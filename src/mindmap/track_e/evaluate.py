@@ -6,9 +6,8 @@ from typing import Iterable
 from mindmap.canonical.generic import GenericLedger
 from mindmap.canonical.typed import TypedLedger
 
-from .generic_observer import GenericObserver
 from .model import FaultCase, ObserverResult, ObserverSurface, localization_scores
-from .typed_observer import TypedObserver
+from .observers import GenericObserver, TypedObserver
 
 
 _OBSERVERS = (
@@ -49,7 +48,7 @@ def _evaluate_one(case: FaultCase, observer, ledger_type) -> tuple[ObserverResul
     else:
         try:
             answer = ledger_type(case.faulty_events).answer(case.query)
-        except Exception as exc:  # surfaced as an uncontained implementation failure
+        except Exception as exc:
             answer = f"ERROR:{type(exc).__name__}:{exc}"
         contained = False
         answer_correct = answer == case.expected_clean_answer
