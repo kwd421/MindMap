@@ -4,11 +4,13 @@ from .alignment import maximum_weight_alignment
 from .metrics import (
     EventSimilarityWeights,
     brier_score,
+    conditional_brier_score,
     event_similarity,
     expected_calibration_error,
     operating_point,
     risk_coverage_curve,
     safe_coverage,
+    select_safe_threshold,
     score_events,
 )
 from .model import (
@@ -27,11 +29,13 @@ __all__ = [
     "EventSimilarityWeights",
     "OperatingPoint",
     "brier_score",
+    "conditional_brier_score",
     "event_similarity",
     "expected_calibration_error",
     "maximum_weight_alignment",
     "operating_point",
     "risk_coverage_curve",
     "safe_coverage",
+    "select_safe_threshold",
     "score_events",
 ]
