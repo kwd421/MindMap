@@ -26,6 +26,5 @@
     "The generic-audited and typed validators implement intentionally equivalent finite invariants.",
     "Well-formed source/extraction errors cannot be detected without independent evidence in this setup.",
     "Latency and check counts are Python reference-implementation diagnostics, not database production costs."
-  ],
-  "runtime_seconds": 0.005439618000082191
+  ]
 }
