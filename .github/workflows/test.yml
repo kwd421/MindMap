@@ -28,6 +28,16 @@ jobs:
         run: python experiments/s_track_conformance.py
       - name: Track X raw verifier P0
         run: python experiments/track_x_v01.py --output-dir /tmp/track_x_v01
+      - name: Verify committed Track X outputs
+        run: |
+          diff -u results/track_x_v01/verification_rows.csv /tmp/track_x_v01/verification_rows.csv
+          diff -u results/track_x_v01/downstream_development_oracle_raw_ceiling.csv /tmp/track_x_v01/downstream_development_oracle_raw_ceiling.csv
+          diff -u results/track_x_v01/downstream_development_raw_verifier.csv /tmp/track_x_v01/downstream_development_raw_verifier.csv
+          diff -u results/track_x_v01/downstream_development_structured_only.csv /tmp/track_x_v01/downstream_development_structured_only.csv
+          diff -u results/track_x_v01/downstream_heldout_oracle_raw_ceiling.csv /tmp/track_x_v01/downstream_heldout_oracle_raw_ceiling.csv
+          diff -u results/track_x_v01/downstream_heldout_raw_verifier.csv /tmp/track_x_v01/downstream_heldout_raw_verifier.csv
+          diff -u results/track_x_v01/downstream_heldout_structured_only.csv /tmp/track_x_v01/downstream_heldout_structured_only.csv
+          diff -u results/track_x_v01/summary.json /tmp/track_x_v01/summary.json
       - name: Upload Track S outputs
         if: always()
         uses: actions/upload-artifact@v4
