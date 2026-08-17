@@ -1,0 +1,23 @@
+{
+  "study": "NCM-Psi v0.2 correlated structured fault injection",
+  "interpretation": "structured intervention study; not a natural extractor accuracy claim",
+  "seed": 20260817,
+  "per_template": 24,
+  "replicates": 20,
+  "prevalences": [0.0, 0.05, 0.1, 0.2, 0.3],
+  "corruption_modes": [
+    "identity_collapse",
+    "fork_cutoff_shift",
+    "world_mind_branch_swap",
+    "exposure_source_swap",
+    "attitude_laundering",
+    "policy_declassification",
+    "restore_parent_error",
+    "temporal_scope_shift",
+    "speaker_or_holder_swap"
+  ],
+  "n_base_scenarios": 264,
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "platform": "Linux-6.18.35-x86_64-with-glibc2.41",
+  "elapsed_seconds": 1.8771218489998773
+}
