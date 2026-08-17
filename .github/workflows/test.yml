@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - research/v0.2-reconciled
+      - research/track-x-v0.1-raw-verifier
   pull_request:
 
 permissions:
@@ -25,6 +26,8 @@ jobs:
         run: pytest -q
       - name: Track S semantic conformance
         run: python experiments/s_track_conformance.py
+      - name: Track X raw verifier P0
+        run: python experiments/track_x_v01.py --output-dir /tmp/track_x_v01
       - name: Upload Track S outputs
         if: always()
         uses: actions/upload-artifact@v4
@@ -33,4 +36,11 @@ jobs:
           path: |
             results/s_track_conformance_rows.csv
             results/s_track_conformance_summary.json
+          if-no-files-found: error
+      - name: Upload Track X outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: track-x-v01-p0
+          path: /tmp/track_x_v01
           if-no-files-found: error
