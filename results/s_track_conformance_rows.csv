@@ -1,0 +1,76 @@
+fixture_id,family,query_id,target_space,invariant,expected,gold,generic,typed,all_agree
+F01,branch_visibility,F01.q1,WORLD,parent_postfork_state,Room 2,Room 2,Room 2,Room 2,1
+F01,branch_visibility,F01.q2,WORLD,postfork_parent_update_not_inherited,Room 1,Room 1,Room 1,Room 1,1
+F01,branch_visibility,F01.q3,WORLD,late_import_of_prefork_fact_visible,Room 0,Room 0,Room 0,Room 0,1
+F01,branch_visibility,F01.q4,WORLD,branch_local_override,Room 3,Room 3,Room 3,Room 3,1
+F01,branch_visibility,F01.q5,WORLD,point_in_system_time_before_late_import,Room 1,Room 1,Room 1,Room 1,1
+F02,mind_copy_without_world_fork,F02.q1,EVER_EXPOSED,copy_does_not_share_postfork_exposure,true,true,true,true,1
+F02,mind_copy_without_world_fork,F02.q2,EVER_EXPOSED,sibling_copy_isolated,false,false,false,false,1
+F02,mind_copy_without_world_fork,F02.q3,AVAILABLE,observer_current_availability,true,true,true,true,1
+F02,mind_copy_without_world_fork,F02.q4,AVAILABLE,unexposed_copy_unavailable,false,false,false,false,1
+F02,mind_copy_without_world_fork,F02.q5,ATTITUDE,instance_specific_attitude,believe,believe,believe,believe,1
+F02,mind_copy_without_world_fork,F02.q6,ATTITUDE,same_principal_not_same_belief,unknown,unknown,unknown,unknown,1
+F02,mind_copy_without_world_fork,F02.q7,ATTRIBUTION,direct_observation_attribution,direct_observation,direct_observation,direct_observation,direct_observation,1
+F02,mind_copy_without_world_fork,F02.q8,ATTRIBUTION,no_attribution_without_exposure,unknown,unknown,unknown,unknown,1
+F03,world_fork_without_mind_copy,F03.q1,WORLD,main_world_continues,blue,blue,blue,blue,1
+F03,world_fork_without_mind_copy,F03.q2,WORLD,child_world_local_state,red,red,red,red,1
+F03,world_fork_without_mind_copy,F03.q3,WORLD,prefork_state_shared,gray,gray,gray,gray,1
+F04,unsynchronized_same_principal_replicas,F04.q1,ATTITUDE,replica_one_belief,believe,believe,believe,believe,1
+F04,unsynchronized_same_principal_replicas,F04.q2,ATTITUDE,replica_two_belief,disbelieve,disbelieve,disbelieve,disbelieve,1
+F04,unsynchronized_same_principal_replicas,F04.q3,EVER_EXPOSED,no_implicit_same_principal_sync,false,false,false,false,1
+F04,unsynchronized_same_principal_replicas,F04.q4,EVER_EXPOSED,reverse_no_implicit_sync,false,false,false,false,1
+F05,identity_fork_copy_attribution,F05.q1,EVER_EXPOSED,identity_fork_received_copy,true,true,true,true,1
+F05,identity_fork_copy_attribution,F05.q2,AVAILABLE,copied_evidence_available,true,true,true,true,1
+F05,identity_fork_copy_attribution,F05.q3,ATTRIBUTION,copy_not_first_person,evidence_copy,evidence_copy,evidence_copy,evidence_copy,1
+F05,identity_fork_copy_attribution,F05.q4,ATTITUDE,copy_can_be_believed,believe,believe,believe,believe,1
+F05,identity_fork_copy_attribution,F05.q5,ATTRIBUTION,source_retains_direct_attribution,direct_observation,direct_observation,direct_observation,direct_observation,1
+F06,receive_accept_reject,F06.q1,EVER_EXPOSED,receipt_creates_exposure,true,true,true,true,1
+F06,receive_accept_reject,F06.q2,ATTITUDE,receipt_does_not_imply_belief,unknown,unknown,unknown,unknown,1
+F06,receive_accept_reject,F06.q3,ATTITUDE,explicit_rejection,disbelieve,disbelieve,disbelieve,disbelieve,1
+F06,receive_accept_reject,F06.q4,ATTITUDE,later_adoption,believe,believe,believe,believe,1
+F06,receive_accept_reject,F06.q5,ATTRIBUTION,adoption_does_not_upgrade_attribution,attributed_report,attributed_report,attributed_report,attributed_report,1
+F07,exposure_policy_lifecycle,F07.q1,AVAILABLE,available_after_observation,true,true,true,true,1
+F07,exposure_policy_lifecycle,F07.q2,EVER_EXPOSED,seal_preserves_historical_exposure,true,true,true,true,1
+F07,exposure_policy_lifecycle,F07.q3,AVAILABLE,seal_blocks_current_availability,false,false,false,false,1
+F07,exposure_policy_lifecycle,F07.q4,AVAILABLE,unseal_restores_access,true,true,true,true,1
+F07,exposure_policy_lifecycle,F07.q5,AVAILABLE,forget_removes_active_availability,false,false,false,false,1
+F07,exposure_policy_lifecycle,F07.q6,EVER_EXPOSED,forget_preserves_audit_history,true,true,true,true,1
+F07,exposure_policy_lifecycle,F07.q7,AVAILABLE,reacquire_restores_availability,true,true,true,true,1
+F08,restore_manifest_gap,F08.q1,EVER_EXPOSED,manifest_member_inherited,true,true,true,true,1
+F08,restore_manifest_gap,F08.q2,EVER_EXPOSED,post_snapshot_recovery_gap,false,false,false,false,1
+F08,restore_manifest_gap,F08.q3,AVAILABLE,manifest_availability_inherited,true,true,true,true,1
+F08,restore_manifest_gap,F08.q4,ATTRIBUTION,snapshot_attribution,same_principal_snapshot_inheritance,same_principal_snapshot_inheritance,same_principal_snapshot_inheritance,same_principal_snapshot_inheritance,1
+F08,restore_manifest_gap,F08.q5,ATTITUDE,manifest_attitude_inherited,believe,believe,believe,believe,1
+F08,restore_manifest_gap,F08.q6,ATTRIBUTION,gap_has_no_attribution,unknown,unknown,unknown,unknown,1
+F09,cross_world_reference_context,F09.q1,ATTITUDE,attitude_held_in_w2_about_w1,believe,believe,believe,believe,1
+F09,cross_world_reference_context,F09.q2,ATTITUDE,no_silent_rescope_to_w2,unknown,unknown,unknown,unknown,1
+F09,cross_world_reference_context,F09.q3,ATTRIBUTION,cross_world_report_attribution,attributed_report,attributed_report,attributed_report,attributed_report,1
+F09,cross_world_reference_context,F09.q4,EVER_EXPOSED,cross_world_receipt_exposure,true,true,true,true,1
+F09,cross_world_reference_context,F09.q5,WORLD,w1_truth_retained,Room 4,Room 4,Room 4,Room 4,1
+F09,cross_world_reference_context,F09.q6,WORLD,w2_truth_not_overwritten,Room 2,Room 2,Room 2,Room 2,1
+F10,protected_only_revocation,F10.q1,DISCLOSE,public_cannot_read_private_only,false,false,false,false,1
+F10,protected_only_revocation,F10.q2,DISCLOSE,trusted_can_read_private_only,true,true,true,true,1
+F10,protected_only_revocation,F10.q3,JUSTIFICATION,admin_sees_private_justification,J.secret,J.secret,J.secret,J.secret,1
+F10,protected_only_revocation,F10.q4,DISCLOSE,revocation_blocks_even_admin,false,false,false,false,1
+F10,protected_only_revocation,F10.q5,JUSTIFICATION,revoked_path_inactive,,,,,1
+F11,independent_public_survives,F11.q1,DISCLOSE,public_path_allows_disclosure,true,true,true,true,1
+F11,independent_public_survives,F11.q2,JUSTIFICATION,public_uses_public_path_only,J.pub,J.pub,J.pub,J.pub,1
+F11,independent_public_survives,F11.q3,JUSTIFICATION,admin_sees_alternative_paths,J.pub|J.sec,J.pub|J.sec,J.pub|J.sec,J.pub|J.sec,1
+F11,independent_public_survives,F11.q4,JUSTIFICATION,public_path_survives_private_revocation,J.pub,J.pub,J.pub,J.pub,1
+F11,independent_public_survives,F11.q5,DISCLOSE,public_path_fails_after_member_delete,false,false,false,false,1
+F12,same_origin_dedup,F12.q1,JUSTIFICATION,same_origin_not_independent,J.ok,J.ok,J.ok,J.ok,1
+F12,same_origin_dedup,F12.q2,DISCLOSE,two_origins_are_sufficient,true,true,true,true,1
+F12,same_origin_dedup,F12.q3,JUSTIFICATION,admin_does_not_override_independence,J.ok,J.ok,J.ok,J.ok,1
+F12,same_origin_dedup,F12.q4,JUSTIFICATION,remaining_duplicate_path_insufficient,,,,,1
+F12,same_origin_dedup,F12.q5,DISCLOSE,dedup_prevents_laundered_disclosure,false,false,false,false,1
+F13,authorized_replication,F13.q1,EVER_EXPOSED,replica_unexposed_before_sync,false,false,false,false,1
+F13,authorized_replication,F13.q2,EVER_EXPOSED,authorized_same_principal_replication,true,true,true,true,1
+F13,authorized_replication,F13.q3,AVAILABLE,authorized_replication_available,true,true,true,true,1
+F13,authorized_replication,F13.q4,ATTRIBUTION,authorized_replication_attribution,same_principal_state_replication,same_principal_state_replication,same_principal_state_replication,same_principal_state_replication,1
+F13,authorized_replication,F13.q5,EVER_EXPOSED,revoked_authorization_blocks_later_replication,false,false,false,false,1
+F13,authorized_replication,F13.q6,ATTRIBUTION,blocked_replication_has_no_attribution,unknown,unknown,unknown,unknown,1
+F14,temporal_negative_controls,F14.q1,WORLD,ordinary_old_valid_state,old,old,old,old,1
+F14,temporal_negative_controls,F14.q2,WORLD,ordinary_latest_valid_state,new,new,new,new,1
+F14,temporal_negative_controls,F14.q3,AVAILABLE,ordinary_evidence_available,true,true,true,true,1
+F14,temporal_negative_controls,F14.q4,ATTITUDE,ordinary_attitude,believe,believe,believe,believe,1
+F14,temporal_negative_controls,F14.q5,DISCLOSE,ordinary_public_disclosure,true,true,true,true,1
