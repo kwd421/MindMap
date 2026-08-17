@@ -9,6 +9,103 @@ from .model import Alert, ObserverSurface
 from .typed_observer import TypedObserver as _TypedObserver
 
 
+_ACQUISITION_OPERATIONS = {
+    "observe",
+    "receive",
+    "read",
+    "evidence_copy",
+    "state_replication",
+    "restore",
+    "reacquire",
+}
+
+
+def _explicit_source_alerts(
+    rows: tuple[CommonEvent, ...], *, rule: str
+) -> list[Alert]:
+    """Check transfer source exposure without treating evidence authorship as memory.
+
+    The canonical contract records exposure separately from evidence creation.
+    Snapshot-manifest inheritance is accepted as a source exposure witness.
+    """
+
+    evidence_time = {
+        event.object_id: event.system_time
+        for event in rows
+        if event.event_type == "evidence" and event.object_id
+    }
+    manifest_members: set[tuple[str, str]] = set()
+    for event in rows:
+        if (
+            event.event_type == "snapshot_member"
+            and event.snapshot_id
+            and event.object_kind == "evidence"
+            and event.object_id
+        ):
+            attrs = dict(event.attributes)
+            if attrs.get("copy_eligible", False) and attrs.get(
+                "historically_exposed", False
+            ):
+                manifest_members.add((event.snapshot_id, event.object_id))
+
+    lineage = [event for event in rows if event.event_type == "lineage"]
+
+    def inherited(
+        mind_id: str,
+        evidence_id: str,
+        system_time: int,
+        visited: frozenset[tuple[str, str, int]],
+    ) -> bool:
+        marker = (mind_id, evidence_id, system_time)
+        if marker in visited:
+            return False
+        visited = visited | {marker}
+        for edge in lineage:
+            if (
+                edge.destination_mind_instance_id != mind_id
+                or edge.system_time > system_time
+                or edge.snapshot_id is None
+                or (edge.snapshot_id, evidence_id) not in manifest_members
+            ):
+                continue
+            cutoff = edge.snapshot_cutoff if edge.snapshot_cutoff is not None else edge.system_time
+            if evidence_time.get(evidence_id, 2**62) <= cutoff:
+                return True
+            if edge.source_mind_instance_id and inherited(
+                edge.source_mind_instance_id, evidence_id, cutoff, visited
+            ):
+                return True
+        return False
+
+    acquired: set[tuple[str, str]] = set()
+    alerts: list[Alert] = []
+    for event in sorted(rows, key=lambda value: (value.system_time, value.event_id)):
+        if (
+            event.event_type != "exposure"
+            or event.destination_mind_instance_id is None
+            or event.object_id is None
+        ):
+            continue
+        source = event.source_mind_instance_id
+        if source is not None and (
+            source,
+            event.object_id,
+        ) not in acquired and not inherited(
+            source, event.object_id, event.system_time, frozenset()
+        ):
+            alerts.append(
+                Alert(
+                    rule,
+                    candidate_event_ids=frozenset({event.event_id}),
+                    constraint_ids=frozenset({"transfer_source_exposed"}),
+                    surface=ObserverSurface.SEMANTIC_JOURNAL,
+                )
+            )
+        if event.transfer_kind in _ACQUISITION_OPERATIONS:
+            acquired.add((event.destination_mind_instance_id, event.object_id))
+    return alerts
+
+
 class GenericObserver(_GenericObserver):
     """Generic observer with complete local identity/context constraints."""
 
@@ -56,6 +153,12 @@ class GenericObserver(_GenericObserver):
                                 surface=ObserverSurface.LOCAL_SCHEMA,
                             )
                         )
+        if surface >= ObserverSurface.SEMANTIC_JOURNAL:
+            alerts.extend(
+                _explicit_source_alerts(
+                    rows, rule="generic_source_not_explicitly_exposed"
+                )
+            )
         return tuple(self._deduplicate(alerts))
 
 
@@ -109,4 +212,10 @@ class TypedObserver(_TypedObserver):
                                 surface=ObserverSurface.LOCAL_SCHEMA,
                             )
                         )
+        if surface >= ObserverSurface.SEMANTIC_JOURNAL:
+            alerts.extend(
+                _explicit_source_alerts(
+                    rows, rule="typed_source_not_explicitly_exposed"
+                )
+            )
         return tuple(self._deduplicate(alerts))
