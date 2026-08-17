@@ -8,9 +8,12 @@ from mindmap.track_x import (
     DecisionRecord,
     EventRecord,
     brier_score,
+    conditional_brier_score,
     expected_calibration_error,
     maximum_weight_alignment,
+    operating_point,
     safe_coverage,
+    select_safe_threshold,
     score_events,
 )
 
@@ -115,6 +118,7 @@ def test_safe_coverage_selects_highest_valid_operating_point():
     assert point.coverage == pytest.approx(0.50)
     assert point.ordinary_risk == 0.0
     assert point.governance_risk == 0.0
+    assert point.governed_coverage == pytest.approx(2 / 3)
 
 
 def test_safe_coverage_can_return_explicit_all_abstain_policy():
@@ -132,9 +136,54 @@ def test_calibration_metrics_have_known_values():
         DecisionRecord("d2", "s1", 0.2, True, False),
     )
     assert brier_score(decisions) == pytest.approx(0.04)
+    assert conditional_brier_score(decisions) == pytest.approx(0.04)
     assert expected_calibration_error(decisions, bins=2) == pytest.approx(0.2)
 
 
 def test_decision_invariants_reject_impossible_rows():
     with pytest.raises(ValueError):
         DecisionRecord("bad", "s", 0.5, False, False, False, True)
+
+
+def test_threshold_is_selected_on_development_and_frozen_on_test():
+    development = (
+        DecisionRecord("d1", "s1", 0.95, True, True, True, False),
+        DecisionRecord("d2", "s1", 0.90, True, True, True, False),
+        DecisionRecord("d3", "s2", 0.80, True, False, True, False),
+    )
+    threshold = select_safe_threshold(development)
+    assert threshold == pytest.approx(0.90)
+
+    held_out = (
+        DecisionRecord("t1", "h1", 0.95, True, True, True, False),
+        DecisionRecord("t2", "h1", 0.90, True, False, True, False),
+        DecisionRecord("t3", "h2", 0.80, True, True, True, False),
+    )
+    point = operating_point(held_out, threshold=threshold)
+    assert point.coverage == pytest.approx(2 / 3)
+    assert point.ordinary_risk == pytest.approx(0.5)
+
+
+def test_minimum_governed_coverage_prevents_selective_evasion():
+    decisions = (
+        DecisionRecord("o1", "s1", 0.95, True, True, False, False),
+        DecisionRecord("o2", "s1", 0.90, True, True, False, False),
+        DecisionRecord("g1", "s2", 0.20, True, True, True, True),
+        DecisionRecord("g2", "s2", 0.10, True, True, True, True),
+    )
+    unconstrained = safe_coverage(decisions)
+    constrained = safe_coverage(decisions, min_governed_coverage=0.5)
+    assert unconstrained.coverage == pytest.approx(0.5)
+    assert unconstrained.governed_coverage == 0.0
+    assert constrained.coverage == 0.0
+
+
+def test_rectangular_alignment_leaves_extra_predictions_unmatched():
+    pairs = maximum_weight_alignment(
+        ("g",),
+        ("p0", "p1", "p2"),
+        lambda left, right: {"p0": 0.2, "p1": 0.9, "p2": 0.7}[right],
+        minimum_score=0.5,
+    )
+    assert len(pairs) == 1
+    assert pairs[0].predicted_index == 1
