@@ -5,7 +5,7 @@ import json
 from dataclasses import asdict
 from typing import Iterable
 
-from mindmap.canonical.model import CommonEvent, sorted_events
+from mindmap.canonical.model import CommonEvent
 
 from .model import JournalCommitment, ProjectionCommitment
 
@@ -24,10 +24,11 @@ def event_hash(event: CommonEvent) -> str:
 
 
 def journal_head(events: Iterable[CommonEvent], previous_head_hash: str | None = None) -> str:
+    """Hash the declared append order rather than a semantic sort order."""
     digest = hashlib.sha256()
     if previous_head_hash:
         digest.update(previous_head_hash.encode("ascii"))
-    for sequence, event in enumerate(sorted_events(events), start=1):
+    for sequence, event in enumerate(tuple(events), start=1):
         digest.update(str(sequence).encode("ascii"))
         digest.update(b"\0")
         digest.update(event.event_id.encode("utf-8"))
@@ -43,7 +44,7 @@ def make_journal_commitment(
     issuer: str = "fixture-authority",
     previous_head_hash: str | None = None,
 ) -> JournalCommitment:
-    ordered = sorted_events(events)
+    ordered = tuple(events)
     return JournalCommitment(
         stream_id=stream_id,
         sequence_start=1,
