@@ -1,0 +1,26 @@
+{
+  "audit": "entitlement-lineage-complete-baseline-v0.1",
+  "source_pilot": "MindMapBench-Entitlement-Pilot v0.1",
+  "github_actions_run_id": 32011288073,
+  "github_actions_job_id": 95331205842,
+  "scenario_count": 200,
+  "query_count": 800,
+  "primary_query_count": 600,
+  "system": "CompleteRelationalRules",
+  "macro_exact_accuracy": 1.0,
+  "primary_accuracy": 1.0,
+  "by_query_type": {
+    "world": 1.0,
+    "belief": 1.0,
+    "disclose": 1.0,
+    "historical": 1.0
+  },
+  "unauthorized_disclosure_rate": 0.0,
+  "failure_count": 0,
+  "uses_query_factor_labels": false,
+  "ncm_psi_primary_accuracy": 0.9933333333333333,
+  "ncm_psi_macro_exact_accuracy": 0.995,
+  "primary_difference_complete_relational_minus_ncm_psi": 0.00666666666666671,
+  "decision": "The original +52.5 percentage-point comparison against ScopedSlots is an incomplete-baseline discriminability result, not an architecture-performance result. Under equal structured information, a compact relational rule system exactly solves the fixed generator and corrects NCM-Psi's four residual errors.",
+  "scope_limit": "Oracle structured-record semantics only; no raw-language extraction, learned reader, lifecycle-fault comparison, or population effect estimate."
+}
