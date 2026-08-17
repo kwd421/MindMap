@@ -1,0 +1,5 @@
+system,PrimaryAccuracyMean,PrimaryAccuracySD,PrimaryAccuracyMin,PrimaryAccuracyMax,DatasetSeeds
+NCM-Psi,0.9925,0.003447,0.988333,1.0,10
+ModalityNoLineage,0.908667,0.009648,0.89,0.923333,10
+LineageNoModality,0.618833,0.014252,0.596667,0.643333,10
+ScopedSlots,0.435833,0.016855,0.41,0.468333,10
