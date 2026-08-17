@@ -98,11 +98,11 @@ FROZEN_MANIFEST: tuple[ManifestEntry, ...] = (
     ManifestEntry(
         "F09",
         "cross_world_reference_context",
-        "F09.a",
-        "F09.q1",
+        "F09.xb",
+        "F09.q4",
         DatasetSplit.HELDOUT,
         RenderingFamily.ELLIPTICAL,
-        "about_world_branch_id",
+        "destination_mind_instance_id",
     ),
     ManifestEntry(
         "F10",
