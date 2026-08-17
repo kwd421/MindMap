@@ -1,0 +1,33 @@
+{
+  "suite": "MindMap-Track-E-Fault-Observability-v0.1",
+  "scope": "fixed lifecycle fault-observability and validator-tier audit; not an end-to-end language or population-effect study",
+  "base_archetypes": 17,
+  "fault_archetypes": 15,
+  "observable_fault_archetypes": 14,
+  "clean_control_archetypes": 2,
+  "alpha_renamings": 20,
+  "evaluated_case_variants": 340,
+  "system_count": 6,
+  "row_count": 2040,
+  "representation_pair_checks": {
+    "G-Complete__vs__T-Canonical": {
+      "rows": 340,
+      "outcomes_identical": true
+    },
+    "G-Envelope__vs__T-Envelope": {
+      "rows": 340,
+      "outcomes_identical": true
+    }
+  },
+  "interpretation": [
+    "Complete generic and typed systems share the same invariant specification and are expected to tie.",
+    "Typed local constraints catch local/referential faults but not cross-event lifecycle faults.",
+    "Semantic invariants cannot identify omissions or semantically valid tampering without an external commitment.",
+    "Transaction envelopes and projection-head commitments catch the three committed omission/tamper/residue cases.",
+    "A dropped revoke with no surviving command/envelope is intentionally unobservable from the remaining ledger.",
+    "Wall-clock timings are Python/environment-specific exploratory measurements."
+  ],
+  "no_population_inference": true,
+  "python_version": "3.13.5",
+  "script_sha256": "636da65603e958fc9a877e67f634204ebd8517cd03f7891c7b0255a87e1ecbd6"
+}
