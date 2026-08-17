@@ -72,6 +72,7 @@ class FaultCase:
     clean_projection_rows: tuple[tuple[str, str], ...] = ()
     faulty_projection_rows: tuple[tuple[str, str], ...] = ()
     clean_control: bool = False
+    identifiable: bool = True
     notes: str = ""
     tags: tuple[str, ...] = ()
 
@@ -92,6 +93,7 @@ class FaultCase:
         clean_projection_rows: Iterable[tuple[str, str]] = (),
         faulty_projection_rows: Iterable[tuple[str, str]] = (),
         clean_control: bool = False,
+        identifiable: bool = True,
         notes: str = "",
         tags: Iterable[str] = (),
     ) -> "FaultCase":
@@ -109,6 +111,7 @@ class FaultCase:
             clean_projection_rows=tuple(clean_projection_rows),
             faulty_projection_rows=tuple(faulty_projection_rows),
             clean_control=clean_control,
+            identifiable=identifiable,
             notes=notes,
             tags=tuple(tags),
         )
