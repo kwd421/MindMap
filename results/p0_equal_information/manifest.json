@@ -7,9 +7,17 @@
     "bytes": 143,
     "sha256": "086608509b960ddb2305327ee2492585262d2e0d253524866e88d86f778b44ff"
   },
-  "fault_query_results.csv": {
-    "bytes": 33844,
-    "sha256": "999b8aa62a98d19921f9b004858b258a481b1a43f11eefce6efa1b1677dd01b4"
+  "fault_query_results_enforceable.csv": {
+    "bytes": 17391,
+    "sha256": "dbe9c13456f8788a0227170762e229e05a7857f90670c30d063e6ec9984fc2c9"
+  },
+  "fault_query_results_missing_event.csv": {
+    "bytes": 3136,
+    "sha256": "23c2079f8d494786c7cc11fedce814f30ca7ebc2e430dfa765d9aa43ddb0177c"
+  },
+  "fault_query_results_well_formed_semantic.csv": {
+    "bytes": 13885,
+    "sha256": "944716c599c019b7bf7d6deadf71b737ca54c042fa380f635983061b029108bd"
   },
   "fault_summary.csv": {
     "bytes": 1197,
