@@ -16,7 +16,7 @@ class ManifestEntry:
     corruption_field: str
 
 
-FROZEN_MANIFEST_VERSION = "track-x-v0.1-manifest-1"
+FROZEN_MANIFEST_VERSION = "track-x-v0.1-manifest-2"
 CALIBRATION_BINS = (0.0, 0.2, 0.4, 0.6, 0.8, 1.0)
 FIXED_COVERAGE_LEVELS = (0.50, 0.75, 0.90, 1.00)
 FIXED_RISK_LEVELS = (0.00, 0.05, 0.10, 0.20)
