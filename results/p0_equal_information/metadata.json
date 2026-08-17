@@ -1,0 +1,31 @@
+{
+  "benchmark": "NCM-Psi P0 Equal-Information Audit v0.1",
+  "scope": "symbolic deterministic semantic-conformance and fault-class audit",
+  "fixtures": 14,
+  "queries": 46,
+  "faults": 18,
+  "systems": [
+    "generic_basic",
+    "generic_audited",
+    "typed"
+  ],
+  "mutants": [
+    "receipt_implies_belief",
+    "identity_fork_first_person",
+    "forget_erases_history",
+    "flatten_policy",
+    "system_time_fork",
+    "same_origin_independent",
+    "branch_collapse"
+  ],
+  "gold_independence": "Expected outputs are literal fixture data; neither generic nor typed resolver is called to generate gold.",
+  "decisive_interpretation": "A complete generic invariant layer and the typed ledger are expected to tie on finite clean semantics and on faults covered by equivalent invariants.",
+  "limitations": [
+    "No natural-language extraction or LLM reader is evaluated.",
+    "Fixtures are hand-authored archetypes, not an independent population sample.",
+    "The generic-audited and typed validators implement intentionally equivalent finite invariants.",
+    "Well-formed source/extraction errors cannot be detected without independent evidence in this setup.",
+    "Latency and check counts are Python reference-implementation diagnostics, not database production costs."
+  ],
+  "runtime_seconds": 0.005439618000082191
+}
