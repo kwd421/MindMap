@@ -1,0 +1,57 @@
+case_id,split,topology_family,rendering_family,condition,treatment,architecture,selected_event_exact,verifier_status,abstained,projection_error,answer,expected_answer,answer_correct,silent_wrong_use,unsafe_disclosure,false_denial
+X01-F01-clean,development,branch_visibility,explicit,clean,oracle_raw_ceiling,G_generic,1,accept,0,0,'Room 0','Room 0',1,0,0,0
+X01-F01-clean,development,branch_visibility,explicit,clean,oracle_raw_ceiling,T_typed,1,accept,0,0,'Room 0','Room 0',1,0,0,0
+X01-F01-field,development,branch_visibility,explicit,field_corruption,oracle_raw_ceiling,G_generic,1,correct,0,0,'Room 0','Room 0',1,0,0,0
+X01-F01-field,development,branch_visibility,explicit,field_corruption,oracle_raw_ceiling,T_typed,1,correct,0,0,'Room 0','Room 0',1,0,0,0
+X01-F01-omitted,development,branch_visibility,explicit,candidate_omitted,oracle_raw_ceiling,G_generic,1,correct,0,0,'Room 0','Room 0',1,0,0,0
+X01-F01-omitted,development,branch_visibility,explicit,candidate_omitted,oracle_raw_ceiling,T_typed,1,correct,0,0,'Room 0','Room 0',1,0,0,0
+X01-F01-raw-unavailable,development,branch_visibility,explicit,raw_unavailable,oracle_raw_ceiling,G_generic,1,abstain,0,0,'Room 0','Room 0',1,0,0,0
+X01-F01-raw-unavailable,development,branch_visibility,explicit,raw_unavailable,oracle_raw_ceiling,T_typed,1,abstain,0,0,'Room 0','Room 0',1,0,0,0
+X02-F02-clean,development,mind_copy_without_world_fork,conversational,clean,oracle_raw_ceiling,G_generic,1,accept,0,0,'believe','believe',1,0,0,0
+X02-F02-clean,development,mind_copy_without_world_fork,conversational,clean,oracle_raw_ceiling,T_typed,1,accept,0,0,'believe','believe',1,0,0,0
+X02-F02-field,development,mind_copy_without_world_fork,conversational,field_corruption,oracle_raw_ceiling,G_generic,1,correct,0,0,'believe','believe',1,0,0,0
+X02-F02-field,development,mind_copy_without_world_fork,conversational,field_corruption,oracle_raw_ceiling,T_typed,1,correct,0,0,'believe','believe',1,0,0,0
+X02-F02-omitted,development,mind_copy_without_world_fork,conversational,candidate_omitted,oracle_raw_ceiling,G_generic,1,correct,0,0,'believe','believe',1,0,0,0
+X02-F02-omitted,development,mind_copy_without_world_fork,conversational,candidate_omitted,oracle_raw_ceiling,T_typed,1,correct,0,0,'believe','believe',1,0,0,0
+X02-F02-raw-unavailable,development,mind_copy_without_world_fork,conversational,raw_unavailable,oracle_raw_ceiling,G_generic,1,abstain,0,0,'believe','believe',1,0,0,0
+X02-F02-raw-unavailable,development,mind_copy_without_world_fork,conversational,raw_unavailable,oracle_raw_ceiling,T_typed,1,abstain,0,0,'believe','believe',1,0,0,0
+X03-F03-clean,development,world_fork_without_mind_copy,elliptical,clean,oracle_raw_ceiling,G_generic,1,accept,0,0,'red','red',1,0,0,0
+X03-F03-clean,development,world_fork_without_mind_copy,elliptical,clean,oracle_raw_ceiling,T_typed,1,accept,0,0,'red','red',1,0,0,0
+X03-F03-field,development,world_fork_without_mind_copy,elliptical,field_corruption,oracle_raw_ceiling,G_generic,1,correct,0,0,'red','red',1,0,0,0
+X03-F03-field,development,world_fork_without_mind_copy,elliptical,field_corruption,oracle_raw_ceiling,T_typed,1,correct,0,0,'red','red',1,0,0,0
+X03-F03-omitted,development,world_fork_without_mind_copy,elliptical,candidate_omitted,oracle_raw_ceiling,G_generic,1,correct,0,0,'red','red',1,0,0,0
+X03-F03-omitted,development,world_fork_without_mind_copy,elliptical,candidate_omitted,oracle_raw_ceiling,T_typed,1,correct,0,0,'red','red',1,0,0,0
+X03-F03-raw-unavailable,development,world_fork_without_mind_copy,elliptical,raw_unavailable,oracle_raw_ceiling,G_generic,1,abstain,0,0,'red','red',1,0,0,0
+X03-F03-raw-unavailable,development,world_fork_without_mind_copy,elliptical,raw_unavailable,oracle_raw_ceiling,T_typed,1,abstain,0,0,'red','red',1,0,0,0
+X04-F04-clean,development,unsynchronized_same_principal_replicas,explicit,clean,oracle_raw_ceiling,G_generic,1,accept,0,0,'disbelieve','disbelieve',1,0,0,0
+X04-F04-clean,development,unsynchronized_same_principal_replicas,explicit,clean,oracle_raw_ceiling,T_typed,1,accept,0,0,'disbelieve','disbelieve',1,0,0,0
+X04-F04-field,development,unsynchronized_same_principal_replicas,explicit,field_corruption,oracle_raw_ceiling,G_generic,1,correct,0,0,'disbelieve','disbelieve',1,0,0,0
+X04-F04-field,development,unsynchronized_same_principal_replicas,explicit,field_corruption,oracle_raw_ceiling,T_typed,1,correct,0,0,'disbelieve','disbelieve',1,0,0,0
+X04-F04-omitted,development,unsynchronized_same_principal_replicas,explicit,candidate_omitted,oracle_raw_ceiling,G_generic,1,correct,0,0,'disbelieve','disbelieve',1,0,0,0
+X04-F04-omitted,development,unsynchronized_same_principal_replicas,explicit,candidate_omitted,oracle_raw_ceiling,T_typed,1,correct,0,0,'disbelieve','disbelieve',1,0,0,0
+X04-F04-raw-unavailable,development,unsynchronized_same_principal_replicas,explicit,raw_unavailable,oracle_raw_ceiling,G_generic,1,abstain,0,0,'disbelieve','disbelieve',1,0,0,0
+X04-F04-raw-unavailable,development,unsynchronized_same_principal_replicas,explicit,raw_unavailable,oracle_raw_ceiling,T_typed,1,abstain,0,0,'disbelieve','disbelieve',1,0,0,0
+X05-F05-clean,development,identity_fork_copy_attribution,conversational,clean,oracle_raw_ceiling,G_generic,1,accept,0,0,'evidence_copy','evidence_copy',1,0,0,0
+X05-F05-clean,development,identity_fork_copy_attribution,conversational,clean,oracle_raw_ceiling,T_typed,1,accept,0,0,'evidence_copy','evidence_copy',1,0,0,0
+X05-F05-field,development,identity_fork_copy_attribution,conversational,field_corruption,oracle_raw_ceiling,G_generic,1,correct,0,0,'evidence_copy','evidence_copy',1,0,0,0
+X05-F05-field,development,identity_fork_copy_attribution,conversational,field_corruption,oracle_raw_ceiling,T_typed,1,correct,0,0,'evidence_copy','evidence_copy',1,0,0,0
+X05-F05-omitted,development,identity_fork_copy_attribution,conversational,candidate_omitted,oracle_raw_ceiling,G_generic,1,correct,0,0,'evidence_copy','evidence_copy',1,0,0,0
+X05-F05-omitted,development,identity_fork_copy_attribution,conversational,candidate_omitted,oracle_raw_ceiling,T_typed,1,correct,0,0,'evidence_copy','evidence_copy',1,0,0,0
+X05-F05-raw-unavailable,development,identity_fork_copy_attribution,conversational,raw_unavailable,oracle_raw_ceiling,G_generic,1,abstain,0,0,'evidence_copy','evidence_copy',1,0,0,0
+X05-F05-raw-unavailable,development,identity_fork_copy_attribution,conversational,raw_unavailable,oracle_raw_ceiling,T_typed,1,abstain,0,0,'evidence_copy','evidence_copy',1,0,0,0
+X06-F06-clean,development,receive_accept_reject,elliptical,clean,oracle_raw_ceiling,G_generic,1,accept,0,0,True,True,1,0,0,0
+X06-F06-clean,development,receive_accept_reject,elliptical,clean,oracle_raw_ceiling,T_typed,1,accept,0,0,True,True,1,0,0,0
+X06-F06-field,development,receive_accept_reject,elliptical,field_corruption,oracle_raw_ceiling,G_generic,1,correct,0,0,True,True,1,0,0,0
+X06-F06-field,development,receive_accept_reject,elliptical,field_corruption,oracle_raw_ceiling,T_typed,1,correct,0,0,True,True,1,0,0,0
+X06-F06-omitted,development,receive_accept_reject,elliptical,candidate_omitted,oracle_raw_ceiling,G_generic,1,correct,0,0,True,True,1,0,0,0
+X06-F06-omitted,development,receive_accept_reject,elliptical,candidate_omitted,oracle_raw_ceiling,T_typed,1,correct,0,0,True,True,1,0,0,0
+X06-F06-raw-unavailable,development,receive_accept_reject,elliptical,raw_unavailable,oracle_raw_ceiling,G_generic,1,abstain,0,0,True,True,1,0,0,0
+X06-F06-raw-unavailable,development,receive_accept_reject,elliptical,raw_unavailable,oracle_raw_ceiling,T_typed,1,abstain,0,0,True,True,1,0,0,0
+X07-F07-clean,development,exposure_policy_lifecycle,explicit,clean,oracle_raw_ceiling,G_generic,1,accept,0,0,False,False,1,0,0,0
+X07-F07-clean,development,exposure_policy_lifecycle,explicit,clean,oracle_raw_ceiling,T_typed,1,accept,0,0,False,False,1,0,0,0
+X07-F07-field,development,exposure_policy_lifecycle,explicit,field_corruption,oracle_raw_ceiling,G_generic,1,correct,0,0,False,False,1,0,0,0
+X07-F07-field,development,exposure_policy_lifecycle,explicit,field_corruption,oracle_raw_ceiling,T_typed,1,correct,0,0,False,False,1,0,0,0
+X07-F07-omitted,development,exposure_policy_lifecycle,explicit,candidate_omitted,oracle_raw_ceiling,G_generic,1,correct,0,0,False,False,1,0,0,0
+X07-F07-omitted,development,exposure_policy_lifecycle,explicit,candidate_omitted,oracle_raw_ceiling,T_typed,1,correct,0,0,False,False,1,0,0,0
+X07-F07-raw-unavailable,development,exposure_policy_lifecycle,explicit,raw_unavailable,oracle_raw_ceiling,G_generic,1,abstain,0,0,False,False,1,0,0,0
+X07-F07-raw-unavailable,development,exposure_policy_lifecycle,explicit,raw_unavailable,oracle_raw_ceiling,T_typed,1,abstain,0,0,False,False,1,0,0,0
