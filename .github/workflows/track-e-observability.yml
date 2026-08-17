@@ -29,21 +29,37 @@ jobs:
           python experiments/track_e_fault_observability_v0_1.py \
             --renamings 20 \
             --output-dir /tmp/track-e-results
-      - name: Verify committed outputs
+      - name: Verify deterministic outputs
         run: |
-          diff -u results/track_e_fault_observability_v0_1/summary.csv /tmp/track-e-results/summary.csv
           diff -u results/track_e_fault_observability_v0_1/detection_matrix.csv /tmp/track-e-results/detection_matrix.csv
           python - <<'PY'
-          import hashlib, json
+          import csv, hashlib, json
           from pathlib import Path
 
+          timing_fields = {'median_validate_us', 'p95_validate_us'}
+
+          def deterministic_rows(path: str):
+              with Path(path).open(newline='') as handle:
+                  return [
+                      {key: value for key, value in row.items() if key not in timing_fields}
+                      for row in csv.DictReader(handle)
+                  ]
+
+          expected_rows = deterministic_rows('results/track_e_fault_observability_v0_1/summary.csv')
+          actual_rows = deterministic_rows('/tmp/track-e-results/summary.csv')
+          if expected_rows != actual_rows:
+              raise SystemExit('deterministic summary fields differ')
+
           source = Path('experiments/track_e_fault_observability_v0_1.py').read_bytes()
-          expected = json.loads(Path('results/track_e_fault_observability_v0_1/metadata.json').read_text())['script_sha256']
-          actual = hashlib.sha256(source).hexdigest()
-          if actual != expected:
-              raise SystemExit(f'script hash mismatch: {actual} != {expected}')
+          expected_hash = json.loads(
+              Path('results/track_e_fault_observability_v0_1/metadata.json').read_text()
+          )['script_sha256']
+          actual_hash = hashlib.sha256(source).hexdigest()
+          if actual_hash != expected_hash:
+              raise SystemExit(f'script hash mismatch: {actual_hash} != {expected_hash}')
           PY
       - name: Upload review artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: track-e-observability-v0.1-review
