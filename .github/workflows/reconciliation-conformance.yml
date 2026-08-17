@@ -16,7 +16,24 @@ jobs:
           python-version: "3.13"
       - name: Regenerate fixed conformance outputs
         run: python experiments/equal_information_conformance_v0_2.py
-      - name: Verify committed outputs are reproducible
-        run: git diff --exit-code -- results/equal_information_conformance_v0_2
+      - name: Verify environment-independent outputs are reproducible
+        run: |
+          git diff --exit-code -- \
+            results/equal_information_conformance_v0_2/summary.json \
+            results/equal_information_conformance_v0_2/per_query.jsonl
+      - name: Verify script content hash in generated manifest
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+
+          script = Path("experiments/equal_information_conformance_v0_2.py")
+          manifest = json.loads(
+              Path("results/equal_information_conformance_v0_2/manifest.json").read_text()
+          )
+          actual = hashlib.sha256(script.read_bytes()).hexdigest()
+          assert manifest["script_sha256"] == actual, (manifest["script_sha256"], actual)
+          PY
       - name: Run conformance tests
         run: python -m unittest discover -s tests -p 'test_equal_information_conformance_v0_2.py' -v
