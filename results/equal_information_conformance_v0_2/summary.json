@@ -1,0 +1,24 @@
+{
+  "suite_version": "equal-information-conformance-v0.2.0",
+  "fixture_ids": [
+    "unsynchronized_replicas",
+    "identity_fork_copy_cross_world",
+    "receipt_rejection",
+    "exposure_availability_lifecycle",
+    "alternative_public_support",
+    "protected_only_revocation",
+    "fork_cutoff_vs_late_import",
+    "snapshot_restore_gap",
+    "authorized_same_principal_replication"
+  ],
+  "fixture_count": 9,
+  "query_count": 30,
+  "typed_correct": 30,
+  "generic_correct": 30,
+  "systems_agree": 30,
+  "typed_accuracy": 1.0,
+  "generic_accuracy": 1.0,
+  "agreement_rate": 1.0,
+  "failure_count": 0,
+  "interpretation": "Independent literal fixture gold; equal-information typed and generic implementations are expected to agree. This is semantic conformance, not evidence that either representation is architecturally superior."
+}
