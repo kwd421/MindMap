@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from copy import deepcopy
 from typing import Any, Protocol
 
 from .gatemem_public import (
@@ -26,15 +27,24 @@ class PublicGateMemAgent(Protocol):
         ...
 
 
+def _clone_episode(value: PublicEpisode) -> PublicEpisode:
+    return PublicEpisode(
+        episode_id=value.episode_id,
+        domain=value.domain,
+        principals=tuple(value.principals),
+        relationships=tuple(deepcopy(item) for item in value.relationships),
+    )
+
+
 class GateMemPublicSession:
     """Chronology and identity guard storing public objects only."""
 
     def __init__(self, episode: PublicEpisode) -> None:
-        self.episode = episode
+        self.episode = _clone_episode(episode)
         self._turns: list[PublicTurn] = []
         self._turn_ids: set[str] = set()
         self._principal_roles = {
-            principal.principal_id: principal.role for principal in episode.principals
+            principal.principal_id: principal.role for principal in self.episode.principals
         }
 
     @property
@@ -84,11 +94,11 @@ class GateMemPublicSession:
                 for key, value in relationship.items()
                 if isinstance(value, str)
             ):
-                selected.append(dict(relationship))
+                selected.append(deepcopy(relationship))
         return tuple(selected)
 
     def reset_agent(self, agent: PublicGateMemAgent) -> None:
-        agent.reset(self.episode)
+        agent.reset(_clone_episode(self.episode))
 
     def ingest_agent(self, agent: PublicGateMemAgent, turn: PublicTurn) -> None:
         self.ingest(turn)
