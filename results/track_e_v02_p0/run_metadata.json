@@ -1,0 +1,15 @@
+{
+  "artifact_id": 9284636274,
+  "deterministic_outputs": [
+    "rows.csv",
+    "summary.json"
+  ],
+  "github_sha": "17df45065edb3271d48e502d9fcabeb53e72ba64",
+  "interpretation": "fixed deterministic fault/clean-control audit; no inferential statistics",
+  "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "python": "3.11.15 (main, Jun 16 2026, 21:41:52) [GCC 13.3.0]",
+  "rows_sha256": "4e16fba3370443e26220f9fa1b8d1826f1698d5b2bac6ceebd220fc86b708963",
+  "study": "MindMap Track E v0.2 canonical fixed P0",
+  "summary_sha256": "c791ae42996b5cf14dfd4f27a1a96861fc0e69cdf6271e11528e5db484cbe3d3",
+  "workflow_run_id": 32019088890
+}

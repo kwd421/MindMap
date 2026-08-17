@@ -1,0 +1,71 @@
+{
+  "case_ids": [
+    "E01",
+    "E02",
+    "E03",
+    "E04",
+    "E05",
+    "E06",
+    "E07",
+    "E08",
+    "E09",
+    "E10",
+    "E11",
+    "E12",
+    "E13",
+    "E14",
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07"
+  ],
+  "interpretation": "fixed deterministic fault/clean-control audit; no inferential statistics",
+  "n_archetypes": 21,
+  "n_clean_controls": 7,
+  "n_fault_archetypes": 14,
+  "n_identifiable_fault_archetypes": 13,
+  "n_non_identifiable_archetypes": 1,
+  "n_rows": 42,
+  "observers": {
+    "G_generic_observer_v0.2": {
+      "clean_false_alarm_rate": 0.0,
+      "exact_responsible_set_rate_given_detection": 0.07692307692307693,
+      "identifiable_detection_recall": 1.0,
+      "mean_candidate_set_size_given_detection": 2.6153846153846154,
+      "mutated_event_hit_rate_given_detection": 0.9230769230769231,
+      "n_cases": 21,
+      "n_clean_controls": 7,
+      "n_faults": 14,
+      "n_identifiable_faults": 13,
+      "n_non_identifiable_faults": 1,
+      "non_identifiable_detected": 0,
+      "silent_incorrect_use_rate": 0.07142857142857142
+    },
+    "T_typed_observer_v0.2": {
+      "clean_false_alarm_rate": 0.0,
+      "exact_responsible_set_rate_given_detection": 0.07692307692307693,
+      "identifiable_detection_recall": 1.0,
+      "mean_candidate_set_size_given_detection": 2.6153846153846154,
+      "mutated_event_hit_rate_given_detection": 0.9230769230769231,
+      "n_cases": 21,
+      "n_clean_controls": 7,
+      "n_faults": 14,
+      "n_identifiable_faults": 13,
+      "n_non_identifiable_faults": 1,
+      "non_identifiable_detected": 0,
+      "silent_incorrect_use_rate": 0.07142857142857142
+    }
+  },
+  "outcome_disagreements": {},
+  "required_surface_counts": {
+    "BYTES": 1,
+    "EXTERNAL_COMMITMENT": 4,
+    "LOCAL_SCHEMA": 2,
+    "PROJECTION_COMMITMENT": 3,
+    "SEMANTIC_JOURNAL": 11
+  },
+  "study": "MindMap Track E v0.2 canonical fixed P0"
+}
