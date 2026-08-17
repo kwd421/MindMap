@@ -1,0 +1,55 @@
+name: track-e-observability
+
+on:
+  push:
+    branches:
+      - research/track-e-observability-v0.1
+  pull_request:
+    paths:
+      - 'experiments/track_e_fault_observability_v0_1.py.gz'
+      - 'results/track_e_fault_observability_v0_1/**'
+      - '.github/workflows/track-e-observability.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  reproduce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Decompress source
+        run: gzip -dc experiments/track_e_fault_observability_v0_1.py.gz > experiments/track_e_fault_observability_v0_1.py
+      - name: Reproduce Track E outputs
+        run: |
+          rm -rf /tmp/track-e-results
+          python experiments/track_e_fault_observability_v0_1.py \
+            --renamings 20 \
+            --output-dir /tmp/track-e-results
+      - name: Verify committed outputs
+        run: |
+          diff -u results/track_e_fault_observability_v0_1/summary.csv /tmp/track-e-results/summary.csv
+          diff -u results/track_e_fault_observability_v0_1/detection_matrix.csv /tmp/track-e-results/detection_matrix.csv
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+
+          source = Path('experiments/track_e_fault_observability_v0_1.py').read_bytes()
+          expected = json.loads(Path('results/track_e_fault_observability_v0_1/metadata.json').read_text())['script_sha256']
+          actual = hashlib.sha256(source).hexdigest()
+          if actual != expected:
+              raise SystemExit(f'script hash mismatch: {actual} != {expected}')
+          PY
+      - name: Upload review artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: track-e-observability-v0.1-review
+          path: |
+            experiments/track_e_fault_observability_v0_1.py
+            /tmp/track-e-results/summary.csv
+            /tmp/track-e-results/detection_matrix.csv
+            /tmp/track-e-results/metadata.json
+          if-no-files-found: error
