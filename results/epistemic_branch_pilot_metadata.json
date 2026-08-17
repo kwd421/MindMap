@@ -1,0 +1,40 @@
+{
+  "benchmark": "NCM-EpiBranch-Synth v0.1",
+  "scope": "mechanism-isolation state-resolution pilot; not end-to-end language QA",
+  "seed": 20260817,
+  "scenarios": 250,
+  "events": 3250,
+  "queries": 5250,
+  "systems": [
+    "FlatGlobal",
+    "BitemporalACL",
+    "BitemporalPerspective",
+    "EpistemicTemporalLatest",
+    "NCM3E"
+  ],
+  "tests": {
+    "invariants_passed": 5,
+    "invariants_failed": 0
+  },
+  "paired_comparison": {
+    "baseline": "EpistemicTemporalLatest",
+    "proposed": "NCM3E",
+    "n": 5250,
+    "answer_accuracy_baseline": 0.38095238095238093,
+    "answer_accuracy_proposed": 1.0,
+    "absolute_improvement": 0.6190476190476191,
+    "paired_bootstrap_95ci": [
+      0.6060952380952381,
+      0.6323809523809524
+    ],
+    "discordant_proposed_only": 3250,
+    "discordant_baseline_only": 0,
+    "mcnemar_exact_p": 0.0
+  },
+  "limitations": [
+    "Gold metadata is generated rather than extracted by an LLM.",
+    "Subject and predicate routing are provided to the resolver.",
+    "The clean NCM3E result is a semantics-conformance upper bound, not a public-benchmark accuracy claim.",
+    "Events are synthetic and query templates are programmatic."
+  ]
+}
