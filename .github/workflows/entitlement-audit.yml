@@ -1,0 +1,23 @@
+name: entitlement-complete-baseline-audit
+
+on:
+  push:
+    branches:
+      - research/audit-entitlement-lineage
+  pull_request:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Install pilot dependencies
+        run: python -m pip install --upgrade pip numpy pandas scipy pytest
+      - name: Run equal-information baseline audit
+        run: python experiments/entitlement_lineage_complete_baseline.py
+      - name: Run focused audit test
+        run: python -m pytest -q tests/test_entitlement_lineage_complete_baseline.py
