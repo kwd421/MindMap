@@ -10,7 +10,7 @@
     "summary.json"
   ],
   "interpretation": "fixed deterministic parser/information-firewall audit; no inferential statistics or unrestricted natural-language claim",
-  "manifest_version": "track-x-v0.1-manifest-1",
+  "manifest_version": "track-x-v0.1-manifest-2",
   "output_sha256": {
     "downstream_development_oracle_raw_ceiling.csv": "4e08fec891948321210ae2ff812d2e78dc2f7dfe4f829049eb0f9f09a35f520f",
     "downstream_development_raw_verifier.csv": "8b6a1d23dbf32759c45e700c9f508073adfddc44b93f5569c8d498708f8f65ff",
