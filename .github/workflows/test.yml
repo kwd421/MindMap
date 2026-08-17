@@ -27,7 +27,11 @@ jobs:
       - name: Track S semantic conformance
         run: python experiments/s_track_conformance.py
       - name: Track E canonical P0
-        run: python experiments/track_e_v02_p0.py
+        run: python experiments/track_e_v02_p0.py --output-dir /tmp/track_e_v02_p0
+      - name: Verify committed Track E outputs
+        run: |
+          diff -u results/track_e_v02_p0/rows.csv /tmp/track_e_v02_p0/rows.csv
+          diff -u results/track_e_v02_p0/summary.json /tmp/track_e_v02_p0/summary.json
       - name: Upload Track S outputs
         if: always()
         uses: actions/upload-artifact@v4
@@ -42,5 +46,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: track-e-v02-p0
-          path: results/track_e_v02_p0
+          path: /tmp/track_e_v02_p0
           if-no-files-found: error
