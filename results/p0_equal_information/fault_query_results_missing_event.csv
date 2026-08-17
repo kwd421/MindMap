@@ -1,0 +1,19 @@
+fault_id,fault_class,description,fixture_id,archetype,target_event_id,query_id,target,system,gold,prediction,affected_by_declared_target,fault_has_observed_semantic_effect,correct,detected,localized_target,silent_wrong,contained,finding_codes,localized_ids,local_checks,cross_checks
+dropped_revoke_event,missing_event,omit the revocation event,f09,shared_support_revoked,f09-e07,f09-q01,disclose,generic_basic,no,yes,1,1,0,0,0,1,0,,,12,0
+dropped_revoke_event,missing_event,omit the revocation event,f09,shared_support_revoked,f09-e07,f09-q02,justification,generic_basic,withhold,family-secret,1,1,0,0,0,1,0,,,12,0
+dropped_revoke_event,missing_event,omit the revocation event,f09,shared_support_revoked,f09-e07,f09-q01,disclose,generic_audited,no,yes,1,1,0,0,0,1,0,,,24,2
+dropped_revoke_event,missing_event,omit the revocation event,f09,shared_support_revoked,f09-e07,f09-q02,justification,generic_audited,withhold,family-secret,1,1,0,0,0,1,0,,,24,2
+dropped_revoke_event,missing_event,omit the revocation event,f09,shared_support_revoked,f09-e07,f09-q01,disclose,typed,no,yes,1,1,0,0,0,1,0,,,30,8
+dropped_revoke_event,missing_event,omit the revocation event,f09,shared_support_revoked,f09-e07,f09-q02,justification,typed,withhold,family-secret,1,1,0,0,0,1,0,,,30,8
+dropped_initial_exposure,missing_event,omit original receipt,f08,forget_and_reacquire,f08-e09,f08-q01,ever_exposed,generic_basic,yes,no,1,1,0,0,0,1,0,,,20,0
+dropped_initial_exposure,missing_event,omit original receipt,f08,forget_and_reacquire,f08-e09,f08-q02,available,generic_basic,no,no,1,1,1,0,0,0,0,,,20,0
+dropped_initial_exposure,missing_event,omit original receipt,f08,forget_and_reacquire,f08-e09,f08-q03,ever_exposed,generic_basic,yes,yes,1,1,1,0,0,0,0,,,20,0
+dropped_initial_exposure,missing_event,omit original receipt,f08,forget_and_reacquire,f08-e09,f08-q04,available,generic_basic,yes,yes,1,1,1,0,0,0,0,,,20,0
+dropped_initial_exposure,missing_event,omit original receipt,f08,forget_and_reacquire,f08-e09,f08-q01,ever_exposed,generic_audited,yes,no,1,1,0,0,0,1,0,,,40,13
+dropped_initial_exposure,missing_event,omit original receipt,f08,forget_and_reacquire,f08-e09,f08-q02,available,generic_audited,no,no,1,1,1,0,0,0,0,,,40,13
+dropped_initial_exposure,missing_event,omit original receipt,f08,forget_and_reacquire,f08-e09,f08-q03,ever_exposed,generic_audited,yes,yes,1,1,1,0,0,0,0,,,40,13
+dropped_initial_exposure,missing_event,omit original receipt,f08,forget_and_reacquire,f08-e09,f08-q04,available,generic_audited,yes,yes,1,1,1,0,0,0,0,,,40,13
+dropped_initial_exposure,missing_event,omit original receipt,f08,forget_and_reacquire,f08-e09,f08-q01,ever_exposed,typed,yes,no,1,1,0,0,0,1,0,,,50,23
+dropped_initial_exposure,missing_event,omit original receipt,f08,forget_and_reacquire,f08-e09,f08-q02,available,typed,no,no,1,1,1,0,0,0,0,,,50,23
+dropped_initial_exposure,missing_event,omit original receipt,f08,forget_and_reacquire,f08-e09,f08-q03,ever_exposed,typed,yes,yes,1,1,1,0,0,0,0,,,50,23
+dropped_initial_exposure,missing_event,omit original receipt,f08,forget_and_reacquire,f08-e09,f08-q04,available,typed,yes,yes,1,1,1,0,0,0,0,,,50,23

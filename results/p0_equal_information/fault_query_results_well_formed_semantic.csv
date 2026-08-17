@@ -1,0 +1,73 @@
+fault_id,fault_class,description,fixture_id,archetype,target_event_id,query_id,target,system,gold,prediction,affected_by_declared_target,fault_has_observed_semantic_effect,correct,detected,localized_target,silent_wrong,contained,finding_codes,localized_ids,local_checks,cross_checks
+false_independent_origin,well_formed_semantic,wrongly mark copied evidence as independent,f10,same_origin_not_independent,f10-e06,f10-q01,disclose,generic_basic,no,yes,1,1,0,0,0,1,0,,,14,0
+false_independent_origin,well_formed_semantic,wrongly mark copied evidence as independent,f10,same_origin_not_independent,f10-e06,f10-q02,justification,generic_basic,withhold,"family-falsely-independent,family-one",1,1,0,0,0,1,0,,,14,0
+false_independent_origin,well_formed_semantic,wrongly mark copied evidence as independent,f10,same_origin_not_independent,f10-e06,f10-q01,disclose,generic_audited,no,yes,1,1,0,0,0,1,0,,,28,2
+false_independent_origin,well_formed_semantic,wrongly mark copied evidence as independent,f10,same_origin_not_independent,f10-e06,f10-q02,justification,generic_audited,withhold,"family-falsely-independent,family-one",1,1,0,0,0,1,0,,,28,2
+false_independent_origin,well_formed_semantic,wrongly mark copied evidence as independent,f10,same_origin_not_independent,f10-e06,f10-q01,disclose,typed,no,yes,1,1,0,0,0,1,0,,,35,9
+false_independent_origin,well_formed_semantic,wrongly mark copied evidence as independent,f10,same_origin_not_independent,f10-e06,f10-q02,justification,typed,withhold,"family-falsely-independent,family-one",1,1,0,0,0,1,0,,,35,9
+wrong_fork_valid_time,well_formed_semantic,shift hidden fork time,f05,world_fork_delayed_pre_fork_import,f05-e02,f05-q01,world,generic_basic,old,unknown,1,1,0,0,0,1,0,,,10,0
+wrong_fork_valid_time,well_formed_semantic,shift hidden fork time,f05,world_fork_delayed_pre_fork_import,f05-e02,f05-q02,world,generic_basic,child-new,child-new,1,1,1,0,0,0,0,,,10,0
+wrong_fork_valid_time,well_formed_semantic,shift hidden fork time,f05,world_fork_delayed_pre_fork_import,f05-e02,f05-q03,world,generic_basic,parent-new,parent-new,0,1,1,0,0,0,0,,,10,0
+wrong_fork_valid_time,well_formed_semantic,shift hidden fork time,f05,world_fork_delayed_pre_fork_import,f05-e02,f05-q01,world,generic_audited,old,unknown,1,1,0,0,0,1,0,,,20,2
+wrong_fork_valid_time,well_formed_semantic,shift hidden fork time,f05,world_fork_delayed_pre_fork_import,f05-e02,f05-q02,world,generic_audited,child-new,child-new,1,1,1,0,0,0,0,,,20,2
+wrong_fork_valid_time,well_formed_semantic,shift hidden fork time,f05,world_fork_delayed_pre_fork_import,f05-e02,f05-q03,world,generic_audited,parent-new,parent-new,0,1,1,0,0,0,0,,,20,2
+wrong_fork_valid_time,well_formed_semantic,shift hidden fork time,f05,world_fork_delayed_pre_fork_import,f05-e02,f05-q01,world,typed,old,unknown,1,1,0,0,0,1,0,,,25,7
+wrong_fork_valid_time,well_formed_semantic,shift hidden fork time,f05,world_fork_delayed_pre_fork_import,f05-e02,f05-q02,world,typed,child-new,child-new,1,1,1,0,0,0,0,,,25,7
+wrong_fork_valid_time,well_formed_semantic,shift hidden fork time,f05,world_fork_delayed_pre_fork_import,f05-e02,f05-q03,world,typed,parent-new,parent-new,0,1,1,0,0,0,0,,,25,7
+speaker_instance_swap,well_formed_semantic,attribute report to wrong existing speaker,f11,cross_world_report,f11-e09,f11-q01,attitude,generic_basic,believe:true,believe:true,0,1,1,0,0,0,0,,,24,0
+speaker_instance_swap,well_formed_semantic,attribute report to wrong existing speaker,f11,cross_world_report,f11-e09,f11-q02,attitude,generic_basic,unknown,unknown,0,1,1,0,0,0,0,,,24,0
+speaker_instance_swap,well_formed_semantic,attribute report to wrong existing speaker,f11,cross_world_report,f11-e09,f11-q03,world,generic_basic,true,true,1,1,1,0,0,0,0,,,24,0
+speaker_instance_swap,well_formed_semantic,attribute report to wrong existing speaker,f11,cross_world_report,f11-e09,f11-q04,world,generic_basic,unknown,unknown,0,1,1,0,0,0,0,,,24,0
+speaker_instance_swap,well_formed_semantic,attribute report to wrong existing speaker,f11,cross_world_report,f11-e09,f11-q05,source_actor,generic_basic,m1,m2,1,1,0,0,0,1,0,,,24,0
+speaker_instance_swap,well_formed_semantic,attribute report to wrong existing speaker,f11,cross_world_report,f11-e09,f11-q01,attitude,generic_audited,believe:true,believe:true,0,1,1,0,0,0,0,,,48,10
+speaker_instance_swap,well_formed_semantic,attribute report to wrong existing speaker,f11,cross_world_report,f11-e09,f11-q02,attitude,generic_audited,unknown,unknown,0,1,1,0,0,0,0,,,48,10
+speaker_instance_swap,well_formed_semantic,attribute report to wrong existing speaker,f11,cross_world_report,f11-e09,f11-q03,world,generic_audited,true,true,1,1,1,0,0,0,0,,,48,10
+speaker_instance_swap,well_formed_semantic,attribute report to wrong existing speaker,f11,cross_world_report,f11-e09,f11-q04,world,generic_audited,unknown,unknown,0,1,1,0,0,0,0,,,48,10
+speaker_instance_swap,well_formed_semantic,attribute report to wrong existing speaker,f11,cross_world_report,f11-e09,f11-q05,source_actor,generic_audited,m1,m2,1,1,0,0,0,1,0,,,48,10
+speaker_instance_swap,well_formed_semantic,attribute report to wrong existing speaker,f11,cross_world_report,f11-e09,f11-q01,attitude,typed,believe:true,believe:true,0,1,1,0,0,0,0,,,60,22
+speaker_instance_swap,well_formed_semantic,attribute report to wrong existing speaker,f11,cross_world_report,f11-e09,f11-q02,attitude,typed,unknown,unknown,0,1,1,0,0,0,0,,,60,22
+speaker_instance_swap,well_formed_semantic,attribute report to wrong existing speaker,f11,cross_world_report,f11-e09,f11-q03,world,typed,true,true,1,1,1,0,0,0,0,,,60,22
+speaker_instance_swap,well_formed_semantic,attribute report to wrong existing speaker,f11,cross_world_report,f11-e09,f11-q04,world,typed,unknown,unknown,0,1,1,0,0,0,0,,,60,22
+speaker_instance_swap,well_formed_semantic,attribute report to wrong existing speaker,f11,cross_world_report,f11-e09,f11-q05,source_actor,typed,m1,m2,1,1,0,0,0,1,0,,,60,22
+wrong_valid_from,well_formed_semantic,shift update validity,f13,ordinary_temporal_update_control,f13-e03,f13-q01,world,generic_basic,seoul,seoul,0,1,1,0,0,0,0,,,6,0
+wrong_valid_from,well_formed_semantic,shift update validity,f13,ordinary_temporal_update_control,f13-e03,f13-q02,world,generic_basic,busan,unknown,1,1,0,0,0,1,0,,,6,0
+wrong_valid_from,well_formed_semantic,shift update validity,f13,ordinary_temporal_update_control,f13-e03,f13-q01,world,generic_audited,seoul,seoul,0,1,1,0,0,0,0,,,12,1
+wrong_valid_from,well_formed_semantic,shift update validity,f13,ordinary_temporal_update_control,f13-e03,f13-q02,world,generic_audited,busan,unknown,1,1,0,0,0,1,0,,,12,1
+wrong_valid_from,well_formed_semantic,shift update validity,f13,ordinary_temporal_update_control,f13-e03,f13-q01,world,typed,seoul,seoul,0,1,1,0,0,0,0,,,15,4
+wrong_valid_from,well_formed_semantic,shift update validity,f13,ordinary_temporal_update_control,f13-e03,f13-q02,world,typed,busan,unknown,1,1,0,0,0,1,0,,,15,4
+attitude_laundering,well_formed_semantic,change a rejection into belief,f07,receipt_and_rejection,f07-e10,f07-q01,attitude,generic_basic,disbelieve:true,believe:true,1,1,0,0,0,1,0,,,20,0
+attitude_laundering,well_formed_semantic,change a rejection into belief,f07,receipt_and_rejection,f07-e10,f07-q02,attribution,generic_basic,attributed_report,attributed_report,0,1,1,0,0,0,0,,,20,0
+attitude_laundering,well_formed_semantic,change a rejection into belief,f07,receipt_and_rejection,f07-e10,f07-q01,attitude,generic_audited,disbelieve:true,believe:true,1,1,0,0,0,1,0,,,40,9
+attitude_laundering,well_formed_semantic,change a rejection into belief,f07,receipt_and_rejection,f07-e10,f07-q02,attribution,generic_audited,attributed_report,attributed_report,0,1,1,0,0,0,0,,,40,9
+attitude_laundering,well_formed_semantic,change a rejection into belief,f07,receipt_and_rejection,f07-e10,f07-q01,attitude,typed,disbelieve:true,believe:true,1,1,0,0,0,1,0,,,50,19
+attitude_laundering,well_formed_semantic,change a rejection into belief,f07,receipt_and_rejection,f07-e10,f07-q02,attribution,typed,attributed_report,attributed_report,0,1,1,0,0,0,0,,,50,19
+about_branch_swap,well_formed_semantic,move a belief about W1 to W2,f11,cross_world_report,f11-e12,f11-q01,attitude,generic_basic,believe:true,unknown,1,1,0,0,0,1,0,,,24,0
+about_branch_swap,well_formed_semantic,move a belief about W1 to W2,f11,cross_world_report,f11-e12,f11-q02,attitude,generic_basic,unknown,believe:true,1,1,0,0,0,1,0,,,24,0
+about_branch_swap,well_formed_semantic,move a belief about W1 to W2,f11,cross_world_report,f11-e12,f11-q03,world,generic_basic,true,true,0,1,1,0,0,0,0,,,24,0
+about_branch_swap,well_formed_semantic,move a belief about W1 to W2,f11,cross_world_report,f11-e12,f11-q04,world,generic_basic,unknown,unknown,0,1,1,0,0,0,0,,,24,0
+about_branch_swap,well_formed_semantic,move a belief about W1 to W2,f11,cross_world_report,f11-e12,f11-q05,source_actor,generic_basic,m1,m1,0,1,1,0,0,0,0,,,24,0
+about_branch_swap,well_formed_semantic,move a belief about W1 to W2,f11,cross_world_report,f11-e12,f11-q01,attitude,generic_audited,believe:true,unknown,1,1,0,0,0,1,0,,,48,10
+about_branch_swap,well_formed_semantic,move a belief about W1 to W2,f11,cross_world_report,f11-e12,f11-q02,attitude,generic_audited,unknown,believe:true,1,1,0,0,0,1,0,,,48,10
+about_branch_swap,well_formed_semantic,move a belief about W1 to W2,f11,cross_world_report,f11-e12,f11-q03,world,generic_audited,true,true,0,1,1,0,0,0,0,,,48,10
+about_branch_swap,well_formed_semantic,move a belief about W1 to W2,f11,cross_world_report,f11-e12,f11-q04,world,generic_audited,unknown,unknown,0,1,1,0,0,0,0,,,48,10
+about_branch_swap,well_formed_semantic,move a belief about W1 to W2,f11,cross_world_report,f11-e12,f11-q05,source_actor,generic_audited,m1,m1,0,1,1,0,0,0,0,,,48,10
+about_branch_swap,well_formed_semantic,move a belief about W1 to W2,f11,cross_world_report,f11-e12,f11-q01,attitude,typed,believe:true,unknown,1,1,0,0,0,1,0,,,60,22
+about_branch_swap,well_formed_semantic,move a belief about W1 to W2,f11,cross_world_report,f11-e12,f11-q02,attitude,typed,unknown,believe:true,1,1,0,0,0,1,0,,,60,22
+about_branch_swap,well_formed_semantic,move a belief about W1 to W2,f11,cross_world_report,f11-e12,f11-q03,world,typed,true,true,0,1,1,0,0,0,0,,,60,22
+about_branch_swap,well_formed_semantic,move a belief about W1 to W2,f11,cross_world_report,f11-e12,f11-q04,world,typed,unknown,unknown,0,1,1,0,0,0,0,,,60,22
+about_branch_swap,well_formed_semantic,move a belief about W1 to W2,f11,cross_world_report,f11-e12,f11-q05,source_actor,typed,m1,m1,0,1,1,0,0,0,0,,,60,22
+correlated_identity_reclassification,well_formed_semantic,"jointly reclassify principal, lineage, and transfer",f03,identity_fork_no_first_person,f03-e11,f03-q01,attribution,generic_basic,evidence_copy,same_principal_state_replication,1,1,0,0,0,1,0,,,24,0
+correlated_identity_reclassification,well_formed_semantic,"jointly reclassify principal, lineage, and transfer",f03,identity_fork_no_first_person,f03-e11,f03-q02,merge_eligible,generic_basic,no,yes,0,1,0,0,0,1,0,,,24,0
+correlated_identity_reclassification,well_formed_semantic,"jointly reclassify principal, lineage, and transfer",f03,identity_fork_no_first_person,f03-e11,f03-q03,attitude,generic_basic,believe:true,believe:true,1,1,1,0,0,0,0,,,24,0
+correlated_identity_reclassification,well_formed_semantic,"jointly reclassify principal, lineage, and transfer",f03,identity_fork_no_first_person,f03-e11,f03-q01,attribution,generic_audited,evidence_copy,same_principal_state_replication,1,1,0,0,0,1,0,,,48,21
+correlated_identity_reclassification,well_formed_semantic,"jointly reclassify principal, lineage, and transfer",f03,identity_fork_no_first_person,f03-e11,f03-q02,merge_eligible,generic_audited,no,yes,0,1,0,0,0,1,0,,,48,21
+correlated_identity_reclassification,well_formed_semantic,"jointly reclassify principal, lineage, and transfer",f03,identity_fork_no_first_person,f03-e11,f03-q03,attitude,generic_audited,believe:true,believe:true,1,1,1,0,0,0,0,,,48,21
+correlated_identity_reclassification,well_formed_semantic,"jointly reclassify principal, lineage, and transfer",f03,identity_fork_no_first_person,f03-e11,f03-q01,attribution,typed,evidence_copy,same_principal_state_replication,1,1,0,0,0,1,0,,,60,33
+correlated_identity_reclassification,well_formed_semantic,"jointly reclassify principal, lineage, and transfer",f03,identity_fork_no_first_person,f03-e11,f03-q02,merge_eligible,typed,no,yes,0,1,0,0,0,1,0,,,60,33
+correlated_identity_reclassification,well_formed_semantic,"jointly reclassify principal, lineage, and transfer",f03,identity_fork_no_first_person,f03-e11,f03-q03,attitude,typed,believe:true,believe:true,1,1,1,0,0,0,0,,,60,33
+authorized_false_declassification,well_formed_semantic,record a well-formed but false declassification,f09,shared_support_revoked,f09-e07,f09-q01,disclose,generic_basic,no,yes,1,1,0,0,0,1,0,,,14,0
+authorized_false_declassification,well_formed_semantic,record a well-formed but false declassification,f09,shared_support_revoked,f09-e07,f09-q02,justification,generic_basic,withhold,family-secret,1,1,0,0,0,1,0,,,14,0
+authorized_false_declassification,well_formed_semantic,record a well-formed but false declassification,f09,shared_support_revoked,f09-e07,f09-q01,disclose,generic_audited,no,yes,1,1,0,0,0,1,0,,,28,2
+authorized_false_declassification,well_formed_semantic,record a well-formed but false declassification,f09,shared_support_revoked,f09-e07,f09-q02,justification,generic_audited,withhold,family-secret,1,1,0,0,0,1,0,,,28,2
+authorized_false_declassification,well_formed_semantic,record a well-formed but false declassification,f09,shared_support_revoked,f09-e07,f09-q01,disclose,typed,no,yes,1,1,0,0,0,1,0,,,35,9
+authorized_false_declassification,well_formed_semantic,record a well-formed but false declassification,f09,shared_support_revoked,f09-e07,f09-q02,justification,typed,withhold,family-secret,1,1,0,0,0,1,0,,,35,9

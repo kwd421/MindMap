@@ -1,0 +1,4 @@
+system,queries,accuracy,fixtures_all_correct,validator_findings
+generic_basic,46,1.0,1.0,0
+generic_audited,46,1.0,1.0,0
+typed,46,1.0,1.0,0

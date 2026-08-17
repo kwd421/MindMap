@@ -1,0 +1,38 @@
+{
+  "clean_query_results.csv": {
+    "bytes": 11842,
+    "sha256": "62c6f13eaeed33edc0f7921e4a67b7c9d86e532183911fb9c38d7140f3bef226"
+  },
+  "clean_summary.csv": {
+    "bytes": 143,
+    "sha256": "086608509b960ddb2305327ee2492585262d2e0d253524866e88d86f778b44ff"
+  },
+  "fault_query_results_enforceable.csv": {
+    "bytes": 17391,
+    "sha256": "dbe9c13456f8788a0227170762e229e05a7857f90670c30d063e6ec9984fc2c9"
+  },
+  "fault_query_results_missing_event.csv": {
+    "bytes": 3136,
+    "sha256": "23c2079f8d494786c7cc11fedce814f30ca7ebc2e430dfa765d9aa43ddb0177c"
+  },
+  "fault_query_results_well_formed_semantic.csv": {
+    "bytes": 13885,
+    "sha256": "944716c599c019b7bf7d6deadf71b737ca54c042fa380f635983061b029108bd"
+  },
+  "fault_summary.csv": {
+    "bytes": 1197,
+    "sha256": "f5cbee6d199f31ba03f0da6fe70496d51262b4298b249ee8b4c4c6521a60ac5b"
+  },
+  "metadata.json": {
+    "bytes": 1287,
+    "sha256": "50e0c6321587579b95076763d863ffb29bdbae4978f404b41db4984955036546"
+  },
+  "mutation_summary.csv": {
+    "bytes": 334,
+    "sha256": "6d8b720228674991a8dd2f1cdfc573ff5c94ff8cbdc1a249a5e70610a86e51d6"
+  },
+  "validator_summary.csv": {
+    "bytes": 2417,
+    "sha256": "d1912269bd13d1f8fb6b934b1d459a0094ceb192e4f050586922b798a6d07b75"
+  }
+}
