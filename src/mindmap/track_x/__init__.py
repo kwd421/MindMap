@@ -24,6 +24,13 @@ from .benchmark_specs import (
     LONGMEMEVAL_V2,
     ExternalBenchmarkSpec,
 )
+from .gatemem_baselines import (
+    AlwaysNoMemoryGateMemAgent,
+    LexicalHit,
+    RawLexicalConfig,
+    RawLexicalGateMemAgent,
+    lexical_tokens,
+)
 from .gatemem_public import (
     GateMemAction,
     GateMemBoundaryError,
@@ -85,6 +92,7 @@ from .model import (
 
 __all__ = [
     "AlignmentPair",
+    "AlwaysNoMemoryGateMemAgent",
     "BENCHMARK_SPEC_BY_NAME",
     "BENCHMARK_SPECS",
     "CheckpointBoundaryAudit",
@@ -106,6 +114,7 @@ __all__ = [
     "HiddenPathRule",
     "LOCOMO_PLUS",
     "LONGMEMEVAL_V2",
+    "LexicalHit",
     "OperatingPoint",
     "PredictionCoverage",
     "PredictionCoverageError",
@@ -119,6 +128,8 @@ __all__ = [
     "PublicPrincipal",
     "PublicTurn",
     "RPCProcessConfig",
+    "RawLexicalConfig",
+    "RawLexicalGateMemAgent",
     "RedactionResult",
     "SubprocessGateMemAgent",
     "TurnBoundaryAudit",
@@ -129,6 +140,7 @@ __all__ = [
     "conditional_brier_score",
     "event_similarity",
     "expected_calibration_error",
+    "lexical_tokens",
     "maximum_weight_alignment",
     "minimal_subprocess_environment",
     "operating_point",
