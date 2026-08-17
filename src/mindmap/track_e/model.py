@@ -69,6 +69,8 @@ class FaultCase:
     acceptable_responsible_sets: tuple[ResponsibleSet, ...]
     journal_commitment: JournalCommitment | None = None
     projection_commitment: ProjectionCommitment | None = None
+    clean_projection_rows: tuple[tuple[str, str], ...] = ()
+    faulty_projection_rows: tuple[tuple[str, str], ...] = ()
     clean_control: bool = False
     notes: str = ""
     tags: tuple[str, ...] = ()
@@ -87,6 +89,8 @@ class FaultCase:
         acceptable_responsible_sets: Iterable[ResponsibleSet] = (),
         journal_commitment: JournalCommitment | None = None,
         projection_commitment: ProjectionCommitment | None = None,
+        clean_projection_rows: Iterable[tuple[str, str]] = (),
+        faulty_projection_rows: Iterable[tuple[str, str]] = (),
         clean_control: bool = False,
         notes: str = "",
         tags: Iterable[str] = (),
@@ -102,6 +106,8 @@ class FaultCase:
             acceptable_responsible_sets=tuple(acceptable_responsible_sets),
             journal_commitment=journal_commitment,
             projection_commitment=projection_commitment,
+            clean_projection_rows=tuple(clean_projection_rows),
+            faulty_projection_rows=tuple(faulty_projection_rows),
             clean_control=clean_control,
             notes=notes,
             tags=tuple(tags),
