@@ -1,6 +1,29 @@
-"""Track X scoring primitives for non-oracle extraction/generalization studies."""
+"""Track X primitives for non-oracle memory-system evaluation."""
 
+from .adapter_guard import (
+    HiddenAnnotationError,
+    HiddenPathHit,
+    HiddenPathRule,
+    PredictionCoverage,
+    PredictionCoverageError,
+    RedactionResult,
+    assert_hidden_annotations_absent,
+    assert_prediction_coverage_complete,
+    canonical_json_sha256,
+    prediction_coverage,
+    scan_hidden_annotations,
+    strip_hidden_annotations,
+)
 from .alignment import maximum_weight_alignment
+from .benchmark_specs import (
+    BENCHMARK_SPEC_BY_NAME,
+    BENCHMARK_SPECS,
+    GATEMEM,
+    HALUMEM,
+    LOCOMO_PLUS,
+    LONGMEMEVAL_V2,
+    ExternalBenchmarkSpec,
+)
 from .metrics import (
     EventSimilarityWeights,
     brier_score,
@@ -23,19 +46,38 @@ from .model import (
 
 __all__ = [
     "AlignmentPair",
+    "BENCHMARK_SPEC_BY_NAME",
+    "BENCHMARK_SPECS",
     "DecisionRecord",
     "EventMetrics",
     "EventRecord",
     "EventSimilarityWeights",
+    "ExternalBenchmarkSpec",
+    "GATEMEM",
+    "HALUMEM",
+    "HiddenAnnotationError",
+    "HiddenPathHit",
+    "HiddenPathRule",
+    "LOCOMO_PLUS",
+    "LONGMEMEVAL_V2",
     "OperatingPoint",
+    "PredictionCoverage",
+    "PredictionCoverageError",
+    "RedactionResult",
+    "assert_hidden_annotations_absent",
+    "assert_prediction_coverage_complete",
     "brier_score",
+    "canonical_json_sha256",
     "conditional_brier_score",
     "event_similarity",
     "expected_calibration_error",
     "maximum_weight_alignment",
     "operating_point",
+    "prediction_coverage",
     "risk_coverage_curve",
     "safe_coverage",
+    "scan_hidden_annotations",
     "select_safe_threshold",
     "score_events",
+    "strip_hidden_annotations",
 ]
