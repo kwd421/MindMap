@@ -1,0 +1,29 @@
+{
+  "study": "NCM-Psi v0.2 mechanism-isolation pilot",
+  "interpretation": "structured-oracle conformance/mechanism study; not end-to-end raw-text accuracy",
+  "seed": 20260817,
+  "per_template": 24,
+  "n_templates": 11,
+  "n_scenarios": 264,
+  "queries_per_scenario": [6],
+  "n_query_system_rows": 7920,
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "platform": "Linux-6.18.35-x86_64-with-glibc2.41",
+  "elapsed_seconds": 3.3017333139998755,
+  "comparison": {
+    "comparison": "B6_ncm_psi - B5a_lineage_only",
+    "strongest_ablation": "B5a_lineage_only",
+    "scenario_clustered_accuracy_difference": 0.07575757575757576,
+    "bootstrap_95_ci_low": 0.06060606060606061,
+    "bootstrap_95_ci_high": 0.09217171717171718,
+    "sign_flip_pvalue": 9.99990000099999e-06,
+    "n_scenarios": 264,
+    "n_positive_scenarios": 72,
+    "n_negative_scenarios": 0,
+    "n_tied_scenarios": 192,
+    "bootstrap_repetitions": 10000,
+    "sign_flip_repetitions": 100000,
+    "bootstrap_seed": 20260828,
+    "sign_flip_seed": 20260846
+  }
+}
