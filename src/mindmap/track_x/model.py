@@ -89,5 +89,7 @@ class OperatingPoint:
     governance_risk: float
     answered: int
     governed_answered: int
+    governed_total: int
+    governed_coverage: float
     ordinary_errors: int
     governance_violations: int
