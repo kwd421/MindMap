@@ -5,7 +5,7 @@ from typing import Iterable
 from mindmap.canonical.model import CommonEvent
 
 from .generic_observer import GenericObserver as _GenericObserver
-from .model import Alert, ObserverSurface
+from .model import Alert, JournalCommitment, ObserverSurface
 from .typed_observer import TypedObserver as _TypedObserver
 
 
@@ -23,11 +23,7 @@ _ACQUISITION_OPERATIONS = {
 def _explicit_source_alerts(
     rows: tuple[CommonEvent, ...], *, rule: str
 ) -> list[Alert]:
-    """Check transfer source exposure without treating evidence authorship as memory.
-
-    The canonical contract records exposure separately from evidence creation.
-    Snapshot-manifest inheritance is accepted as a source exposure witness.
-    """
+    """Check transfer source exposure without treating evidence authorship as memory."""
 
     evidence_time = {
         event.object_id: event.system_time
@@ -68,7 +64,11 @@ def _explicit_source_alerts(
                 or (edge.snapshot_id, evidence_id) not in manifest_members
             ):
                 continue
-            cutoff = edge.snapshot_cutoff if edge.snapshot_cutoff is not None else edge.system_time
+            cutoff = (
+                edge.snapshot_cutoff
+                if edge.snapshot_cutoff is not None
+                else edge.system_time
+            )
             if evidence_time.get(evidence_id, 2**62) <= cutoff:
                 return True
             if edge.source_mind_instance_id and inherited(
@@ -104,6 +104,64 @@ def _explicit_source_alerts(
         if event.transfer_kind in _ACQUISITION_OPERATIONS:
             acquired.add((event.destination_mind_instance_id, event.object_id))
     return alerts
+
+
+def _normalize_alert_candidates(
+    rows: tuple[CommonEvent, ...],
+    alerts: Iterable[Alert],
+    journal_commitment: JournalCommitment | None,
+) -> list[Alert]:
+    """Map typed row/object identifiers back to source journal event IDs.
+
+    Localization is scored in the journal event domain. This normalization does
+    not change whether a fault is detected; it only makes candidate sets
+    comparable across generic and typed physical representations.
+    """
+
+    object_to_event: dict[str, str] = {}
+    event_by_id = {event.event_id: event for event in rows}
+    for event in rows:
+        if event.object_id:
+            object_to_event[event.object_id] = event.event_id
+
+    normalized: list[Alert] = []
+    for alert in alerts:
+        original = set(alert.candidate_event_ids)
+        candidates = {object_to_event.get(value, value) for value in original}
+
+        if "snapshot_member_post_cutoff" in alert.rule:
+            snapshot_ids: set[str] = set()
+            for candidate in candidates:
+                event = event_by_id.get(candidate)
+                if event and event.event_type == "snapshot_member" and event.snapshot_id:
+                    snapshot_ids.add(event.snapshot_id)
+            for event in rows:
+                if event.event_type == "lineage" and event.snapshot_id in snapshot_ids:
+                    candidates.add(event.event_id)
+
+        if "sequence_or_membership_mismatch" in alert.rule and journal_commitment:
+            actual = tuple(event.event_id for event in rows)
+            expected = journal_commitment.ordered_event_ids
+            for index in range(max(len(actual), len(expected))):
+                actual_id = actual[index] if index < len(actual) else None
+                expected_id = expected[index] if index < len(expected) else None
+                if actual_id == expected_id:
+                    continue
+                if actual_id:
+                    candidates.add(actual_id)
+                if expected_id:
+                    candidates.add(expected_id)
+
+        normalized.append(
+            Alert(
+                rule=alert.rule,
+                candidate_event_ids=frozenset(candidates),
+                constraint_ids=alert.constraint_ids,
+                surface=alert.surface,
+                detail=alert.detail,
+            )
+        )
+    return normalized
 
 
 class GenericObserver(_GenericObserver):
@@ -159,7 +217,10 @@ class GenericObserver(_GenericObserver):
                     rows, rule="generic_source_not_explicitly_exposed"
                 )
             )
-        return tuple(self._deduplicate(alerts))
+        normalized = _normalize_alert_candidates(
+            rows, alerts, kwargs.get("journal_commitment")
+        )
+        return tuple(self._deduplicate(normalized))
 
 
 class TypedObserver(_TypedObserver):
@@ -218,4 +279,7 @@ class TypedObserver(_TypedObserver):
                     rows, rule="typed_source_not_explicitly_exposed"
                 )
             )
-        return tuple(self._deduplicate(alerts))
+        normalized = _normalize_alert_candidates(
+            rows, alerts, kwargs.get("journal_commitment")
+        )
+        return tuple(self._deduplicate(normalized))
