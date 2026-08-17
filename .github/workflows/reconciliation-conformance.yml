@@ -1,0 +1,22 @@
+name: reconciliation-conformance
+
+on:
+  push:
+    branches:
+      - research/reconcile-v0.2
+  pull_request:
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Regenerate fixed conformance outputs
+        run: python experiments/equal_information_conformance_v0_2.py
+      - name: Verify committed outputs are reproducible
+        run: git diff --exit-code -- results/equal_information_conformance_v0_2
+      - name: Run conformance tests
+        run: python -m unittest discover -s tests -p 'test_equal_information_conformance_v0_2.py' -v
