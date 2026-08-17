@@ -1,0 +1,36 @@
+name: test
+
+on:
+  push:
+    branches:
+      - main
+      - research/v0.2-reconciled
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install
+        run: python -m pip install -e '.[dev]'
+      - name: Test
+        run: pytest -q
+      - name: Track S semantic conformance
+        run: python experiments/s_track_conformance.py
+      - name: Upload Track S outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: s-track-conformance
+          path: |
+            results/s_track_conformance_rows.csv
+            results/s_track_conformance_summary.json
+          if-no-files-found: error

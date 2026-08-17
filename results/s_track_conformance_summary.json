@@ -1,0 +1,45 @@
+{
+  "correct_counts": {
+    "generic": 75,
+    "gold": 75,
+    "typed": 75
+  },
+  "disagreement_counts": {},
+  "failures": [],
+  "fixtures": [
+    "F01",
+    "F02",
+    "F03",
+    "F04",
+    "F05",
+    "F06",
+    "F07",
+    "F08",
+    "F09",
+    "F10",
+    "F11",
+    "F12",
+    "F13",
+    "F14"
+  ],
+  "interpretation": "fixed declarative conformance suite; no inferential statistics",
+  "n_all_agree": 75,
+  "n_cases": 75,
+  "n_failures": 0,
+  "n_fixtures": 14,
+  "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "python": "3.11.15 (main, Jun 16 2026, 21:41:52) [GCC 13.3.0]",
+  "study": "NCM-Psi v0.2 Track S semantic conformance",
+  "target_counts": {
+    "ATTITUDE": 12,
+    "ATTRIBUTION": 10,
+    "AVAILABLE": 11,
+    "DISCLOSE": 8,
+    "EVER_EXPOSED": 14,
+    "JUSTIFICATION": 8,
+    "WORLD": 12
+  },
+  "workflow_run_id": 32014966255,
+  "artifact_id": 9283150208,
+  "source_commit": "b84cc8fb78fa0194e8839ad2827dafba78ac4d41"
+}

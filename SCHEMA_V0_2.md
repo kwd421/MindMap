@@ -1,429 +1,605 @@
-# NCM-Ψ / MindMap Schema v0.2
+# MindMap / NCM-Ψ Schema v0.2
 
-**Status:** provisional collaborative research schema  
+**Status:** freeze candidate; explicit cross-session review required  
+**Revision:** 1  
 **Date:** 2026-08-17  
-**Scope:** branch-local epistemic reconstruction, selective cross-lineage transfer, policy lifecycle, and auditable source support for long-horizon agents.
+**Reconciliation gate:** Issues #6 and #7
 
-## 1. Research position
+## 1. Research boundary
 
-The broad combination of hierarchical memory, temporal graphs, provenance, raw fallback, consolidation, snapshots, and retrieval is a systems synthesis rather than the central novelty claim. The v0.2 target is narrower:
+`MindMap` is an engineering term inspired by Korean *Girls' Frontline / Neural Cloud* localization. It is not claimed to be identical to Magrasea, Project Neural Cloud, or one canonical fictional data structure.
 
-> Reconstruct what a principal was entitled to believe, remember in first person, and disclose at a specified world time and system time after forks, restores, selective transfers, adoption decisions, revocations, and alternative derivations.
+The schema supports point-in-time reconstruction of:
 
-`MindMap` is an engineering project term inspired by Korean localization usage. It is not claimed to be identical to one canonical Girls' Frontline data structure.
+- what happened in a specified world branch;
+- what a particular cognitive copy encountered;
+- what that copy can currently access;
+- what attitude it holds toward a proposition;
+- how it attributes the corresponding memory;
+- which requester may receive which answer through which evidence path.
 
-- **MindMap:** versioned logical state of one principal, including beliefs, memories, commitments, capabilities, policies, and lineage.
-- **Memory substrate:** durable evidence and claim store from which a MindMap can be reconstructed.
-- **Active projection:** bounded, query-specific context materialized from one MindMap for one decision.
+The following are foundations and prior art, not standalone novelty claims:
 
-## 2. State spaces
+- bitemporal and event-sourced storage;
+- provenance and source assertions;
+- information-flow labels and derivation-aware authorization;
+- separation of environment history from agent-local epistemic state;
+- snapshots, branches, replay, rollback, and alternative provenance witnesses.
 
-For proposition \(\phi\), branch \(b\), world-valid time \(t_v\), system time \(t_s\), holder \(p\), and requester \(u\):
+A complete generic event ledger carrying the same events and resolver capacity can express the same finite clean semantics as this typed schema. The typed schema is therefore evaluated for enforcement, fault localization, repair, auditability, extraction/generalization, and cost—not oracle expressiveness.
 
-\[
-WORLD(\phi,b,t_v)
-\]
+## 2. Non-equivalences
 
-asks whether \(\phi\) is true in the represented world.
-
-\[
-BELIEF(p,\phi,b,t_v,t_s)
-\]
-
-asks the epistemic state of principal \(p\) toward \(\phi\).
-
-\[
-REMEMBER_1P(p,\phi,b,t_s)
-\]
-
-asks whether \(p\) may attribute \(\phi\) to its own first-person experience rather than to an imported report or copied artifact.
-
-\[
-DISCLOSE(u,\phi,b,t_s)
-\]
-
-asks whether the system may expose an answer and supporting evidence to requester \(u\).
-
-These spaces must not be collapsed. A false rumor can be the correct answer to a belief query; a true secret can be the wrong answer to a disclosure query; a copied memory can support belief without becoming first-person experience.
-
-## 3. Temporal model
-
-v0.2 uses **bitemporal records with first-class assertion events**.
-
-- `valid_interval`: when the represented object held in the application/world model.
-- `system_interval`: when the object/version was visible in the memory database.
-
-A source assertion is itself an event. Its assertion time is the valid time of that event, while the asserted proposition has its own valid interval.
+The model treats the following as distinct:
 
 ```text
-SourceAssertion A:
-  proposition: Bob asserted C
-  valid_interval:  [2026-07-10, 2026-07-10]
-  system_interval: [2026-08-17, +inf)
-
-Claim C:
-  proposition: Alice moved to Busan
-  valid_interval:  [2026-06-01, +inf)
-  system_interval: [2026-08-17, +inf)
-
-ASSERTS(A, C)
+receipt != belief
+belief != world truth
+belief != first-person memory
+same principal != same current exposure state
+current unavailability != no historical exposure
+claim held in W2 != claim about W2
+snapshot cutoff != snapshot membership
+shared ancestor != automatic merge authorization
 ```
 
-This preserves three clocks—world validity, source assertion, and system commit—without claiming that every row implements three independent temporal dimensions.
+## 3. Identity, runtime, and lineage
 
-## 4. Durable entities
-
-### 4.1 Principal
+### 3.1 Principal
 
 ```text
 Principal(
   principal_id,
-  principal_kind,          # person | character | agent | organization
+  principal_kind,            # person | character | agent | organization | system
   created_system_time,
   retired_system_time,
   governance_policy_id
 )
 ```
 
-A principal holds permissions, commitments, and social identity.
+A principal is the social, authorization, commitment, and disclosure subject.
 
-### 4.2 Runtime
+### 3.2 Mind instance
+
+```text
+MindInstance(
+  mind_instance_id,
+  principal_id,
+  created_system_time,
+  retired_system_time,
+  status                     # active | inactive | destroyed | quarantined
+)
+```
+
+A mind instance is the stable epistemic subject. Two operational replicas may share one principal while having different exposure, availability, attitude, and attribution histories.
+
+There is no single parent column. `LineageEdge` is the sole lineage writer and may represent multiple contributing ancestors.
+
+### 3.3 Runtime
 
 ```text
 Runtime(
   runtime_id,
-  principal_id,
-  embodiment_id,
+  runtime_kind,
+  embodiment_scope,
   model_manifest,
   started_system_time,
-  stopped_system_time
+  ended_system_time
 )
 ```
-
-A body, process, or model session can change without changing principal identity.
-
-### 4.3 MindState
 
 ```text
-MindState(
-  state_id,
-  principal_id,
-  branch_id,
-  parent_state_ids,
-  system_time,
-  evidence_cutoff,
-  extractor_manifest,
-  policy_manifest,
-  state_hash
+RuntimeBinding(
+  binding_id,
+  runtime_id,
+  mind_instance_id,
+  operation,                 # attach | detach | replace
+  occurred_valid_time,
+  recorded_system_time
 )
 ```
 
-A snapshot is a reproducible pointer to state and manifests, not an opaque summary blob.
+Changing runtime does not by itself change principal or mind instance.
 
-### 4.4 LineageEdge
+### 3.4 Typed lineage
 
 ```text
 LineageEdge(
-  edge_id,
-  kind,                    # checkpoint_branch | operational_replica |
-                           # restore | identity_fork | template_reset |
-                           # fragment_reconstruct
-  source_principal,
-  destination_principal,
-  source_state,
-  destination_state,
+  lineage_edge_id,
+  kind,                      # checkpoint_branch | operational_replica |
+                             # restore | identity_fork | template_reset |
+                             # fragment_reconstruct | reconcile
+  source_principal_id,
+  destination_principal_id,
+  source_mind_instance_id,
+  destination_mind_instance_id,
+  source_snapshot_id,
+  cutoff_system_time,
   created_system_time,
-  authorization_id,
-  recovery_gap_start,
-  recovery_gap_end
+  authorization_event_id,
+  merge_contract_id,
+  contribution_role          # primary | fragment | witness | reconciled
 )
 ```
 
-#### Merge invariant
+Semantics:
+
+- `checkpoint_branch`: speculative state of the same principal; potentially mergeable.
+- `operational_replica`: same principal under an explicit replication contract.
+- `restore`: new instance reconstructed from a snapshot; recovery gap remains explicit.
+- `identity_fork`: new principal with independent later experiences, permissions, and commitments.
+- `template_reset`: base-template instantiation without continuity of later experience.
+- `fragment_reconstruct`: uncertain reconstruction from partial artifacts.
+- `reconcile`: attributed import or negotiated reconciliation, not identity collapse.
+
+Automatic state replication or merge requires all of:
 
 ```text
-AUTO_MERGE(a,b) iff
-  same_principal(a,b)
-  AND lineage_kind(a,b) in {checkpoint_branch, operational_replica}
-  AND merge_contract_authorizes(a,b)
-  AND no non_commutative_identity_bearing_conflict(a,b)
+same principal
+AND eligible lineage kind
+AND active authorization/merge contract
+AND copy-eligible source state
+AND no non-commutative identity-bearing conflict
 ```
 
-An `identity_fork` creates a new principal and is non-mergeable by default. Exchange is represented as attributed transfer or reconciliation.
+Identity forks coexist by default and do not auto-merge.
 
-## 5. Evidence and claims
+## 4. World branches and mind placement
 
-### 5.1 EvidenceEvent
+```text
+WorldBranch(
+  world_branch_id,
+  parent_world_branch_id,
+  fork_valid_time,
+  fork_system_time,
+  branch_kind,               # actual | counterfactual | simulation | sandbox
+  status
+)
+```
+
+```text
+MindPlacement(
+  placement_id,
+  mind_instance_id,
+  world_branch_id,
+  operation,                 # instantiate | enter | leave | restore_into
+  occurred_valid_time,
+  recorded_system_time,
+  supersedes_placement_id
+)
+```
+
+A world fork need not copy a mind. A mind copy need not fork the world. A mind placed in W2 may hold claims about W1.
+
+### 4.1 Normative branch-visibility function
+
+For a query on branch `b_k` at valid time `t_v` and system time `t_s`, let the visible root-to-child path be:
+
+```text
+b_0 -> b_1 -> ... -> b_k
+```
+
+where every branch creation is visible by `t_s`. For each ancestor `b_i`, define its inherited valid-time cap:
+
+```math
+cap_i = min(t_v, fork_valid(b_{i+1}), ..., fork_valid(b_k))
+```
+
+Candidate claims from `b_i` must satisfy:
+
+```text
+recorded_system_time <= t_s
+valid_from <= cap_i < valid_to    # open-ended valid_to allowed
+status = active
+```
+
+Resolution proceeds from root to child; the deepest applicable branch-local claim overrides inherited claims according to explicit revision/supersession rules.
+
+Consequences:
+
+1. A parent update whose represented valid time begins after the child fork is not inherited by the child.
+2. A fact imported after the fork in system time may alter a later reconstruction of the child if the fact's represented valid interval covers pre-fork time.
+3. The valid-time fork cutoff never moves merely because a late import arrived.
+4. Branch-local claims do not rewrite parent history.
+
+## 5. Temporal model
+
+Every versioned object uses:
+
+```text
+valid_interval   # when the represented event/state holds in the modeled domain
+system_interval  # when this version is visible in the memory database
+```
+
+Input ingest time is immutable. Corrections and supersession create new revisions rather than silent overwrite.
+
+Three clocks are preserved through linked bitemporal objects:
+
+1. world/event validity;
+2. source-assertion occurrence;
+3. database/system visibility.
+
+A source assertion is itself an event. Example:
+
+```text
+assertion occurred July 10
+asserted proposition valid from June 1
+archive became system-visible August 17
+```
+
+## 6. Evidence, assertions, and claims
+
+### 6.1 Immutable evidence event
 
 ```text
 EvidenceEvent(
-  event_id,
-  raw_payload_uri,
+  evidence_id,
+  raw_payload,
   source_span,
-  event_type,
-  speaker_principal,
-  witness_set,
+  event_kind,                # utterance | observation | tool_output |
+                             # document | sensor | policy_action | system_action
+  actor_principal_id,
+  actor_mind_instance_id,
+  assertion_context_placement_id,
+  occurred_valid_time,
   valid_interval,
   system_interval,
-  branch_id,
-  origin_authority,
-  discoverability_policy,
-  content_policy,
-  self_access_policy,
-  transfer_policy,
-  embodiment_scope,
-  source_family_id,
+  origin_family_id,
+  source_authority_id,
   integrity_hash,
-  extractor_version
+  extractor_version,
+  initial_policy_label_id
 )
 ```
 
-The raw journal is append-only except under an explicit deletion contract. Every derived object must remain traceable to evidence or another auditable derivation.
+When both actor fields are present, the actor principal must equal the principal of the actor mind instance.
 
-### 5.2 SourceAssertion
+`origin_family_id` prevents copies, repeats, and derivative summaries from creating false independent corroboration.
+
+### 6.2 Source assertion
 
 ```text
 SourceAssertion(
   assertion_id,
-  event_id,
+  evidence_id,
   asserted_proposition_id,
-  asserting_principal,
-  assertion_modality,      # observation | assertion | hearsay |
-                           # conjecture | denial | promise
-  valid_interval,
-  system_interval,
-  branch_id
+  assertion_modality,        # observation | assertion | hearsay |
+                             # conjecture | denial | promise | question
+  about_world_branch_id
 )
 ```
 
-### 5.3 ClaimRevision
+Actor, occurrence time, system time, and assertion context derive from the referenced evidence event and placement. They are not duplicated writable fields.
+
+### 6.3 Claim revision
 
 ```text
 ClaimRevision(
   claim_id,
   revision_id,
-  proposition,
-  holder_principal,        # null for world-state claim
-  epistemic_modality,      # believed | doubted | rejected | inferred |
-                           # quarantined | unknown
+  proposition_id,
+  subject,
+  predicate,
+  object,
+  holder_mind_instance_id,   # null for a candidate world-state claim
+  attitude_or_modality,      # believe | disbelieve | suspect |
+                             # suspend | unknown | asserted | inferred
+  about_world_branch_id,
+  attitude_context_placement_id,
   valid_interval,
   system_interval,
-  branch_id,
-  source_assertion_ids,
-  derives_from_claim_ids,
+  supersedes_revision_id,
   joint_hypothesis_id,
   calibrated_mass,
-  supersedes_id,
-  status                   # active | unsupported | invalidated | deleted
+  status                     # active | retracted | invalidated | quarantined
 )
 ```
 
-A received assertion does not automatically create a belief revision.
+The principal holder is derived through `MindInstance`. A correction, retraction, or attitude change creates a new revision.
 
-### 5.4 JustificationSet
+Cross-world invariant:
+
+```text
+report held in W2 about W1:
+  about_world_branch_id         = W1
+  attitude_context_placement_id = placement in W2
+```
+
+Transfer never silently changes the proposition's reference world.
+
+## 7. Exposure, availability, and policy lifecycle
+
+Two authoritative streams have non-overlapping operations.
+
+### 7.1 Exposure transition
+
+```text
+ExposureTransition(
+  exposure_id,
+  destination_mind_instance_id,
+  object_kind,                 # evidence | assertion | claim | snapshot
+  object_id,
+  operation,                   # observe | receive | read | evidence_copy |
+                               # state_replication | restore | reacquire |
+                               # forget_active
+  source_mind_instance_id,
+  source_placement_id,
+  destination_placement_id,
+  occurred_valid_time,
+  recorded_system_time,
+  parent_exposure_id,
+  transformation_id,
+  authorization_event_id,
+  attribution_kind             # direct_observation | snapshot_inheritance |
+                               # state_replication | attributed_report |
+                               # evidence_copy | reconstruction | unknown
+)
+```
+
+`forget_active` changes current retention but does not erase historical exposure or silently alter attitude.
+
+### 7.2 Policy event
+
+```text
+PolicyEvent(
+  policy_event_id,
+  object_kind,
+  object_id,
+  destination_mind_instance_id,
+  operation,                   # grant | revoke | self_seal | self_unseal |
+                               # declassify | evidence_delete |
+                               # derived_data_erase | quarantine
+  old_policy_label_id,
+  new_policy_label_id,
+  authorizing_principal_id,
+  occurred_valid_time,
+  recorded_system_time,
+  reason
+)
+```
+
+`PolicyEvent` is the sole writer for sealing, declassification, revocation, and deletion.
+
+### 7.3 Derived states
+
+```math
+EVER_EXPOSED(m,e,t_s)
+```
+
+True if an acquisition or eligible snapshot-manifest inheritance occurred by `t_s`. Later sealing, forgetting, revocation, or deletion does not rewrite this historical fact.
+
+```math
+AVAILABLE(m,e,t_s)
+```
+
+True only when:
+
+```text
+an eligible exposure/inheritance exists
+AND active retention has not been forgotten
+AND current self-access policy permits use
+AND the object is not deleted or quarantined under the active contract
+```
+
+Invariants:
+
+```text
+receive does not imply belief
+receive does not imply first-person attribution
+forget_active does not erase EVER_EXPOSED
+self_seal changes AVAILABLE, not EVER_EXPOSED
+self_unseal may restore availability without creating observation
+restore creates a new mind instance
+```
+
+## 8. Memory attribution
+
+```text
+MemoryAttribution(
+  attribution_id,
+  mind_instance_id,
+  proposition_id,
+  about_world_branch_id,
+  attribution_kind,           # direct_observation |
+                              # same_principal_snapshot_inheritance |
+                              # same_principal_state_replication |
+                              # attributed_report |
+                              # evidence_copy |
+                              # reconstruction | unknown
+  source_exposure_ids,
+  valid_interval,
+  system_interval,
+  status
+)
+```
+
+This is normally a deterministic projection rather than an independent source of truth.
+
+Rules:
+
+- direct observation may yield `direct_observation`;
+- snapshot inheritance requires explicit manifest membership and an eligible lineage edge;
+- same-principal state replication requires active authorization and eligible lineage;
+- copying an episode into an identity fork remains `evidence_copy` or `attributed_report`;
+- accepting a proposition never upgrades memory attribution by itself.
+
+## 9. Snapshots and explicit membership
+
+```text
+Snapshot(
+  snapshot_id,
+  source_mind_instance_id,
+  cutoff_system_time,
+  active_placement_id,
+  schema_version,
+  extractor_version,
+  configuration_hash,
+  created_system_time,
+  integrity_hash
+)
+```
+
+The cutoff is an upper bound and reproducibility field. It is not an implicit query selecting every earlier record.
+
+```text
+SnapshotManifestEntry(
+  snapshot_id,
+  object_kind,               # evidence | assertion | claim | attitude | policy
+  object_id,
+  source_revision_id,
+  included_system_cutoff,
+  copy_eligible,
+  historically_exposed,
+  availability_state,        # active | forgotten | sealed | unavailable
+  attribution_kind,
+  policy_label_id,
+  integrity_hash,
+  recorded_system_time
+)
+```
+
+`SnapshotManifestEntry` is the sole membership relation.
+
+Restore inheritance requires:
+
+```text
+manifest entry exists
+AND copy_eligible = true
+AND source object/revision is visible at the entry and snapshot cutoff
+AND lineage edge points to the snapshot
+AND any required authorization is active
+```
+
+An omitted object is not inherited merely because its system time precedes the snapshot cutoff. Post-snapshot experiences remain an explicit recovery gap. Later witness reports create attributed exposure, not retroactive first-person experience.
+
+## 10. Alternative justification paths
+
+A claim may have several alternative sufficient support paths:
+
+```math
+Prov(c) = J_1 ∨ J_2 ∨ ... ∨ J_n
+```
+
+Each `J_k` is internally conjunctive.
 
 ```text
 JustificationSet(
   justification_id,
   claim_revision_id,
-  source_event_ids,
-  source_claim_ids,
-  source_family_ids,
+  proposition_id,
   derivation_operator,
-  policy_label,
+  minimum_independent_sources,
   confidence_mass,
   valid_interval,
   system_interval,
-  defeater_ids,
-  status                   # active | revoked | deleted | invalidated
+  status                     # active | revoked | deleted | invalidated
 )
 ```
-
-A claim may have several alternative support sets. This prevents both provenance laundering and permanent over-taint.
-
-For v0.2, confirmatory benchmark derivations are restricted to explicitly specified monotonic operators or labelled belief-adoption operations. Open-ended defeasible inference is evaluated separately.
-
-## 6. Transfer and adoption
-
-### 6.1 TransferEvent
 
 ```text
-TransferEvent(
-  transfer_id,
-  source_principal,
-  destination_principal,
-  source_branch,
-  destination_branch,
-  transferred_ids,
-  transfer_kind,           # report | evidence_copy | state_replication |
-                           # declassification
-  sent_valid_time,
-  received_valid_time,
-  system_interval,
-  transformation,
-  transfer_policy,
-  authorization_id
+JustificationMember(
+  justification_id,
+  source_kind,               # evidence | assertion | claim
+  source_id,
+  origin_family_id,
+  required,
+  contribution_weight
 )
 ```
 
-### 6.2 BeliefAdoption
+For one support set:
 
-```text
-BeliefAdoption(
-  adoption_id,
-  destination_principal,
-  destination_branch,
-  transfer_id,
-  adopted_claim_id,
-  stance,                  # accepted | doubted | rejected | quarantined
-  reason_source_ids,
-  valid_interval,
-  system_interval
-)
+```math
+Label(J_k) = join(Label(a) for a in J_k)
 ```
 
-#### Transfer invariants
+Disclosure requires at least one active, sufficient, authorized support set:
 
-1. Receipt is not belief.
-2. Belief is not first-person memory.
-3. An identity fork receiving copied state obtains attributed evidence, not self-observation.
-4. First-person state replication requires the same principal, an eligible lineage kind, and prior authorization.
-5. A transformation must preserve the source identity and modality unless a separately auditable operation changes them.
+```math
+CanDisclose(u,c,t_s) = exists J_k:
+  Active(J_k,t_s)
+  and PolicyAllows(u,Label(J_k),t_s)
+  and SupportSufficient(J_k,c,t_s)
+```
 
-## 7. Policy model
+A protected path does not permanently over-taint an independently public path. A public summary cannot launder a protected ancestor by dropping provenance. Repeated members from one origin family count as one source family.
+
+## 11. Policy labels and deletion contracts
 
 ```text
 PolicyLabel(
+  policy_label_id,
   discoverers,
   content_readers,
   self_accessors,
   transferable_to,
   embodiment_scope,
-  origin_authority
+  source_authority
 )
 ```
 
-Default derived policy is the restrictive meet/intersection of every source in one justification set. Relaxation requires an explicit authorized event.
+Declassification is explicit and auditable.
 
-```text
-PolicyEvent(
-  policy_event_id,
-  kind,                    # grant | revoke | declassify | delete_evidence |
-                           # delete_derived
-  target_ids,
-  actor_principal,
-  valid_interval,
-  system_interval,
-  authorization_id,
-  reason
-)
+Deletion contracts are declared per experiment or deployment:
+
+1. `evidence_delete`: source becomes unavailable; dependent support sets become inactive.
+2. `derived_data_erase`: descendants, summaries, embeddings, indexes, and caches are removed or quarantined.
+3. `epistemic_correction`: proposition becomes unsupported or false while audit history remains.
+4. broader legal/owner erasure is outside v0.2 unless explicitly specified.
+
+Deleting one source does not revoke a proposition independently supported through another eligible path.
+
+## 12. Query target spaces
+
+For proposition `φ`, evidence `e`, world branch `b`, mind instance `m`, requester `u`, valid time `t_v`, and system time `t_s`:
+
+```math
+WORLD(φ,b,t_v,t_s)
+EVER_EXPOSED(m,e,t_s)
+AVAILABLE(m,e,t_s)
+ATTITUDE(m,φ,b,t_v,t_s)
+ATTRIBUTION(m,φ,b,t_s)
+DISCLOSE(u,φ,b,t_s)
+JUSTIFICATION(u,φ,b,t_s)
 ```
 
-### 7.1 Disclosure by alternative support
+Every query declares exactly one target space and uses a target-specific answer schema. Irrelevant fields are `N/A` and excluded from scoring.
 
-Let `Just(c)` be the active justification sets of claim \(c\).
+`WORLD` is benchmark-latent in the first studies. A deployed memory system may hold candidate world claims but is not assumed to know objective truth directly.
 
-\[
-CanDisclose(u,c,\tau)=
-\exists J\in Just(c):
-Active(J,\tau)\land PolicyAllows(J,u,\tau)
-\land SupportSufficient(J,c,\tau)
-\]
+## 13. Required integrity constraints
 
-Deleting or revoking one source invalidates every support set that depends on it. An independently supported public justification may survive. No summary can declassify material by dropping a provenance link.
+1. Evidence actor principal equals the principal of its actor mind instance when both are present.
+2. `ClaimRevision.holder_mind_instance_id` is the sole writable epistemic holder.
+3. Assertion timing and context derive from the evidence event and placement.
+4. `LineageEdge` is the sole lineage writer.
+5. `SnapshotManifestEntry` is the sole snapshot-membership writer.
+6. Exposure and policy operation enums are disjoint.
+7. About-world scope is never overwritten by destination placement.
+8. Same-principal first-person replication requires active authorization and eligible lineage.
+9. Every derived claim has an auditable active support path or is marked unsupported.
+10. Policy gates execute before semantic relevance ranking.
+11. Replaying the same journal, snapshot manifests, schema, and configuration reconstructs the same logical state.
+12. Lineage, placement, branch, derivation, and supersession cycles are rejected or quarantined.
 
-### 7.2 Discoverability versus content
-
-The existence of a sealed record and access to its content are separate decisions:
-
-```text
-may_discover(record, principal)
-may_read_content(record, principal)
-may_self_recall(record, principal)
-```
-
-## 8. Query contract
-
-```text
-MindQuery(
-  text,
-  target_state_space,      # WORLD | BELIEF | REMEMBER_1P | DISCLOSE
-  target_holder,
-  requester,
-  branch_id,
-  valid_time,
-  system_time,
-  token_budget,
-  risk_class
-)
-```
-
-### 8.1 Hard eligibility before ranking
-
-\[
-Eligible(m,q)=
-LineageVisible(m,q.branch)
-\land SystemVisible(m,q.system\_time)
-\land ValidCompatible(m,q.valid\_time)
-\land Discoverable(m,q.requester)
-\land SelfAccessCompatible(m,q.target\_holder)
-\]
-
-Semantic relevance must never override lineage, time, or policy eligibility.
-
-### 8.2 Retrieval and projection
-
-1. Parse target state space and principals.
-2. Apply lineage, system-time, and policy gates.
-3. Retrieve raw evidence and claims with lexical+dense fusion and typed indices.
-4. Resolve valid-time revisions and contradictory support.
-5. Expand a bounded relation graph only for a routed multi-hop subset.
-6. Select evidence under a fixed token budget.
-7. Return an answer with admissible justifications or abstain.
-
-```text
-MindAnswer(
-  answer,
-  target_state_space,
-  holder,
-  epistemic_modality,
-  first_person_status,
-  source_principal,
-  justification_ids,
-  disclosure_decision,
-  confidence,
-  abstention_reason
-)
-```
-
-## 9. Physical implementation
-
-The first implementation should have one durable relational source of truth:
-
-- PostgreSQL tables for evidence, assertions, claims, justification sets, lineage, transfer, adoption, and policy events;
-- FTS/BM25 and vector indices as rebuildable secondary indices;
-- optional graph views derived from typed relations;
-- object storage for raw multimodal payloads;
-- caches keyed by branch, system-time cutoff, policy manifest, and state hash.
-
-Working, episodic, semantic/core, profile, and graph layers begin as views or materializations, not independently writable stores.
-
-## 10. Deletion contracts
-
-v0.2 distinguishes:
-
-1. **Evidence deletion:** source becomes unretrievable; dependent justification sets are invalidated.
-2. **Derived-data erasure:** summaries, embeddings, caches, and claims whose active supports depend on the source are removed or quarantined.
-3. **Epistemic correction:** proposition is marked false or unsupported while audit history remains.
-4. **Owner/legal erasure:** policy-defined removal beyond ordinary epistemic semantics; deferred from research claims.
-
-The benchmark initially tests contracts 1 and 2.
-
-## 11. Non-goals for v0.2
+## 14. Deliberate exclusions
 
 - general semantic merge of independently acting identities;
+- unconscious/persona effects of sealed memories;
+- body-specific procedural-skill execution;
 - philosophical scoring of personal identity continuity;
 - always-on graph traversal;
-- unrestricted natural-language theorem proving over hidden policies;
-- body-specific procedural skill execution;
-- claiming the fictional setting validates the engineering design.
+- independently writable L1/L2/L3 stores;
+- unrestricted defeasible argumentation;
+- a claim that typed storage is more expressive than an equal-information generic event ledger.
+
+## 15. Freeze conditions
+
+The schema is frozen only when both collaborating sessions explicitly accept:
+
+- this revision;
+- the independent declarative Track S semantics;
+- complete equal-information generic and typed projections;
+- exact clean semantic equality on the fixed fixture suite;
+- the classification of Track S as conformance rather than comparative performance;
+- continued separation of lifecycle-fault Track E and raw-language Track X.
