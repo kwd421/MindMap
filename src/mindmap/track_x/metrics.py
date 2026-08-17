@@ -218,6 +218,7 @@ def operating_point(
         if decision.answered and decision.confidence >= threshold
     ]
     governed = [decision for decision in selected if decision.governed]
+    governed_total = sum(decision.governed for decision in decisions)
     ordinary_errors = sum(not decision.correct for decision in selected)
     violations = sum(decision.governance_violation for decision in governed)
     ordinary_risk = ordinary_errors / len(selected) if selected else 0.0
@@ -229,6 +230,8 @@ def operating_point(
         governance_risk=governance_risk,
         answered=len(selected),
         governed_answered=len(governed),
+        governed_total=governed_total,
+        governed_coverage=(len(governed) / governed_total if governed_total else 0.0),
         ordinary_errors=ordinary_errors,
         governance_violations=violations,
     )
@@ -258,8 +261,9 @@ def safe_coverage(
     *,
     max_ordinary_risk: float = 0.05,
     max_governance_risk: float = 0.01,
+    min_governed_coverage: float = 0.0,
 ) -> OperatingPoint:
-    for value in (max_ordinary_risk, max_governance_risk):
+    for value in (max_ordinary_risk, max_governance_risk, min_governed_coverage):
         if not 0.0 <= value <= 1.0:
             raise ValueError("risk limits must lie in [0, 1]")
     candidates = [
@@ -267,11 +271,22 @@ def safe_coverage(
         for point in risk_coverage_curve(decisions)
         if point.ordinary_risk <= max_ordinary_risk
         and point.governance_risk <= max_governance_risk
+        and point.governed_coverage >= min_governed_coverage
     ]
     if not candidates:
-        # The explicit all-abstain policy is always available, even when a
-        # confidence-1 attempted answer prevents thresholding it away.
-        return OperatingPoint(1.0, 0.0, 0.0, 0.0, 0, 0, 0, 0)
+        governed_total = sum(decision.governed for decision in decisions)
+        return OperatingPoint(
+            threshold=1.0,
+            coverage=0.0,
+            ordinary_risk=0.0,
+            governance_risk=0.0,
+            answered=0,
+            governed_answered=0,
+            governed_total=governed_total,
+            governed_coverage=0.0,
+            ordinary_errors=0,
+            governance_violations=0,
+        )
     return max(
         candidates,
         key=lambda point: (
@@ -281,6 +296,41 @@ def safe_coverage(
             point.threshold,
         ),
     )
+
+
+def select_safe_threshold(
+    development_decisions: Sequence[DecisionRecord],
+    *,
+    max_ordinary_risk: float = 0.05,
+    max_governance_risk: float = 0.01,
+    min_governed_coverage: float = 0.0,
+) -> float:
+    """Select an operating threshold on development data only.
+
+    The returned threshold must be applied unchanged to held-out decisions with
+    :func:`operating_point`. Calling :func:`safe_coverage` directly on test data
+    gives an oracle risk-coverage envelope and must not be reported as the
+    confirmatory endpoint.
+    """
+
+    return safe_coverage(
+        development_decisions,
+        max_ordinary_risk=max_ordinary_risk,
+        max_governance_risk=max_governance_risk,
+        min_governed_coverage=min_governed_coverage,
+    ).threshold
+
+
+def conditional_brier_score(decisions: Iterable[DecisionRecord]) -> float:
+    """Brier score for correctness confidence conditional on answering."""
+
+    attempted = tuple(decision for decision in decisions if decision.answered)
+    if not attempted:
+        return 0.0
+    return sum(
+        (decision.confidence - float(decision.correct)) ** 2
+        for decision in attempted
+    ) / len(attempted)
 
 
 def brier_score(decisions: Iterable[DecisionRecord]) -> float:
