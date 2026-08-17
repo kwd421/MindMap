@@ -1,0 +1,37 @@
+{
+  "benchmark": "MindMapBench-Entitlement-Pilot v0.1",
+  "scope": "synthetic mechanism-isolation pilot comparing a scoped slot store with an epistemically typed lineage ledger",
+  "seed": 20260817,
+  "scenario_count": 200,
+  "query_count": 800,
+  "event_count": 1263,
+  "queries_per_scenario": 4.0,
+  "pairwise_factor_coverage": 1.0,
+  "dataset_replication_seeds": [20260817, 20270790, 20280763, 20290736, 20300709, 20310682, 20320655, 20330628, 20340601, 20350574],
+  "noise_repetitions": 20,
+  "transaction_time_definition": "immutable system record/ingestion time; distinct from event valid time",
+  "systems": ["ScopedSlots", "ModalityNoLineage", "LineageNoModality", "NCM-Psi"],
+  "primary_endpoint": "macro exact accuracy over world, belief, and disclosure queries; restricted disclosures and unresolved merge conflicts require the explicit sentinel answer",
+  "primary_comparison": {
+    "baseline": "ScopedSlots",
+    "proposed": "NCM-Psi",
+    "paired_queries": 600,
+    "cluster_count": 200,
+    "accuracy_baseline": 0.4683333333333333,
+    "accuracy_proposed": 0.9933333333333333,
+    "absolute_improvement": 0.525,
+    "scenario_cluster_bootstrap_95ci": [0.4783333333333333, 0.57],
+    "discordant_proposed_only": 315,
+    "discordant_baseline_only": 0,
+    "mcnemar_exact_p": 2.996272867003007e-95
+  },
+  "limitations": [
+    "Gold answers and structured records are generated programmatically.",
+    "The experiment does not evaluate natural-language extraction or a reader LLM.",
+    "NCM-Psi uses hand-specified modality weights.",
+    "The task intentionally includes cases where modality and lineage are causally relevant.",
+    "Noise channels are synthetic and do not estimate empirical LLM error distributions.",
+    "Clean NCM-Psi accuracy is a mechanism-conformance result, not a deployment claim."
+  ],
+  "runtime_seconds": 16.62207004000004
+}
