@@ -236,7 +236,11 @@ def main() -> None:
     write_csv(out / "clean_query_results.csv", clean_rows)
     write_csv(out / "clean_summary.csv", clean_summary)
     write_csv(out / "validator_summary.csv", validator_rows)
-    write_csv(out / "fault_query_results.csv", fault_rows)
+    for fault_class in sorted({str(row["fault_class"]) for row in fault_rows}):
+        write_csv(
+            out / f"fault_query_results_{fault_class}.csv",
+            [row for row in fault_rows if row["fault_class"] == fault_class],
+        )
     write_csv(out / "fault_summary.csv", fault_summary)
     write_csv(out / "mutation_summary.csv", mutant_rows)
 
@@ -261,7 +265,6 @@ def main() -> None:
             "Well-formed source/extraction errors cannot be detected without independent evidence in this setup.",
             "Latency and check counts are Python reference-implementation diagnostics, not database production costs.",
         ],
-        "runtime_seconds": time.perf_counter() - started,
     }
     (out / "metadata.json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding="utf-8")
 
@@ -280,7 +283,7 @@ def main() -> None:
     print("\nMUTANTS")
     for row in mutant_rows:
         print(row)
-    print(f"\nWrote {out}")
+    print(f"\nWrote {out} in {time.perf_counter() - started:.6f}s")
 
 
 if __name__ == "__main__":
