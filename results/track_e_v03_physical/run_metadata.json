@@ -1,0 +1,11 @@
+{
+  "artifact_id": 9290509186,
+  "github_sha": "ee5124f05886b834e7974a01fbc04394ee15da08",
+  "interpretation": "fixed deterministic physical projection/repair audit; no inferential statistics",
+  "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "python": "3.11.15 (main, Jun 16 2026, 21:41:52) [GCC 13.3.0]",
+  "rows_sha256": "641617f3c4d62df1fa845f84dab981e3c5e372e57869744f9bd9d2af49a9c6b5",
+  "study": "MindMap Track E v0.3 matched physical fault P1",
+  "summary_sha256": "f1dc436800b7c5e2ed850b5056d924a5b654b11d5631066b312798c67d595599",
+  "workflow_run_id": 32026971500
+}
