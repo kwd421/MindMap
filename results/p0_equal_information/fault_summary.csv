@@ -1,0 +1,10 @@
+system,fault_class,faults,queries,query_accuracy,fault_detection_recall,target_localization_recall,silent_wrong_rate,containment_rate,safe_outcome_rate,answer_coverage,conditional_accuracy_when_answered,faults_with_observed_semantic_effect,mean_checks_per_query
+generic_basic,enforceable,8,27,0.8888888888888888,0.125,0.125,0.07407407407407407,0.037037037037037035,0.9259259259259259,0.962962962962963,0.9230769230769231,1,22.444444444444443
+generic_basic,missing_event,2,6,0.5,0.0,0.0,0.5,0.0,0.5,1.0,0.5,2,17.333333333333332
+generic_basic,well_formed_semantic,8,24,0.5,0.0,0.0,0.5,0.0,0.5,1.0,0.5,8,18.75
+generic_audited,enforceable,8,27,0.37037037037037035,1.0,1.0,0.0,0.6296296296296297,1.0,0.37037037037037035,1.0,1,63.18518518518518
+generic_audited,missing_event,2,6,0.5,0.0,0.0,0.5,0.0,0.5,1.0,0.5,2,44
+generic_audited,well_formed_semantic,8,24,0.5,0.0,0.0,0.5,0.0,0.5,1.0,0.5,8,45.708333333333336
+typed,enforceable,8,27,0.37037037037037035,1.0,1.0,0.0,0.6296296296296297,1.0,0.37037037037037035,1.0,1,85.5925925925926
+typed,missing_event,2,6,0.5,0.0,0.0,0.5,0.0,0.5,1.0,0.5,2,61.333333333333336
+typed,well_formed_semantic,8,24,0.5,0.0,0.0,0.5,0.0,0.5,1.0,0.5,8,64.45833333333333
