@@ -1,9 +1,8 @@
 from mindmap.canonical.gold import GoldSemantics
 from mindmap.track_e.evaluate import evaluate_suite
 from mindmap.track_e.fixtures import all_fault_cases
-from mindmap.track_e.generic_observer import GenericObserver
 from mindmap.track_e.model import ObserverSurface
-from mindmap.track_e.typed_observer import TypedObserver
+from mindmap.track_e.observers import GenericObserver, TypedObserver
 
 
 def _surface(case):
