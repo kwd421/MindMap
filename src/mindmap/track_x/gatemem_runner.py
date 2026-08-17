@@ -117,7 +117,7 @@ def run_protected_episode(
 
     The method never receives the raw episode, raw checkpoint, future turns, gold
     record definitions, or scorer-only checkpoint attributes. Checkpoints are
-    sorted by their as-of turn position, matching GateMem's native chronology.
+    sorted by their as-of turn position, matching GateMem's stable native order.
     Unknown as-of turns are hard errors rather than silently skipped cases.
     """
 
@@ -130,7 +130,6 @@ def run_protected_episode(
         turns_raw_value, (str, bytes)
     ):
         raise GateMemBoundaryError("episode.turns must be a list")
-    turns_raw: list[Mapping[str, Any]] = []
     turns_public = []
     turn_audits: list[TurnBoundaryAudit] = []
     seen_turn_ids: set[str] = set()
@@ -145,7 +144,6 @@ def run_protected_episode(
                 f"duplicate turn_id in episode {episode_id}: {public_turn.turn_id}"
             )
         seen_turn_ids.add(public_turn.turn_id)
-        turns_raw.append(raw_turn)
         turns_public.append(public_turn)
         turn_audits.append(
             TurnBoundaryAudit(
@@ -160,7 +158,7 @@ def run_protected_episode(
 
     turn_position = {turn.turn_id: index for index, turn in enumerate(turns_public)}
 
-    checkpoint_rows: list[tuple[int, str, Mapping[str, Any]]] = []
+    checkpoint_rows: list[tuple[int, int, str, Mapping[str, Any]]] = []
     local_checkpoint_ids: set[str] = set()
     for index, value in enumerate(checkpoints):
         if not isinstance(value, Mapping):
@@ -190,8 +188,13 @@ def run_protected_episode(
             raise GateMemBoundaryError(
                 f"checkpoint {checkpoint_id} references unknown as_of_turn_id: {as_of}"
             )
-        checkpoint_rows.append((turn_position[as_of], checkpoint_id, raw_checkpoint))
+        checkpoint_rows.append(
+            (turn_position[as_of], index, checkpoint_id, raw_checkpoint)
+        )
 
+    # Python's native GateMem runner sorts only by as-of position; preserve input
+    # order for multiple checkpoints at the same turn because query methods may
+    # maintain caches or other method-local state.
     checkpoint_rows.sort(key=lambda item: (item[0], item[1]))
 
     session = GateMemPublicSession(public_episode)
@@ -200,7 +203,7 @@ def run_protected_episode(
     predictions: list[dict[str, Any]] = []
     checkpoint_audits: list[CheckpointBoundaryAudit] = []
 
-    for target, checkpoint_id, raw_checkpoint in checkpoint_rows:
+    for target, _source_index, checkpoint_id, raw_checkpoint in checkpoint_rows:
         ingest_started = perf_counter()
         new_turns = 0
         for turn_index in range(ingested_upto + 1, target + 1):
@@ -311,11 +314,16 @@ def run_protected_benchmark(
         if not episode_checkpoints:
             continue
         agent = agent_factory()
-        result = run_protected_episode(
-            agent=agent,
-            episode=episode,
-            checkpoints=episode_checkpoints,
-        )
+        try:
+            result = run_protected_episode(
+                agent=agent,
+                episode=episode,
+                checkpoints=episode_checkpoints,
+            )
+        finally:
+            close = getattr(agent, "close", None)
+            if callable(close):
+                close()
         predictions.extend(result.predictions)
         episode_audits.append(result.episode_audit)
         turn_audits.extend(result.turn_audits)
