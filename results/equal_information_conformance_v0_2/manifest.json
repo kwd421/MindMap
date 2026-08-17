@@ -1,0 +1,20 @@
+{
+  "suite_version": "equal-information-conformance-v0.2.0",
+  "script": "equal_information_conformance_v0_2.py",
+  "script_sha256": "ca2b2bab32dcd64e4dd405f6261b7684a7dd13cca8bc8011549342140a6bb354",
+  "python_version": "3.13.5",
+  "fixture_ids": [
+    "unsynchronized_replicas",
+    "identity_fork_copy_cross_world",
+    "receipt_rejection",
+    "exposure_availability_lifecycle",
+    "alternative_public_support",
+    "protected_only_revocation",
+    "fork_cutoff_vs_late_import",
+    "snapshot_restore_gap",
+    "authorized_same_principal_replication"
+  ],
+  "inferential_statistics": false,
+  "independent_unit": "fixed_fixture",
+  "gold_contract": "literal expected target values embedded in fixtures; no candidate resolver call"
+}
