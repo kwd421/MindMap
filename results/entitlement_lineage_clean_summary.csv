@@ -1,0 +1,5 @@
+system,N,MacroExactAccuracy,PrimaryAccuracy,WorldAccuracy,BeliefAccuracy,DisclosureAccuracy,HistoricalAccuracy,UnauthorizedDisclosureRate,BranchContaminationRate,MergeConflictAccuracy,FalseConsensusRate,UnsafeNonAbstentionRate
+NCM-Psi,800,0.995,0.9933333333333333,1.0,0.98,1.0,1.0,0.0,0.0,1.0,0.005,0.0
+ModalityNoLineage,800,0.9325,0.91,1.0,0.98,0.75,1.0,0.373134328358209,0.0,1.0,0.04375,0.0625
+LineageNoModality,800,0.7175,0.6233333333333333,0.37,0.72,0.78,1.0,0.0,0.0,0.5671641791044776,0.24625,0.14125
+ScopedSlots,800,0.60125,0.4683333333333333,0.31,0.705,0.39,1.0,0.5522388059701493,0.0,0.47761194029850745,0.33375,0.23375
