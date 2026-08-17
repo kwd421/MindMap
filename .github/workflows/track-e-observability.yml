@@ -31,24 +31,36 @@ jobs:
             --output-dir /tmp/track-e-results
       - name: Verify deterministic outputs
         run: |
-          diff -u results/track_e_fault_observability_v0_1/detection_matrix.csv /tmp/track-e-results/detection_matrix.csv
           python - <<'PY'
           import csv, hashlib, json
           from pathlib import Path
 
           timing_fields = {'median_validate_us', 'p95_validate_us'}
 
-          def deterministic_rows(path: str):
+          def rows(path: str, ignored: set[str] = set()):
               with Path(path).open(newline='') as handle:
                   return [
-                      {key: value for key, value in row.items() if key not in timing_fields}
+                      {key: value for key, value in row.items() if key not in ignored}
                       for row in csv.DictReader(handle)
                   ]
 
-          expected_rows = deterministic_rows('results/track_e_fault_observability_v0_1/summary.csv')
-          actual_rows = deterministic_rows('/tmp/track-e-results/summary.csv')
-          if expected_rows != actual_rows:
-              raise SystemExit('deterministic summary fields differ')
+          checks = [
+              (
+                  'results/track_e_fault_observability_v0_1/summary.csv',
+                  '/tmp/track-e-results/summary.csv',
+                  timing_fields,
+              ),
+              (
+                  'results/track_e_fault_observability_v0_1/detection_matrix.csv',
+                  '/tmp/track-e-results/detection_matrix.csv',
+                  set(),
+              ),
+          ]
+          for expected_path, actual_path, ignored in checks:
+              if rows(expected_path, ignored) != rows(actual_path, ignored):
+                  raise SystemExit(
+                      f'deterministic CSV fields differ: {expected_path} vs {actual_path}'
+                  )
 
           source = Path('experiments/track_e_fault_observability_v0_1.py').read_bytes()
           expected_hash = json.loads(
