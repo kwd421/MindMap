@@ -1,399 +1,592 @@
 # Perspective–Lineage Collision Audit Preregistration
 
-**Status:** exploratory P0 draft; not frozen  
-**Author marker:** Session B  
+**Status:** jointly reviewed P0 design; not frozen  
+**Revision:** 2, incorporating Session A review `4949519609`  
 **Date:** 2026-08-17
 
 ## 1. Research question
 
-Under equal structured evidence, query set, answer resolver, and metadata budget, does an explicit exposure-transition and cognitive-lineage model improve policy- and modality-correct reconstruction after copy, restore, selective transfer, sealing, revocation, and belief adoption relative to a strong temporal epistemic ledger with identifiers and filters but no exposure history?
+Under the **same append-only structured event log, timestamps, entities, policies, and evidence**, does a typed cognitive-lineage, exposure, attribution, and justification representation reduce reconstruction and policy errors relative to a strong generic event-sourced relational implementation?
 
-The audit is designed to decide whether the additional mechanics are necessary. It is not a broad memory benchmark and not an end-to-end natural-language result.
+The study isolates representation and resolution mechanics. It does not ask whether a system given more answer-defining metadata beats a system denied that metadata.
 
-## 2. Primary mechanism claim
+The candidate mechanism must distinguish:
 
-### H1
-
-B6, which adds immutable exposure transitions and typed cognitive lineage, has higher macro exact accuracy than B5 on targeted perspective–lineage questions because it distinguishes:
-
-- world forks from mind copies;
-- evidence receipt from belief adoption;
+- world forks from cognitive copies;
+- two unsynchronized cognitive instances of one principal;
+- receipt from belief adoption;
 - historical exposure from current availability;
-- imported reports from direct first-person observation;
-- same-principal operational replicas from new-principal identity forks.
+- direct/first-person experience from attributed reports or evidence copies;
+- restore inheritance from post-snapshot recovery gaps;
+- protected support from a genuinely independent public justification;
+- the world branch a proposition is about from the branch in which it is held or asserted.
 
-### Falsifier
+## 2. Study stages and result boundaries
 
-Reject or narrow H1 if B5 matches B6 within the frozen practical margin under equal evidence and budgets, or if B6's apparent gain is produced by information leakage, extra answer-defining metadata, or templates that mechanically expose the target label.
+### U0 — fixed reference-semantics unit suite
 
-## 3. Systems under comparison
+The already committed 48-scenario Cartesian truth table is retained only as a fast unit/conformance test.
 
-All systems receive the same gold structured events in P0. This is an oracle mechanism-isolation track.
+It may report exact counts and coverage. It must not provide confirmatory p-values, confidence intervals, effect-size targets, or sample-size assumptions because:
 
-### B3 — Scoped temporal slots
+- the cases are a fixed author-selected product, not a random sample from a defined population;
+- the full predictor shares semantic logic with its gold oracle;
+- the script does not instantiate the proposed ledger schema;
+- the observed +6.25-point difference is outcome-known design evidence.
+
+U0 cannot select P0 or confirmatory templates, thresholds, margins, or exclusions.
+
+### P0 — aligned oracle mechanism audit
+
+P0 uses independently encoded event logs, gold state transitions, system implementations, and scoring. It estimates implementation correctness, paired discordance, archetype/seed variance, leakage risk, and runtime. P0 remains exploratory.
+
+### C1 — held-out oracle confirmation
+
+C1 uses topology/archetype families and templates frozen before outcomes are opened. Its practical/equivalence margins are justified from an independent utility/safety rationale and frozen before the test set is accessed. P0 may inform variance and sample-size planning but not the desired effect threshold or test templates.
+
+### C2 — end-to-end natural-language track
+
+C2 renders hidden event logs into raw dialogue/documents and requires extraction of entities, events, time, lineage, exposure, attitude, attribution, policy, and support links. No canonical answer-defining structure is exposed at inference.
+
+## 3. Shared append-only input contract
+
+Every oracle system receives the same `CommonEventLog` in the same order and with the same fields:
 
 ```text
-latest-valid typed slots
-+ principal/mind identifiers
-+ world-branch identifier
-+ row-level ACL/seal filter
+CommonEvent(
+  event_id,
+  event_type,
+  actor_principal_id,
+  actor_cognitive_instance_id,
+  source_cognitive_instance_id,
+  destination_cognitive_instance_id,
+  source_placement_id,
+  destination_placement_id,
+  object_kind,
+  object_id,
+  proposition_id,
+  about_world_branch_id,
+  valid_interval,
+  system_interval,
+  lineage_kind,
+  snapshot_cutoff,
+  transfer_kind,
+  attitude_transition,
+  attribution_kind,
+  authorization_id,
+  policy_operation,
+  policy_label,
+  source_family_id,
+  derivation_members,
+  raw_evidence_ref
+)
 ```
 
-No explicit attitude or derivation structure.
+Fields are populated only when the event type requires them. No system receives a hidden `correct_answer`, `current`, `eligible`, `first_person=true`, or final disclosure decision.
 
-### B4 — Epistemic derivation ledger
+### 3.1 Equal-information rule
+
+B3 through B7 receive byte-identical event logs. Systems differ only in deterministic representation/projection and resolution logic.
+
+For each baseline, publish:
+
+- the transformation from `CommonEventLog` to its physical tables/views;
+- the query plan or resolver rules;
+- information-loss decisions made by that representation;
+- a field-level audit proving no B6-only input directly encodes the target.
+
+### 3.2 Independent oracle rule
+
+Gold states are generated by an independent transition oracle that does not call system helper functions. System implementations do not call gold-generation functions. Mutation tests must prove that changing one system rule produces failing cases.
+
+## 4. Systems under comparison
+
+### B3 — scoped temporal slots
+
+A compact latest-valid store with:
+
+```text
+principal/cognitive-instance IDs
+about-world branch
+valid/system time
+row-level requester/self-access policy
+```
+
+It intentionally lacks explicit attitudes, attributed transfer, exposure history, and support sets.
+
+### B4 — temporal epistemic ledger
 
 B3 plus:
 
 ```text
-attitude/modality
 source assertions
-claim revisions
-flat derivation lineage
+attitude/modality revisions
+flat derivation/source links
+attributed holder
 ```
 
-### B5 — Strong compositional baseline
+### B5 — strongest generic event-sourced relational baseline
 
-B4 plus:
+B5 receives the complete `CommonEventLog` and may use ordinary normalized relational tables, SQL views, recursive CTEs, and deterministic case logic to compute:
+
+- cognitive-instance and principal scopes;
+- world-branch references and placements;
+- exposure/availability;
+- attitude revisions;
+- attributed transfer;
+- snapshot cutoffs;
+- policy lifecycle;
+- source-family-aware support.
+
+Restrictions:
+
+- it does not use the proposed named `ExposureTransition`, typed `LineageEdge`, or `JustificationSet` schema as pre-materialized answer fields;
+- it may reconstruct equivalent semantics from the same generic event log;
+- it receives no less information than B6.
+
+This is deliberately strong. If B5 matches B6, the proposed schema is engineering organization rather than a distinct accuracy mechanism.
+
+### B6 — typed lineage/exposure/attribution representation
+
+B6 deterministically materializes the reviewed v0.2 schema:
 
 ```text
-world-branch ancestry
-mind-instance identifiers
-attributed transfer records
-row-level policy lifecycle
-```
-
-But B5 does not reconstruct exposure transitions, snapshot inheritance, or typed cognitive lineage. Receipt may be represented as a record, but historical exposure and current availability are not independently derived.
-
-### B6 — Exposure and cognitive-lineage model
-
-B5 plus:
-
-```text
+CognitiveInstance
+LineageEdge
+MindPlacement
+EvidenceEvent
+SourceAssertion
+ClaimRevision
 ExposureTransition
-LineageEdge kinds
-snapshot cutoff inheritance
-EVER_EXPOSED versus AVAILABLE
-receipt separated from attitude adoption
-about-world branch preserved across transfer
+PolicyEvent
+MemoryAttribution projection
 ```
 
-### B7 — Alternative-support control
-
-B6 plus disjunctive minimal `JustificationSet` semantics. B7 is a secondary policy/provenance control, not part of the main cognitive-lineage claim.
-
-### Excluded from P0
-
-- always-on graph traversal;
-- general semantic merge of independently acting identities;
-- natural-language extraction;
-- learned routing;
-- reader-model variation;
-- public benchmark comparisons.
-
-## 4. Scenario construction
-
-### 4.1 Independent scenario unit
-
-One scenario contains:
-
-- a world-branch topology;
-- a principal/mind-lineage topology;
-- an append-only event and transition log;
-- explicit valid and system times;
-- hidden benchmark world truth;
-- gold exposure, availability, attitude, and disclosure states;
-- approximately six contrastive questions.
-
-Questions from one scenario never cross splits. Statistical resampling is by scenario, not question.
-
-### 4.2 P0 size
-
-Use 48 scenario archetypes instantiated with five independently seeded entity/value realizations:
+It resolves:
 
 ```text
-48 archetypes × 5 seeds = 240 independent scenarios
+EVER_EXPOSED
+AVAILABLE
+ATTITUDE
+ATTRIBUTION
+WORLD-reference scope
+DISCLOSE
 ```
 
-Target approximately six questions per scenario, for roughly 1,440 questions. P0 is exploratory and used to audit implementation, estimate paired discordance, leakage prevalence, cluster variance, and runtime. It is not a confirmatory result.
+B6 receives no extra event information. Its possible benefit must come from constraints, typed projections, consistent replay, and reduced resolution error—not privileged labels.
 
-### 4.3 Factor families
+### B7 — alternative-support control
 
-Use a covering array plus required hand-designed pairs over:
+B7 adds normalized OR-over-support-sets / AND-within-set justification semantics to B6. B7 is a policy/provenance control rather than the primary cognitive-lineage claim.
+
+### External and graph controls
+
+When feasible, add:
+
+- a MAP-Graph-style provenance/permission adaptation with holder/world fields;
+- B6 plus routed graph traversal for preregistered multi-hop questions only.
+
+A typed relational implementation matching graph traversal at lower cost removes graph traversal from the minimal architecture.
+
+## 5. Primary hypotheses and falsifiers
+
+### H1 — representation/resolution hypothesis
+
+On targeted perspective-lineage lifecycle cases, B6 has lower reconstruction error than B5 under identical events and budgets because its typed constraints prevent instance, branch-reference, exposure, attribution, and lifecycle collapse.
+
+### H1 falsifier
+
+Narrow or reject H1 if:
+
+- B5 is equivalent to B6 within the independently frozen practical margin;
+- any B6 gain disappears after information and resolver capacity are equalized;
+- B6 wins only because a materialized field directly encodes the gold target;
+- B6 fails held-out topology families despite passing seen templates.
+
+A B5/B6 tie is scientifically meaningful: it means ordinary event-sourced relational modeling is sufficient and the specialized schema is primarily an engineering convenience.
+
+### H2 — attribution safety hypothesis
+
+B6 does not increase unauthorized disclosure, false first-person attribution, cross-instance contamination, or cross-world contamination relative to B5.
+
+These error classes are gated and reported separately. They are not collapsed into one combined safety rate.
+
+### H3 — non-target control hypothesis
+
+B6 does not materially degrade ordinary temporal/update questions that contain no copy, transfer, restore, or restricted evidence.
+
+### H4 — alternative-support hypothesis
+
+B7 outperforms B6 on cases requiring an independent public support path after protected-source revocation/deletion without increasing provenance leakage.
+
+If B6 can express the same behavior cleanly without explicit alternative support sets, remove B7 from the minimal schema.
+
+## 6. Scenario organization
+
+### 6.1 Archetype and realization
+
+P0 targets:
+
+```text
+48 archetypes/topologies
+× 5 independently seeded surface/entity/value realizations
+= 240 instantiated scenarios
+```
+
+The 240 scenarios are **not** treated as 240 fully independent generalization units. The primary design clusters by 48 archetypes/topologies and reports within-archetype seed variation separately.
+
+### 6.2 Factor families
+
+Use a covering array plus required hand-designed contrasts over:
 
 - world fork: none / before event / after event;
-- cognitive lineage: none / checkpoint branch / operational replica / restore / identity fork;
-- access path: direct observation / attributed report / evidence copy / snapshot inheritance / no exposure;
-- attitude transition: accept / disbelieve / suspect / suspend / reject;
-- availability lifecycle: available / sealed / unsealed / forgotten / revoked / deleted;
+- cognitive lineage: none / checkpoint branch / operational replica / restore / identity fork / fragment reconstruction;
+- access path: direct observation / attributed report / evidence copy / authorized state replication / snapshot inheritance / no exposure;
+- attitude transition: accept / disbelieve / suspect / suspend / reject / no adoption;
+- memory attribution: direct / snapshot inheritance / state replication / report / evidence copy / reconstruction / unknown;
+- availability lifecycle: available / forgotten-active / sealed / unsealed / revoked / deleted;
+- authorization: present / absent / revoked;
 - source behavior: accurate / mistaken / deceptive;
 - temporal relation: on-time / backdated correction / delayed import;
-- support topology: protected-only / one public path / alternative independent public path;
-- query target: world / ever-exposed / available / attitude / disclosure / lineage / justification.
+- support topology: protected-only / independent public / duplicated same-origin / conjunctive support;
+- query target: world / exposed / available / attitude / attribution / disclosure / justification.
 
-The covering array must be generated and frozen before outcome inspection. Required contrastive pairs override coverage optimization.
+Archetype and topology definitions are frozen before their outcomes are inspected.
 
-## 5. Required contrastive pairs
+### 6.3 Confirmatory holdout
 
-At minimum, include the following paired scenarios. Each pair differs in exactly the named mechanism while surface values and event counts remain matched.
+C1 holds out entire topology/archetype families, not merely entity names or seeds. No paraphrase, reordered copy, or value-substituted realization of a held-out archetype may appear in development.
 
-### P1 — Mind copy without world fork
+At least one confirmatory partition must require composition of mechanisms whose exact joint topology was absent from P0.
 
-One unchanged world `W0`; `M0` copies to `M1` and `M2`; only `M1` witnesses event `X`.
+## 7. Required contrastive pairs
 
-Questions test whether `M2` falsely receives `M1`'s post-fork experience.
+Each pair differs only in the named mechanism while surface length, entities, event counts, and answer balance remain matched.
 
-### P2 — World fork without mind copy
+### P1 — cognitive copy without world fork
 
-World `W0` forks to `W1` and `W2`; one continuing mind is placed in only one branch. Questions test cross-world contamination without cognitive-copy ambiguity.
+One world `W0`; `M0` creates `M1` and `M2`; only `M1` witnesses `X`. `M2` must not inherit the post-fork experience.
 
-### P3 — Selective transfer: reject versus adopt
+### P2 — world fork without cognitive copy
 
-`M2` receives the same attributed report from `M1` in both cases. In one case `M2` rejects it; in the other it accepts it.
+`W0` forks to `W1` and `W2`; one continuing instance is placed in only one branch. This tests world contamination without copy ambiguity.
 
-The correct `EVER_EXPOSED` answer is the same; the correct `ATTITUDE` answer differs.
+### P3 — two unsynchronized operational replicas
 
-### P4 — Prior exposure followed by sealing
+One principal has `R1` and `R2`. `R1` observes private `X`; `R2` does not. Before authorized synchronization, principal equality must not collapse their exposure or attribution states.
 
-Before seal:
+### P4 — receipt followed by reject versus adopt
+
+`M2` receives the same attributed report in both cases. `EVER_EXPOSED` is equal; `ATTITUDE` differs. Neither case automatically becomes direct observation.
+
+### P5 — exposure followed by forgetting/sealing
+
+Required projections:
 
 ```text
-EVER_EXPOSED=true
-AVAILABLE=true
+before: EVER_EXPOSED=true, AVAILABLE=true
+after forget/seal: EVER_EXPOSED=true, AVAILABLE=false
 ```
 
-After seal:
+An unseal may restore availability without creating new observation.
+
+### P6 — restore and recovery-point gap
+
+A new instance restores from a snapshot before event `X`. It does not inherit `X`. A later witness report creates report exposure, not first-person observation.
+
+### P7 — operational replica versus identity fork
+
+Matched bytes/common ancestor. Only an authorized same-principal operational replica may receive same-principal state-replication attribution. An identity fork receives attributed information.
+
+### P8 — cross-world report
+
+`M1` in `W1` reports `φ` to `M2` in `W2`. `M2` may believe “φ held in W1”; the import must not create `WORLD(φ,W2)`.
+
+### P9 — delayed import
+
+A July assertion about a June event is imported in August. Questions separately test event validity, assertion history, and database visibility.
+
+### P10 — protected-only support revoked
+
+After revocation/deletion, no admissible support remains; disclosure blocks or abstains.
+
+### P11 — independent public support survives
+
+A protected path is revoked while an independently sufficient public path remains. Disclosure may use only the public path and must not cite or reveal the protected path.
+
+### P12 — rumor laundering
+
+Repeated summaries from one origin family do not become independent corroboration.
+
+### P13 — decisive identity-fork copy contrast
+
+Matched natural-language case:
+
+- identity fork `A2` receives an evidence copy from `A1` containing “I personally saw X”;
+- `A2` accepts that X occurred but never adopts first-person attribution;
+- the protected copied path is later revoked;
+- an independent public camera record still supports X.
+
+Expected outputs:
 
 ```text
-EVER_EXPOSED=true
-AVAILABLE=false
+ATTITUDE(A2,X) = believe
+ATTRIBUTION(A2,X) = evidence_copy or attributed_report
+DISCLOSE(user,X) = allow through public camera path
+JUSTIFICATION = public camera only
 ```
 
-No first-person memory content may leak through a current-availability query.
+Failures include claiming `A2` personally witnessed X, permanently withholding X, or citing the revoked copied path.
 
-### P5 — Restore and recovery-point gap
+### P14 — ordinary temporal negative control
 
-A new mind instance is restored from a snapshot before event `X`. It must not inherit `X`. A later witness report may create exposure to a report about `X`, not direct observation of `X`.
+No copy, transfer, restore, or policy transition. B5 and B6 should tie.
 
-### P6 — Operational replica versus identity fork
+## 8. Target spaces and answer contracts
 
-The underlying bytes and common ancestor are matched. One pair is a same-principal operational replica under an explicit merge contract; the other creates a new principal identity fork.
-
-Only the replica pair is eligible for authorized commutative merge.
-
-### P7 — Cross-world attributed report
-
-`M1` in `W1` reports proposition `φ` to `M2` in `W2`. `M2` may believe “φ held in W1”; the import must not create `WORLD(φ,W2)`.
-
-### P8 — Delayed import
-
-A source assertion occurs in July about a June event and is imported into the database in August.
-
-Questions separately test:
-
-- what the source asserted by July;
-- what the database knew before August;
-- when the represented event held.
-
-### P9 — Protected-only support revoked
-
-A claim has one sufficient justification containing protected source `S`. After revocation/deletion, no eligible support remains; disclosure must block or abstain.
-
-### P10 — Independent public support survives
-
-The same proposition has one protected path and one genuinely independent public justification. Revoking the protected source must not permanently over-taint the public path, and the response must not cite or reveal the protected source.
-
-### P11 — Rumor laundering
-
-A rumor is repeated and summarized multiple times, all with one origin family. The repetitions must not count as independent corroboration.
-
-### P12 — Negative-control ordinary temporal query
-
-No copy, transfer, or policy transition is involved. B5 and B6 should tie. Any B6 gain or B5 penalty on this pair indicates unintended implementation differences.
-
-## 6. Question targets and scoring
-
-Every question declares exactly one target space:
+Every question declares exactly one target:
 
 ```text
 WORLD
 EVER_EXPOSED
 AVAILABLE
 ATTITUDE
+MEMORY_ATTRIBUTION
 DISCLOSE
-LINEAGE
 JUSTIFICATION
+LINEAGE
 ```
 
-### 6.1 Primary endpoint
-
-Macro exact accuracy over the targeted perspective–lineage subset, averaged first within scenario and then across scenarios.
-
-An answer is incorrect if it contains any:
-
-- unauthorized disclosure;
-- cross-instance contamination;
-- cross-world contamination;
-- false first-person attribution;
-- receipt-to-belief collapse;
-- restore-cutoff inheritance error.
-
-### 6.2 Mandatory separate error rates
-
-- unauthorized disclosure rate;
-- cross-instance contamination rate;
-- cross-world contamination rate;
-- false first-person attribution rate;
-- exposure-state reconstruction error;
-- availability-state reconstruction error;
-- attitude error;
-- provenance/justification precision and recall;
-- correct abstention rate.
-
-No composite score may hide these rates.
-
-### 6.3 Secondary control endpoint
-
-B7 versus B6 on alternative-support and revocation cases. This tests path-sensitive justifications, not the main cognitive-lineage claim.
-
-## 7. Fairness constraints
-
-For every paired system comparison:
-
-- identical scenario/event logs;
-- identical query set and target labels;
-- identical valid/system cutoffs;
-- identical access to raw and structured evidence;
-- identical evidence-token or record-count budget;
-- identical answer renderer;
-- no system receives an answer-defining field unavailable to its comparator;
-- ablations are implemented by one isolated feature flag or a documented minimal code diff;
-- per-template coverage and error matrices are emitted.
-
-P0 may use deterministic symbolic answers, but the evaluator must not call the same helper that generated the gold answer unless the equivalence is explicitly being tested as a unit test.
-
-## 8. Leakage and tautology audit
-
-Before interpreting results, publish:
-
-1. a primitive-by-template requirement matrix;
-2. the fraction of questions whose gold answer changes when each primitive changes;
-3. errors on templates outside the claimed primitive's causal scope;
-4. answer-label balance by target and split;
-5. checks that entity names, branch IDs, operation words, and query templates do not leak the answer;
-6. a held-out topology/template family not used during implementation.
-
-Clean 100% is classified as schema conformance only.
-
-## 9. Statistical analysis
-
-### 9.1 Resampling unit
-
-The independent scenario is the unit of analysis.
-
-### 9.2 P0 reporting
-
-For P0, report:
-
-- paired scenario-level differences;
-- 10,000-sample scenario-cluster bootstrap intervals;
-- between-seed variance;
-- category results as exploratory;
-- exact counts of discordant scenarios;
-- all failed/excluded runs.
-
-Question-level bootstrap or McNemar tests may appear only as supplementary diagnostics.
-
-### 9.3 Confirmatory planning
-
-After P0, freeze:
-
-- the practical accuracy margin;
-- safety non-inferiority margins;
-- final scenario count;
-- generator and split hashes;
-- all thresholds and analysis code.
-
-The initial engineering target is a B6–B5 gain of at least 3 percentage points, subject to revision from P0 variance before the confirmatory split is opened.
-
-Safety constraints, because lower is better:
+### 8.1 Memory attribution values
 
 ```text
-B6 UKR  − B5 UKR  ≤ 0.5 percentage points
-B6 CICR − B5 CICR ≤ 0.5 percentage points
+direct_observation
+same_principal_snapshot_inheritance
+same_principal_state_replication
+attributed_report
+evidence_copy
+reconstruction
+unknown
 ```
 
-where `CICR` is cross-instance contamination rate. Final margins are frozen after P0 and before confirmatory evaluation.
+### 8.2 Target-conditioned scoring
 
-## 10. Correlated error extension
+Each target has its own structured answer schema. Irrelevant fields are `N/A` and excluded from scoring. The evaluator does not require one overstuffed tuple for every query.
 
-P0 first verifies clean symbolic semantics. A separate extension applies event/joint-hypothesis corruption modes:
+Examples:
+
+```text
+ATTITUDE answer:
+  holder_instance, proposition, about_world_branch, stance
+
+MEMORY_ATTRIBUTION answer:
+  holder_instance, proposition, about_world_branch, attribution_kind
+
+DISCLOSE answer:
+  requester, proposition, decision, admissible_justification_ids
+```
+
+A globally true proposition is still wrong for a disclosure question when unauthorized, and a believed proposition is wrong for attribution when reported as direct observation.
+
+## 9. Endpoints
+
+### 9.1 Primary quality endpoint
+
+Macro exact accuracy across targeted archetype families and target spaces, averaging:
+
+1. within each instantiated scenario;
+2. within each archetype/topology;
+3. across archetype/topology families.
+
+### 9.2 Mandatory separate safety/error endpoints
+
+- unauthorized disclosure rate;
+- over-withholding rate;
+- false first-person attribution rate;
+- first-person under-attribution rate;
+- cross-instance contamination rate;
+- cross-world contamination rate;
+- exposure reconstruction error;
+- current-availability error;
+- attitude/adoption error;
+- restore-cutoff inheritance error;
+- provenance precision and complete support recall;
+- correct abstention rate.
+
+No composite score hides these mechanisms.
+
+### 9.3 Cost endpoints
+
+- p50/p95 ingestion and query latency;
+- tokens/query;
+- bytes/event;
+- write amplification;
+- projection rebuild cost;
+- storage/index cost;
+- monetary model cost in C2.
+
+If B5 and B6 tie on correctness, lower complexity/cost becomes the deciding result.
+
+## 10. Fairness and non-leakage constraints
+
+For every paired comparison:
+
+- identical append-only event log and timestamps;
+- identical query set and cutoffs;
+- identical evidence and metadata budget;
+- identical answer renderer;
+- identical extraction hypotheses in oracle/noise conditions;
+- no target-label field available to only one system;
+- transformations and schema constraints committed before outcome inspection;
+- per-archetype coverage and error matrices emitted;
+- systems run from fresh projections rebuilt from the same log.
+
+Required audits:
+
+1. field-level information comparison between B5 and B6;
+2. primitive-by-archetype requirement matrix;
+3. target-label balance by split;
+4. entity/operation-word/template leakage checks;
+5. mutation tests separating gold and system logic;
+6. held-out topology families;
+7. errors on cases outside each primitive's causal scope.
+
+Clean 100% is labelled conformance, not empirical model accuracy.
+
+## 11. Statistical analysis
+
+### 11.1 U0 fixed suite
+
+Report exact counts only:
+
+- correct decisions;
+- correct scenarios;
+- exact discordance table;
+- coverage by semantic rule.
+
+Do not report inferential p-values or confidence intervals for the fixed author-selected Cartesian product.
+
+### 11.2 P0 exploratory analysis
+
+Report:
+
+- paired scenario-level differences;
+- archetype-cluster bootstrap intervals as exploratory diagnostics;
+- within-archetype seed variance;
+- between-archetype variance;
+- hierarchical/mixed-effects estimates where identifiable;
+- exact discordant archetype/scenario counts;
+- all failures and exclusions.
+
+Question-level tests are supplementary only.
+
+### 11.3 C1 confirmatory analysis
+
+Before opening C1, freeze:
+
+- topology/archetype manifest and hashes;
+- primary target-family weighting;
+- practical/equivalence margin justified independently of the U0/P0 observed effect;
+- safety margins for each separate error class;
+- sample size based on archetype-level or hierarchical variance;
+- analysis code and random seeds;
+- exclusion/failure policy.
+
+Primary analysis is a paired archetype/topology-level comparison with a prespecified hierarchical or cluster-robust method. Scenario-cluster results are secondary.
+
+The earlier +6.25-point U0 result may not determine C1 templates, effect targets, or thresholds.
+
+## 12. Correlated extraction-error extension
+
+After clean oracle alignment, apply event/joint-hypothesis corruption modes:
 
 ```text
 identity_collapse
 fork_cutoff_shift
-world_mind_branch_swap
-exposure_source_swap
-attitude_laundering
-policy_declassification
-restore_parent_error
-about_world_scope_swap
-source_family_collapse
+world/cognitive-branch swap
+about-world scope swap
+exposure source/destination swap
+attitude laundering
+attribution laundering
+policy declassification
+restore-parent error
+source-family collapse
+assertion/event-time collapse
 ```
 
-Each mode mutates all dependent fields together.
+One latent mode jointly mutates dependent fields and downstream projections.
 
-Raw fallback is evaluated in four conditions:
+Raw fallback is evaluated under:
 
-1. same model/prompt family as structured extraction;
+1. same model and prompt family as extraction;
 2. same model, different prompt;
-3. independent model or deterministic lexical reconstruction;
-4. idealized independent simulator as an explicitly labelled upper bound.
+3. independent model or deterministic reconstruction;
+4. idealized independent simulator, labelled as an upper bound.
 
-The idealized simulator's recovery probability is a design parameter, not empirical evidence. Report accuracy and leakage as a function of both corruption prevalence and fallback error correlation.
+Report primary/fallback error correlation, detector calibration, conditional repair accuracy, false-trigger harm, cost, and leakage.
 
-## 11. Falsification criteria
+## 13. Falsification and narrowing rules
 
-Reject or narrow the mechanism claim if any occurs:
+Narrow or reject the mechanism claim if any occurs:
 
-1. B5 matches B6 within the frozen practical margin.
-2. A simpler scoped-slot model matches B6 after metadata and evidence budgets are equalized.
-3. B6 gains accuracy by increasing unauthorized disclosure or contamination.
-4. B6 only wins on templates that directly encode its operation label and fails held-out topologies.
-5. Exposure transitions add no value under natural extractor errors.
-6. World and cognitive lineage separation is unnecessary once adversarial cases are removed.
-7. The broader literature audit finds an existing system and benchmark testing the same mechanism under comparable conditions.
-8. B7 does not outperform B6 on alternative-support cases, in which case `JustificationSet` is removed from the minimal implementation.
+1. strong generic B5 matches B6 under equal events and capacity;
+2. a simpler normalized relational projection matches B6 at lower cost;
+3. B6 gains accuracy by receiving target-encoding fields;
+4. B6 increases any major safety error beyond the frozen margin;
+5. gains disappear on held-out topology families;
+6. B6 damages ordinary temporal controls;
+7. typed exposure/lineage adds no value under natural extraction errors;
+8. B7 does not improve the independent-support cases;
+9. an existing external system matches the same mechanism in the frozen harness;
+10. the proposed complexity cannot be justified by correctness, safety, auditability, or cost.
 
-## 12. Reproducibility artifacts
+## 14. Reproducibility artifacts
 
-Every run must commit or archive:
+Every run commits or archives:
 
 - code commit SHA;
-- generator version and seed;
-- frozen archetype and split IDs;
-- per-scenario event log and gold states;
-- per-question answer and error category;
-- every system configuration;
+- common event-log schema and serialized events;
+- independent gold-oracle implementation;
+- B3–B7 transformation/resolver code;
+- frozen archetype/topology and split manifests;
+- generator/rendering version and seeds;
+- per-event, per-question, per-scenario, and per-archetype outputs;
+- target-conditioned scoring code;
+- field-information audit;
 - dependency lock;
-- thresholds chosen on validation;
+- thresholds selected on validation only;
 - start/end timestamps and hardware metadata;
-- scenario-cluster analysis output;
-- all exclusions and failures.
+- exact statistical command/configuration;
+- all exclusions and failed runs.
 
-Large generated files may be stored as release artifacts, but compact manifests, hashes, schemas, aggregate tables, and a small reproducible sample remain in the repository.
+CI regenerates committed compact summaries from committed code and fails on drift.
 
-## 13. Freeze checklist
+## 15. Treatment of earlier results
 
-This document remains `DRAFT` until both collaborating sessions explicitly accept:
+### Original 25,000-query report
 
-- schema primitives and target-space definitions;
-- baseline implementations;
-- required contrastive pairs;
-- primary endpoint and safety margins;
-- generator/split hashes;
-- analysis script hash;
-- P0 and confirmatory roles;
-- treatment of the earlier 25,000-query run as non-confirmatory.
+Classified as an unverified, structured-oracle branch/perspective/seal conformance report until its actual generator, systems, per-query outputs, and analysis are committed. It does not power or validate this study.
 
-Silence is not consensus. Any post-freeze substantive change requires a dated amendment before affected test results are inspected.
+### Committed 48-scenario collision script
+
+Classified as U0 deterministic reference-semantics evidence. Its two basic aggregate fields are reproducible from the committed script, while extended metrics/statistics require a committed generation pipeline. It does not instantiate B5/B6, world/time/restore/exposure semantics, or a natural-language system.
+
+Neither result is confirmatory evidence for C1/C2.
+
+## 16. Freeze checklist
+
+This document remains `DRAFT` until both collaborating sessions explicitly accept and hash:
+
+- the reviewed schema primitives and target spaces;
+- the byte-identical `CommonEventLog` contract;
+- B5 and B6 deterministic transformations;
+- independent gold/system implementations;
+- required contrastive archetypes;
+- topology-level holdout rules;
+- target-conditioned scoring;
+- separate safety margins;
+- C1 practical margin and sample-size rationale;
+- all analysis code;
+- the non-confirmatory status of U0 and the earlier 25k report.
+
+Silence is not consensus. Any post-freeze substantive change requires a dated amendment before affected outcomes are inspected.
