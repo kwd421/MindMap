@@ -1,0 +1,16 @@
+{
+  "deterministic_outputs": [
+    "verification_rows.csv",
+    "downstream_rows.csv",
+    "summary.json"
+  ],
+  "downstream_rows_sha256": "f12fc11ada9890263447584f392050b5d0bea43717742a8b6593211b6485e122",
+  "interpretation": "fixed deterministic parser/information-firewall audit; no inferential statistics or unrestricted natural-language claim",
+  "manifest_version": "track-x-v0.1-manifest-1",
+  "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "python": "3.11.15 (main, Jun 16 2026, 21:41:52) [GCC 13.3.0]",
+  "script_sha256": "dd05e23ee9e248ce8393677603d532796d880905257523be48717694ae23e6a2",
+  "study": "MindMap Track X v0.1 leakage-free raw verifier P0",
+  "summary_sha256": "999a0ea7cc07c3823f930cbda0cbf163c78dfd3d62b7cac9aeb91d28cbf01cca",
+  "verification_rows_sha256": "b6ead8dc6cf73e307fe149db8a8cef886238ed3120d64fa5076ebb0eb6143438"
+}
