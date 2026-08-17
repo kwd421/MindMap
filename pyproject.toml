@@ -1,0 +1,20 @@
+[project]
+name = "mindmap-ncm3"
+version = "0.2.0"
+description = "Research prototype for epistemic-temporal branch memory in long-horizon agents"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy>=1.26",
+  "pandas>=2.0",
+  "scipy>=1.11",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "experiments"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
