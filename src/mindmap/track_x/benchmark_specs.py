@@ -71,6 +71,9 @@ GATEMEM = ExternalBenchmarkSpec(
         "expected_action",
         "judge_spec",
         "leak_targets",
+        "gold_answer_structured",
+        "gold_refusal_category",
+        "policy_snapshot",
     ),
     output_contract=(
         "checkpoint_id",
