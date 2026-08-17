@@ -7,6 +7,7 @@ import hashlib
 import json
 import platform
 import sys
+from collections import defaultdict
 from pathlib import Path
 from typing import Iterable
 
@@ -53,24 +54,55 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _write_downstream_tables(
+    output_dir: Path, rows: list[dict[str, object]]
+) -> tuple[Path, ...]:
+    grouped: dict[tuple[str, str], list[dict[str, object]]] = defaultdict(list)
+    for row in rows:
+        grouped[(str(row["split"]), str(row["treatment"]))].append(row)
+
+    expected_groups = {
+        (split, treatment)
+        for split in ("development", "heldout")
+        for treatment in (
+            "structured_only",
+            "raw_verifier",
+            "oracle_raw_ceiling",
+        )
+    }
+    if set(grouped) != expected_groups:
+        raise ValueError("downstream split/treatment groups changed")
+
+    paths: list[Path] = []
+    for split, treatment in sorted(grouped):
+        path = output_dir / f"downstream_{split}_{treatment}.csv"
+        _write_rows(path, grouped[(split, treatment)])
+        paths.append(path)
+    return tuple(paths)
+
+
 def run(output_dir: Path) -> dict[str, object]:
     cases = all_raw_verifier_cases()
     verification_rows, downstream_rows, summary = evaluate_raw_verifier_suite(cases)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     verification_path = output_dir / "verification_rows.csv"
-    downstream_path = output_dir / "downstream_rows.csv"
     summary_path = output_dir / "summary.json"
     metadata_path = output_dir / "run_metadata.json"
 
     _write_rows(verification_path, verification_rows)
-    _write_rows(downstream_path, downstream_rows)
+    downstream_paths = _write_downstream_tables(output_dir, downstream_rows)
     summary_path.write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
 
     script_path = Path(__file__).resolve()
+    deterministic_paths = (
+        verification_path,
+        *downstream_paths,
+        summary_path,
+    )
     metadata = {
         "study": summary["study"],
         "manifest_version": FROZEN_MANIFEST_VERSION,
@@ -78,14 +110,10 @@ def run(output_dir: Path) -> dict[str, object]:
         "python": sys.version,
         "platform": platform.platform(),
         "script_sha256": hashlib.sha256(script_path.read_bytes()).hexdigest(),
-        "verification_rows_sha256": _sha256(verification_path),
-        "downstream_rows_sha256": _sha256(downstream_path),
-        "summary_sha256": _sha256(summary_path),
-        "deterministic_outputs": [
-            verification_path.name,
-            downstream_path.name,
-            summary_path.name,
-        ],
+        "output_sha256": {
+            path.name: _sha256(path) for path in deterministic_paths
+        },
+        "deterministic_outputs": [path.name for path in deterministic_paths],
     }
     metadata_path.write_text(
         json.dumps(metadata, indent=2, sort_keys=True) + "\n",
