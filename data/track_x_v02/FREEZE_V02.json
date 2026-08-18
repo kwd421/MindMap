@@ -1,0 +1,42 @@
+{
+  "protocol_version": "track-x-v0.2-freeze-1",
+  "frozen_source_commit": "30aa6f4b1ab38867bbab39cebb165502f7ae44de",
+  "passing_ci_run": 32160768340,
+  "parent_protocol_pr": 38,
+  "freeze_scaffold_pr": 44,
+  "development_author_session": "B",
+  "heldout_author_session": "A",
+  "development_topology_count": 7,
+  "expanded_development_condition_count": 42,
+  "frozen_paths": [
+    "docs/TRACK_X_V02_PROTOCOL.md",
+    "data/track_x_v02/development/session_b.json",
+    "src/mindmap/track_x/v02_data.py",
+    "src/mindmap/track_x/v02_bundles.py",
+    "src/mindmap/track_x/v02_pipeline.py",
+    "src/mindmap/track_x/v02_verifier_adapter.py",
+    "src/mindmap/track_x/v02_cases.py",
+    "src/mindmap/track_x/v02_evaluate.py",
+    "tests/test_track_x_v02.py"
+  ],
+  "allowed_session_a_paths": [
+    "data/track_x_v02/heldout/session_a.json",
+    "data/track_x_v02/heldout/AUTHORSHIP.md"
+  ],
+  "budgets": {
+    "max_raw_characters": 1200,
+    "max_context_passages": 3,
+    "max_context_characters": 1800,
+    "primary_calls": 1,
+    "verifier_calls": 1
+  },
+  "development_decision_policy": {
+    "complete_supported_candidate": "accept",
+    "complete_raw_candidate_conflict": "correct",
+    "complete_raw_missing_candidate": "correct",
+    "raw_unavailable": "abstain",
+    "material_field_ambiguous": "abstain",
+    "candidate_identity_conflict": "reject"
+  },
+  "heldout_rule": "No frozen path or threshold may change after Session A authors held-out passages. Any such change creates Track X v0.3 and cannot overwrite the v0.2 result."
+}
