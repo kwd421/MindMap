@@ -8,8 +8,13 @@ from mindmap.canonical.generic import GenericLedger
 from mindmap.canonical.model import TargetSpace
 from mindmap.canonical.typed import TypedLedger
 
-from .model import VerificationStatus
-from .v02_cases import V02DevelopmentCase, build_development_cases, expected_status
+from .model import VerificationDecision, VerificationStatus
+from .v02_cases import (
+    V02DevelopmentCase,
+    build_development_cases,
+    expected_controlled_status,
+    expected_primary_status,
+)
 from .v02_data import PassageCondition
 
 
@@ -18,69 +23,134 @@ _LEDGER_TYPES = {
     "T_typed": TypedLedger,
 }
 
+_TREATMENTS = (
+    "primary_extractor_only",
+    "primary_plus_verifier",
+    "controlled_candidate_only",
+    "controlled_plus_verifier",
+    "oracle_raw_ceiling",
+)
+
+
+def _decision_event(decision: VerificationDecision):
+    if decision.status in {
+        VerificationStatus.ABSTAIN,
+        VerificationStatus.REJECT,
+    }:
+        return None, True
+    return decision.output_event, False
+
 
 def _selected_event(case: V02DevelopmentCase, treatment: str):
-    if treatment == "primary_candidate":
-        return case.candidate_event, False
-    if treatment == "raw_verifier":
-        decision = case.verifier_decision
-        if decision.status in {
-            VerificationStatus.ABSTAIN,
-            VerificationStatus.REJECT,
-        }:
-            return None, True
-        return decision.output_event, False
+    if treatment == "primary_extractor_only":
+        event = case.primary_extraction.event
+        return event, event is None
+    if treatment == "primary_plus_verifier":
+        return _decision_event(case.primary_verifier_decision)
+    if treatment == "controlled_candidate_only":
+        return case.controlled_candidate_event, False
+    if treatment == "controlled_plus_verifier":
+        return _decision_event(case.controlled_verifier_decision)
     if treatment == "oracle_raw_ceiling":
         return case.gold_event, False
     raise ValueError(f"unknown treatment: {treatment}")
 
 
-def _verification_row(case: V02DevelopmentCase) -> dict[str, object]:
-    decision = case.verifier_decision
+def _decision_columns(
+    *,
+    prefix: str,
+    decision: VerificationDecision,
+    expected_status: VerificationStatus,
+    gold_event,
+) -> dict[str, object]:
     covered = decision.status in {
         VerificationStatus.ACCEPT,
         VerificationStatus.CORRECT,
     }
-    output_exact = covered and decision.output_event == case.gold_event
-    expected = expected_status(case.record.candidate_condition)
-    primary_exact = case.primary_extraction.event == case.gold_event
+    output_exact = covered and decision.output_event == gold_event
+    return {
+        f"{prefix}_status": decision.status.value,
+        f"{prefix}_expected_status": expected_status.value,
+        f"{prefix}_status_correct": decision.status is expected_status,
+        f"{prefix}_covered": covered,
+        f"{prefix}_output_event_exact": output_exact,
+        f"{prefix}_confidence": decision.confidence,
+        f"{prefix}_reason_codes": "|".join(decision.reason_codes),
+    }
+
+
+def _verification_row(case: V02DevelopmentCase) -> dict[str, object]:
+    condition = case.record.candidate_condition
+    primary_expected = expected_primary_status(condition)
+    controlled_expected = expected_controlled_status(condition)
+    primary_columns = _decision_columns(
+        prefix="primary_verifier",
+        decision=case.primary_verifier_decision,
+        expected_status=primary_expected,
+        gold_event=case.gold_event,
+    )
+    controlled_columns = _decision_columns(
+        prefix="controlled_verifier",
+        decision=case.controlled_verifier_decision,
+        expected_status=controlled_expected,
+        gold_event=case.gold_event,
+    )
     return {
         "passage_id": case.record.passage_id,
         "topology_family": case.record.topology_family,
-        "condition": case.record.candidate_condition.value,
-        "primary_event_exact": primary_exact,
-        "primary_confidence": case.primary_extraction.confidence,
-        "candidate_event_exact": case.candidate_event == case.gold_event,
-        "verifier_status": decision.status.value,
-        "expected_status": expected.value,
-        "status_correct": decision.status is expected,
-        "covered": covered,
-        "output_event_exact": output_exact,
-        "clean_false_correction": (
-            case.record.candidate_condition is PassageCondition.CLEAN
-            and decision.status is not VerificationStatus.ACCEPT
+        "condition": condition.value,
+        "primary_event_exact": case.primary_extraction.event == case.gold_event,
+        "primary_extractor_confidence": case.primary_extraction.confidence,
+        "controlled_candidate_exact": (
+            case.controlled_candidate_event == case.gold_event
         ),
-        "false_accept": (
-            case.record.candidate_condition is PassageCondition.FIELD_CORRUPTION
-            and decision.status is VerificationStatus.ACCEPT
+        **primary_columns,
+        **controlled_columns,
+        "primary_clean_false_correction": (
+            condition is PassageCondition.CLEAN
+            and case.primary_verifier_decision.status
+            is not VerificationStatus.ACCEPT
         ),
-        "ambiguous_abstained": (
-            case.record.candidate_condition is PassageCondition.AMBIGUOUS_RAW
-            and decision.status is VerificationStatus.ABSTAIN
+        "controlled_clean_false_correction": (
+            condition is PassageCondition.CLEAN
+            and case.controlled_verifier_decision.status
+            is not VerificationStatus.ACCEPT
         ),
-        "raw_unavailable_abstained": (
-            case.record.candidate_condition is PassageCondition.RAW_UNAVAILABLE
-            and decision.status is VerificationStatus.ABSTAIN
+        "controlled_false_accept": (
+            condition is PassageCondition.FIELD_CORRUPTION
+            and case.controlled_verifier_decision.status
+            is VerificationStatus.ACCEPT
         ),
-        "misleading_context_corrected": (
-            case.record.candidate_condition is PassageCondition.MISLEADING_CONTEXT
-            and decision.status is VerificationStatus.CORRECT
-            and output_exact
+        "primary_ambiguous_abstained": (
+            condition is PassageCondition.AMBIGUOUS_RAW
+            and case.primary_verifier_decision.status
+            is VerificationStatus.ABSTAIN
         ),
-        "confidence": decision.confidence,
-        "reason_codes": "|".join(decision.reason_codes),
+        "controlled_ambiguous_abstained": (
+            condition is PassageCondition.AMBIGUOUS_RAW
+            and case.controlled_verifier_decision.status
+            is VerificationStatus.ABSTAIN
+        ),
+        "primary_raw_unavailable_abstained": (
+            condition is PassageCondition.RAW_UNAVAILABLE
+            and case.primary_verifier_decision.status
+            is VerificationStatus.ABSTAIN
+        ),
+        "controlled_raw_unavailable_abstained": (
+            condition is PassageCondition.RAW_UNAVAILABLE
+            and case.controlled_verifier_decision.status
+            is VerificationStatus.ABSTAIN
+        ),
+        "controlled_misleading_context_corrected": (
+            condition is PassageCondition.MISLEADING_CONTEXT
+            and case.controlled_verifier_decision.status
+            is VerificationStatus.CORRECT
+            and case.controlled_verifier_decision.output_event == case.gold_event
+        ),
         "raw_characters": len(case.record.raw_text or ""),
-        "context_characters": sum(len(text) for text in case.record.context_passages),
+        "context_characters": sum(
+            len(text) for text in case.record.context_passages
+        ),
     }
 
 
@@ -133,15 +203,32 @@ def _rate(values: list[bool]) -> float:
     return sum(values) / len(values) if values else 0.0
 
 
+def _decision_summary(
+    rows: list[dict[str, object]], *, prefix: str
+) -> dict[str, object]:
+    covered = [row for row in rows if bool(row[f"{prefix}_covered"])]
+    return {
+        "status_accuracy": _rate(
+            [bool(row[f"{prefix}_status_correct"]) for row in rows]
+        ),
+        "coverage": _rate([bool(row[f"{prefix}_covered"]) for row in rows]),
+        "covered_output_exact_rate": _rate(
+            [bool(row[f"{prefix}_output_event_exact"]) for row in covered]
+        ),
+        "mean_confidence": mean(
+            float(row[f"{prefix}_confidence"]) for row in rows
+        ) if rows else 0.0,
+    }
+
+
 def evaluate_development(
     repository_root: Path,
 ) -> tuple[list[dict[str, object]], list[dict[str, object]], dict[str, object]]:
     cases = build_development_cases(repository_root=repository_root)
     verification_rows = [_verification_row(case) for case in cases]
     downstream_rows: list[dict[str, object]] = []
-    treatments = ("primary_candidate", "raw_verifier", "oracle_raw_ceiling")
     for case in cases:
-        for treatment in treatments:
+        for treatment in _TREATMENTS:
             for architecture in _LEDGER_TYPES:
                 downstream_rows.append(
                     _downstream_row(case, treatment, architecture)
@@ -154,15 +241,12 @@ def evaluate_development(
         ]
         by_condition[condition.value] = {
             "n": len(rows),
-            "status_accuracy": _rate(
-                [bool(row["status_correct"]) for row in rows]
+            "primary_verifier": _decision_summary(
+                rows, prefix="primary_verifier"
             ),
-            "output_exact_rate": _rate(
-                [bool(row["output_event_exact"]) for row in rows]
+            "controlled_verifier": _decision_summary(
+                rows, prefix="controlled_verifier"
             ),
-            "mean_confidence": mean(
-                float(row["confidence"]) for row in rows
-            ) if rows else 0.0,
         }
 
     downstream_summary: dict[str, dict[str, object]] = {}
@@ -213,57 +297,88 @@ def evaluate_development(
         if generic_outcome != typed_outcome:
             disagreements[f"{key[0]}:{key[1]}"] = 1
 
+    clean_rows = [
+        row
+        for row in verification_rows
+        if row["condition"] == PassageCondition.CLEAN.value
+    ]
+    field_rows = [
+        row
+        for row in verification_rows
+        if row["condition"] == PassageCondition.FIELD_CORRUPTION.value
+    ]
+    ambiguous_rows = [
+        row
+        for row in verification_rows
+        if row["condition"] == PassageCondition.AMBIGUOUS_RAW.value
+    ]
+    unavailable_rows = [
+        row
+        for row in verification_rows
+        if row["condition"] == PassageCondition.RAW_UNAVAILABLE.value
+    ]
+    misleading_rows = [
+        row
+        for row in verification_rows
+        if row["condition"] == PassageCondition.MISLEADING_CONTEXT.value
+    ]
+
     summary = {
         "study": "MindMap Track X v0.2 development freeze audit",
         "interpretation": (
-            "Session-B-authored development passages only; no held-out result"
+            "Session-B-authored development passages only; end-to-end primary "
+            "and controlled-candidate recovery are reported separately; no "
+            "held-out result"
         ),
         "n_topologies": len({row["topology_family"] for row in verification_rows}),
         "n_passage_conditions": len(verification_rows),
         "verification": {
-            "status_accuracy": _rate(
-                [bool(row["status_correct"]) for row in verification_rows]
+            "primary_verifier": _decision_summary(
+                verification_rows, prefix="primary_verifier"
             ),
-            "covered_output_exact_rate": _rate(
+            "controlled_verifier": _decision_summary(
+                verification_rows, prefix="controlled_verifier"
+            ),
+            "primary_clean_false_correction_rate": _rate(
+                [bool(row["primary_clean_false_correction"]) for row in clean_rows]
+            ),
+            "controlled_clean_false_correction_rate": _rate(
                 [
-                    bool(row["output_event_exact"])
-                    for row in verification_rows
-                    if bool(row["covered"])
+                    bool(row["controlled_clean_false_correction"])
+                    for row in clean_rows
                 ]
             ),
-            "clean_false_correction_rate": _rate(
+            "controlled_false_accept_rate": _rate(
+                [bool(row["controlled_false_accept"]) for row in field_rows]
+            ),
+            "primary_ambiguous_abstention_rate": _rate(
                 [
-                    bool(row["clean_false_correction"])
-                    for row in verification_rows
-                    if row["condition"] == PassageCondition.CLEAN.value
+                    bool(row["primary_ambiguous_abstained"])
+                    for row in ambiguous_rows
                 ]
             ),
-            "false_accept_rate": _rate(
+            "controlled_ambiguous_abstention_rate": _rate(
                 [
-                    bool(row["false_accept"])
-                    for row in verification_rows
-                    if row["condition"] == PassageCondition.FIELD_CORRUPTION.value
+                    bool(row["controlled_ambiguous_abstained"])
+                    for row in ambiguous_rows
                 ]
             ),
-            "ambiguous_abstention_rate": _rate(
+            "primary_raw_unavailable_abstention_rate": _rate(
                 [
-                    bool(row["ambiguous_abstained"])
-                    for row in verification_rows
-                    if row["condition"] == PassageCondition.AMBIGUOUS_RAW.value
+                    bool(row["primary_raw_unavailable_abstained"])
+                    for row in unavailable_rows
                 ]
             ),
-            "raw_unavailable_abstention_rate": _rate(
+            "controlled_raw_unavailable_abstention_rate": _rate(
                 [
-                    bool(row["raw_unavailable_abstained"])
-                    for row in verification_rows
-                    if row["condition"] == PassageCondition.RAW_UNAVAILABLE.value
+                    bool(row["controlled_raw_unavailable_abstained"])
+                    for row in unavailable_rows
                 ]
             ),
-            "misleading_context_correction_rate": _rate(
+            "controlled_misleading_context_correction_rate": _rate(
                 [
-                    bool(row["misleading_context_corrected"])
-                    for row in verification_rows
-                    if row["condition"] == PassageCondition.MISLEADING_CONTEXT.value
+                    bool(row["controlled_misleading_context_corrected"])
+                    for row in misleading_rows
                 ]
             ),
             "by_condition": by_condition,
