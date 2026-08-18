@@ -16,7 +16,6 @@ _REQUIRED_NONINTERFERENCE = (
 class AuthorshipDeclaration:
     base_freeze_commit: str
     heldout_branch: str
-    heldout_commit: str
     changed_paths: tuple[str, ...]
 
 
@@ -32,6 +31,13 @@ def validate_authorship_note(
     *,
     expected_base_commit: str | None = None,
 ) -> AuthorshipDeclaration:
+    """Validate the pre-commit authorship declaration.
+
+    The note deliberately does not contain its own final commit hash. That hash
+    is computed by Git/CI and recorded in the GitHub handoff and result metadata;
+    requiring it inside the committed file would be self-referential.
+    """
+
     text = path.read_text(encoding="utf-8")
     if _REQUIRED_DECLARATION not in text:
         raise ValueError("authorship note lacks explicit Session A acceptance")
@@ -41,11 +47,8 @@ def validate_authorship_note(
     lines = tuple(line.strip() for line in text.splitlines())
     base = _field(lines, "Base/freeze commit:")
     branch = _field(lines, "Held-out branch:")
-    commit = _field(lines, "Held-out commit:")
     if not _COMMIT_RE.fullmatch(base):
         raise ValueError("Base/freeze commit must be a full lowercase SHA-1")
-    if not _COMMIT_RE.fullmatch(commit):
-        raise ValueError("Held-out commit must be a full lowercase SHA-1")
     if expected_base_commit is not None and base != expected_base_commit:
         raise ValueError(
             f"authorship base {base} does not match frozen base "
@@ -70,6 +73,5 @@ def validate_authorship_note(
     return AuthorshipDeclaration(
         base_freeze_commit=base,
         heldout_branch=branch,
-        heldout_commit=commit,
         changed_paths=tuple(sorted(declared_paths)),
     )
