@@ -10,8 +10,9 @@ from mindmap.canonical.typed import TypedLedger
 
 from .model import VerificationDecision, VerificationStatus
 from .v02_cases import (
-    V02DevelopmentCase,
+    V02Case,
     build_development_cases,
+    build_heldout_cases,
     expected_controlled_status,
     expected_primary_status,
 )
@@ -41,7 +42,7 @@ def _decision_event(decision: VerificationDecision):
     return decision.output_event, False
 
 
-def _selected_event(case: V02DevelopmentCase, treatment: str):
+def _selected_event(case: V02Case, treatment: str):
     if treatment == "primary_extractor_only":
         event = case.primary_extraction.event
         return event, event is None
@@ -79,7 +80,7 @@ def _decision_columns(
     }
 
 
-def _verification_row(case: V02DevelopmentCase) -> dict[str, object]:
+def _verification_row(case: V02Case) -> dict[str, object]:
     condition = case.record.candidate_condition
     primary_expected = expected_primary_status(condition)
     controlled_expected = expected_controlled_status(condition)
@@ -155,7 +156,7 @@ def _verification_row(case: V02DevelopmentCase) -> dict[str, object]:
 
 
 def _downstream_row(
-    case: V02DevelopmentCase,
+    case: V02Case,
     treatment: str,
     architecture: str,
 ) -> dict[str, object]:
@@ -221,10 +222,14 @@ def _decision_summary(
     }
 
 
-def evaluate_development(
-    repository_root: Path,
+def evaluate_cases(
+    cases: tuple[V02Case, ...],
+    *,
+    study: str,
+    interpretation: str,
 ) -> tuple[list[dict[str, object]], list[dict[str, object]], dict[str, object]]:
-    cases = build_development_cases(repository_root=repository_root)
+    """Run one frozen metric implementation on either authorship split."""
+
     verification_rows = [_verification_row(case) for case in cases]
     downstream_rows: list[dict[str, object]] = []
     for case in cases:
@@ -324,12 +329,8 @@ def evaluate_development(
     ]
 
     summary = {
-        "study": "MindMap Track X v0.2 development freeze audit",
-        "interpretation": (
-            "Session-B-authored development passages only; end-to-end primary "
-            "and controlled-candidate recovery are reported separately; no "
-            "held-out result"
-        ),
+        "study": study,
+        "interpretation": interpretation,
         "n_topologies": len({row["topology_family"] for row in verification_rows}),
         "n_passage_conditions": len(verification_rows),
         "verification": {
@@ -387,3 +388,32 @@ def evaluate_development(
         "generic_typed_disagreements": disagreements,
     }
     return verification_rows, downstream_rows, summary
+
+
+def evaluate_development(
+    repository_root: Path,
+) -> tuple[list[dict[str, object]], list[dict[str, object]], dict[str, object]]:
+    cases = build_development_cases(repository_root=repository_root)
+    return evaluate_cases(
+        cases,
+        study="MindMap Track X v0.2 development freeze audit",
+        interpretation=(
+            "Session-B-authored development passages only; end-to-end primary "
+            "and controlled-candidate recovery are reported separately; no "
+            "held-out result"
+        ),
+    )
+
+
+def evaluate_heldout(
+    repository_root: Path,
+) -> tuple[list[dict[str, object]], list[dict[str, object]], dict[str, object]]:
+    cases = build_heldout_cases(repository_root=repository_root)
+    return evaluate_cases(
+        cases,
+        study="MindMap Track X v0.2 Session-A-authored held-out evaluation",
+        interpretation=(
+            "Frozen Session-B primary/verifier and metrics applied to "
+            "Session-A-authored held-out passages; no post-held-out tuning"
+        ),
+    )
