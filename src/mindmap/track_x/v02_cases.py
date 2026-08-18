@@ -29,8 +29,9 @@ class V02DevelopmentCase:
     query: TargetQuery
     expected_answer: Answer
     primary_extraction: PrimaryExtraction
-    candidate_event: CommonEvent | None
-    verifier_decision: VerificationDecision
+    controlled_candidate_event: CommonEvent | None
+    primary_verifier_decision: VerificationDecision
+    controlled_verifier_decision: VerificationDecision
 
     def events_with(self, event: CommonEvent | None) -> tuple[CommonEvent, ...]:
         rows = list(self.context_events)
@@ -39,7 +40,7 @@ class V02DevelopmentCase:
         return tuple(rows)
 
 
-_EXPECTED_STATUSES = {
+_EXPECTED_CONTROLLED_STATUSES = {
     PassageCondition.CLEAN: VerificationStatus.ACCEPT,
     PassageCondition.FIELD_CORRUPTION: VerificationStatus.CORRECT,
     PassageCondition.CANDIDATE_OMITTED: VerificationStatus.CORRECT,
@@ -48,29 +49,66 @@ _EXPECTED_STATUSES = {
     PassageCondition.MISLEADING_CONTEXT: VerificationStatus.CORRECT,
 }
 
+_EXPECTED_PRIMARY_STATUSES = {
+    PassageCondition.CLEAN: VerificationStatus.ACCEPT,
+    PassageCondition.FIELD_CORRUPTION: VerificationStatus.ACCEPT,
+    PassageCondition.CANDIDATE_OMITTED: VerificationStatus.ACCEPT,
+    PassageCondition.RAW_UNAVAILABLE: VerificationStatus.ABSTAIN,
+    PassageCondition.AMBIGUOUS_RAW: VerificationStatus.ABSTAIN,
+    PassageCondition.MISLEADING_CONTEXT: VerificationStatus.ACCEPT,
+}
 
-def expected_status(condition: PassageCondition) -> VerificationStatus:
-    return _EXPECTED_STATUSES[condition]
+
+def expected_controlled_status(condition: PassageCondition) -> VerificationStatus:
+    return _EXPECTED_CONTROLLED_STATUSES[condition]
+
+
+def expected_primary_status(condition: PassageCondition) -> VerificationStatus:
+    return _EXPECTED_PRIMARY_STATUSES[condition]
 
 
 def _fixture_map() -> dict[str, Fixture]:
     return {fixture.fixture_id: fixture for fixture in all_fixtures()}
 
 
-def _candidate_for(
+def _controlled_candidate_for(
     record: RawPassageRecord,
     gold_event: CommonEvent,
     primary: PrimaryExtraction,
 ) -> CommonEvent | None:
+    """Construct the controlled candidate separately from the primary output.
+
+    The controlled path isolates correction/omission behavior. The end-to-end
+    path always uses `primary.event` directly and is evaluated independently.
+    """
+
     if record.candidate_condition is PassageCondition.CLEAN:
-        return primary.event
+        return gold_event
     if record.candidate_condition is PassageCondition.CANDIDATE_OMITTED:
         return None
     mutation = record.candidate_mutation
     if mutation is None:
         raise ValueError(f"{record.passage_id} lacks required candidate mutation")
-    source = primary.event if primary.event is not None else gold_event
-    return apply_candidate_mutation(source, mutation)
+    return apply_candidate_mutation(gold_event, mutation)
+
+
+def _verify(
+    *,
+    verifier: DevelopmentIndependentVerifier,
+    record: RawPassageRecord,
+    candidate: CommonEvent | None,
+    context_events: tuple[CommonEvent, ...],
+    insertion_index: int,
+) -> VerificationDecision:
+    return verifier.verify(
+        V02VerifierInput(
+            raw_text=record.raw_text,
+            context_passages=record.context_passages,
+            candidate_event=candidate,
+            context_events=context_events,
+            insertion_index=insertion_index,
+        )
+    )
 
 
 def build_development_cases(
@@ -111,15 +149,21 @@ def build_development_cases(
         )
         expected_answer = GoldSemantics(fixture.events).answer(expected_case.query)
         primary = primary_extractor.extract(record.raw_text)
-        candidate = _candidate_for(record, gold_event, primary)
-        verifier_input = V02VerifierInput(
-            raw_text=record.raw_text,
-            context_passages=record.context_passages,
-            candidate_event=candidate,
+        controlled_candidate = _controlled_candidate_for(record, gold_event, primary)
+        primary_decision = _verify(
+            verifier=verifier,
+            record=record,
+            candidate=primary.event,
             context_events=context_events,
             insertion_index=insertion_index,
         )
-        decision = verifier.verify(verifier_input)
+        controlled_decision = _verify(
+            verifier=verifier,
+            record=record,
+            candidate=controlled_candidate,
+            context_events=context_events,
+            insertion_index=insertion_index,
+        )
         cases.append(
             V02DevelopmentCase(
                 record=record,
@@ -129,8 +173,9 @@ def build_development_cases(
                 query=expected_case.query,
                 expected_answer=expected_answer,
                 primary_extraction=primary,
-                candidate_event=candidate,
-                verifier_decision=decision,
+                controlled_candidate_event=controlled_candidate,
+                primary_verifier_decision=primary_decision,
+                controlled_verifier_decision=controlled_decision,
             )
         )
     return tuple(cases)
