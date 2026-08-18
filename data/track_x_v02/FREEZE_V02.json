@@ -1,0 +1,65 @@
+{
+  "protocol_version": "track-x-v0.2-freeze-4",
+  "supersedes_protocol_versions": [
+    "track-x-v0.2-freeze-1",
+    "track-x-v0.2-freeze-2",
+    "track-x-v0.2-freeze-3"
+  ],
+  "supersession_reason": "Before any Session A held-out passage existed, the compact bundle schema and protocol were aligned, end-to-end primary evaluation was separated from the controlled-candidate audit, one shared development/held-out evaluator was frozen, contribution-isolation CI was added, and the impossible requirement that AUTHORSHIP.md contain its own commit SHA was removed. Freeze-1 through freeze-3 are not accepted held-out evaluation bases.",
+  "frozen_source_commit": "be9461bb71389513c95b20421fc00b5cce246291",
+  "passing_ci_run": 32162811798,
+  "parent_protocol_pr": 38,
+  "freeze_scaffold_pr": 44,
+  "development_author_session": "B",
+  "heldout_author_session": "A",
+  "development_topology_count": 7,
+  "expanded_development_condition_count": 42,
+  "frozen_paths": [
+    "docs/TRACK_X_V02_PROTOCOL.md",
+    "data/track_x_v02/development/session_b.json",
+    "data/track_x_v02/heldout/AUTHORSHIP_TEMPLATE.md",
+    "src/mindmap/track_x/v02_data.py",
+    "src/mindmap/track_x/v02_bundles.py",
+    "src/mindmap/track_x/v02_pipeline.py",
+    "src/mindmap/track_x/v02_verifier_adapter.py",
+    "src/mindmap/track_x/v02_cases.py",
+    "src/mindmap/track_x/v02_evaluate.py",
+    "src/mindmap/track_x/v02_authorship.py",
+    "experiments/validate_track_x_v02_contribution.py",
+    "experiments/track_x_v02_heldout.py",
+    "tests/test_track_x_v02.py",
+    "tests/test_track_x_v02_authorship.py",
+    "tests/test_track_x_v02_heldout_runner.py",
+    ".github/workflows/track-x-v02-heldout.yml"
+  ],
+  "allowed_session_a_paths": [
+    "data/track_x_v02/heldout/session_a.json",
+    "data/track_x_v02/heldout/AUTHORSHIP.md"
+  ],
+  "budgets": {
+    "max_raw_characters": 1200,
+    "max_context_passages": 3,
+    "max_context_characters": 1800,
+    "primary_calls": 1,
+    "verifier_calls": 1
+  },
+  "development_decision_policy": {
+    "complete_supported_candidate": "accept",
+    "complete_raw_candidate_conflict": "correct",
+    "complete_raw_missing_candidate": "correct",
+    "raw_unavailable": "abstain",
+    "material_field_ambiguous": "abstain",
+    "candidate_identity_conflict": "reject"
+  },
+  "primary_heldout_treatments": [
+    "primary_extractor_only",
+    "primary_plus_verifier",
+    "oracle_raw_ceiling"
+  ],
+  "secondary_controlled_treatments": [
+    "controlled_candidate_only",
+    "controlled_plus_verifier",
+    "oracle_raw_ceiling"
+  ],
+  "heldout_rule": "Session A must branch from the freeze-4 declaration commit and change exactly the two allowed paths. AUTHORSHIP.md declares the base and branch; Git/CI computes the held-out head SHA. No frozen path, parser rule, threshold, budget, treatment, or evaluator may change afterward. Any such change creates Track X v0.3 and cannot overwrite the v0.2 result."
+}
