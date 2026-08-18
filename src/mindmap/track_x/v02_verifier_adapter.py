@@ -12,4 +12,5 @@ class NormalizedDevelopmentVerifier(DevelopmentIndependentVerifier):
 
     def _reconstruct(self, text: str):
         normalized = re.sub(r"\bReplica\b", "replica", text)
+        normalized = re.sub(r"\bSource\b", "source", normalized)
         return super()._reconstruct(normalized)
