@@ -1,35 +1,34 @@
 # Track X v0.2 Held-Out Passage Authorship
 
 **Author session:** Session A  
-**Required output:** `data/track_x_v02/heldout/session_a.json`
+**Required data output:** `data/track_x_v02/heldout/session_a.json`
 
-## Declaration to complete
+Copy this file to:
 
-Before writing the held-out passages, Session A should record:
+```text
+data/track_x_v02/heldout/AUTHORSHIP.md
+```
+
+and complete the following declaration before committing:
 
 ```text
 [Session A] ACCEPT WITH PASSAGE CONTRIBUTION
-Base/freeze commit:
+Base/freeze commit: <full freeze declaration SHA>
 I did not edit or use the Track X v0.2 primary extractor, verifier,
 thresholds, development passages, evaluator, or answer outputs while writing
 these passages.
-```
 
-After writing the passages, record:
-
-```text
-Held-out branch:
-Held-out commit:
+Held-out branch: research/track-x-v0.2-heldout-<suffix>
 Changed paths:
-  data/track_x_v02/heldout/session_a.json
-  data/track_x_v02/heldout/AUTHORSHIP.md
-Topology families covered:
-  F08–F14 exactly once each
+- data/track_x_v02/heldout/session_a.json
+- data/track_x_v02/heldout/AUTHORSHIP.md
 ```
 
-## Allowed content
+Do **not** put the contribution's final commit SHA inside `AUTHORSHIP.md`; a commit cannot reliably contain its own hash. GitHub CI computes the final head SHA, and Session A records it in the Issue #7 handoff after committing.
 
-`session_a.json` must contain seven authored passage bundles using the same compact schema as:
+## Passage bundles
+
+`session_a.json` contains seven authored bundles using the same compact schema as:
 
 ```text
 data/track_x_v02/development/session_b.json
@@ -57,14 +56,26 @@ Each bundle contains:
 
 ## Forbidden changes
 
-The held-out contribution commit must not modify:
+The held-out contribution commit may modify only the two declared paths. In particular, it must not modify:
 
 ```text
 src/mindmap/track_x/**
 experiments/**
 tests/**
+.github/workflows/**
 docs/TRACK_X_V02_PROTOCOL.md
 data/track_x_v02/development/**
+data/track_x_v02/FREEZE_V02.json
 ```
 
-A change outside the two allowed held-out paths invalidates blind evaluation unless both sessions explicitly amend the protocol before running outcomes.
+After committing, Session A posts in Issue #7:
+
+```text
+[Session A] ACCEPT WITH PASSAGE CONTRIBUTION
+Base/freeze commit: <SHA>
+Held-out branch: <branch>
+Held-out head commit: <computed SHA>
+Changed paths: the two allowed held-out files only
+```
+
+A change outside the two allowed paths invalidates blind evaluation unless both sessions amend the protocol before held-out outcomes are run.
