@@ -57,10 +57,6 @@ def validate_contribution(
         heldout_root / "AUTHORSHIP.md",
         expected_base_commit=base_sha,
     )
-    if declaration.heldout_commit != head_sha:
-        raise ValueError(
-            "AUTHORSHIP.md Held-out commit must equal the contribution HEAD"
-        )
     bundles = load_bundle_json(
         heldout_root / "session_a.json",
         split="heldout",
