@@ -6,6 +6,7 @@ import csv
 import hashlib
 import json
 import platform
+import subprocess
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -53,9 +54,26 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _git_head(repository_root: Path) -> str:
+    completed = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repository_root,
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+    return completed.stdout.strip()
+
+
 def run(repository_root: Path, output_dir: Path) -> dict[str, object]:
     heldout_root = repository_root / "data" / "track_x_v02" / "heldout"
     declaration = validate_authorship_note(heldout_root / "AUTHORSHIP.md")
+    freeze = json.loads(
+        (repository_root / "data" / "track_x_v02" / "FREEZE_V02.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    heldout_head = _git_head(repository_root)
     verification_rows, downstream_rows, summary = evaluate_heldout(repository_root)
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -80,10 +98,15 @@ def run(repository_root: Path, output_dir: Path) -> dict[str, object]:
     metadata = {
         "study": summary["study"],
         "interpretation": summary["interpretation"],
+        "freeze": {
+            "protocol_version": freeze["protocol_version"],
+            "frozen_source_commit": freeze["frozen_source_commit"],
+            "passing_ci_run": freeze["passing_ci_run"],
+        },
         "authorship": {
             "base_freeze_commit": declaration.base_freeze_commit,
             "heldout_branch": declaration.heldout_branch,
-            "heldout_commit": declaration.heldout_commit,
+            "heldout_head_commit": heldout_head,
             "changed_paths": list(declaration.changed_paths),
         },
         "python": sys.version,
