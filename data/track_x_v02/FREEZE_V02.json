@@ -1,12 +1,13 @@
 {
-  "protocol_version": "track-x-v0.2-freeze-3",
+  "protocol_version": "track-x-v0.2-freeze-4",
   "supersedes_protocol_versions": [
     "track-x-v0.2-freeze-1",
-    "track-x-v0.2-freeze-2"
+    "track-x-v0.2-freeze-2",
+    "track-x-v0.2-freeze-3"
   ],
-  "supersession_reason": "Before any Session A held-out passage existed, the compact bundle schema was aligned with the protocol, the end-to-end primary path was separated from the controlled-candidate mechanism audit, and the shared held-out evaluator plus contribution-isolation CI were frozen. Freeze-1 and freeze-2 are not accepted held-out evaluation bases.",
-  "frozen_source_commit": "1f6ab06c6693c7aa4950d3eeb46d0a177752d1b7",
-  "passing_ci_run": 32162360850,
+  "supersession_reason": "Before any Session A held-out passage existed, the compact bundle schema and protocol were aligned, end-to-end primary evaluation was separated from the controlled-candidate audit, one shared development/held-out evaluator was frozen, contribution-isolation CI was added, and the impossible requirement that AUTHORSHIP.md contain its own commit SHA was removed. Freeze-1 through freeze-3 are not accepted held-out evaluation bases.",
+  "frozen_source_commit": "be9461bb71389513c95b20421fc00b5cce246291",
+  "passing_ci_run": 32162811798,
   "parent_protocol_pr": 38,
   "freeze_scaffold_pr": 44,
   "development_author_session": "B",
@@ -28,6 +29,7 @@
     "experiments/track_x_v02_heldout.py",
     "tests/test_track_x_v02.py",
     "tests/test_track_x_v02_authorship.py",
+    "tests/test_track_x_v02_heldout_runner.py",
     ".github/workflows/track-x-v02-heldout.yml"
   ],
   "allowed_session_a_paths": [
@@ -59,5 +61,5 @@
     "controlled_plus_verifier",
     "oracle_raw_ceiling"
   ],
-  "heldout_rule": "Session A must branch from the freeze-3 declaration commit and change exactly the two allowed paths. No frozen path, parser rule, threshold, budget, treatment, or evaluator may change afterward. Any such change creates Track X v0.3 and cannot overwrite the v0.2 result."
+  "heldout_rule": "Session A must branch from the freeze-4 declaration commit and change exactly the two allowed paths. AUTHORSHIP.md declares the base and branch; Git/CI computes the held-out head SHA. No frozen path, parser rule, threshold, budget, treatment, or evaluator may change afterward. Any such change creates Track X v0.3 and cannot overwrite the v0.2 result."
 }
