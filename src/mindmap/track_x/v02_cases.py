@@ -21,7 +21,7 @@ from .v02_verifier_adapter import NormalizedDevelopmentVerifier
 
 
 @dataclass(frozen=True, slots=True)
-class V02DevelopmentCase:
+class V02Case:
     record: RawPassageRecord
     gold_event: CommonEvent
     context_events: tuple[CommonEvent, ...]
@@ -38,6 +38,10 @@ class V02DevelopmentCase:
         if event is not None:
             rows.insert(self.insertion_index, event)
         return tuple(rows)
+
+
+# Compatibility alias for existing development-only callers.
+V02DevelopmentCase = V02Case
 
 
 _EXPECTED_CONTROLLED_STATUSES = {
@@ -74,13 +78,8 @@ def _fixture_map() -> dict[str, Fixture]:
 def _controlled_candidate_for(
     record: RawPassageRecord,
     gold_event: CommonEvent,
-    primary: PrimaryExtraction,
 ) -> CommonEvent | None:
-    """Construct the controlled candidate separately from the primary output.
-
-    The controlled path isolates correction/omission behavior. The end-to-end
-    path always uses `primary.event` directly and is evaluated independently.
-    """
+    """Construct a controlled candidate independently of primary extraction."""
 
     if record.candidate_condition is PassageCondition.CLEAN:
         return gold_event
@@ -111,45 +110,57 @@ def _verify(
     )
 
 
-def build_development_cases(
+def build_cases_from_records(
+    records: tuple[RawPassageRecord, ...],
     *,
-    repository_root: Path,
     primary_extractor: DevelopmentPrimaryExtractor | None = None,
     verifier: DevelopmentIndependentVerifier | None = None,
-) -> tuple[V02DevelopmentCase, ...]:
+) -> tuple[V02Case, ...]:
+    """Apply one frozen primary/verifier implementation to either split."""
+
     primary_extractor = primary_extractor or DevelopmentPrimaryExtractor()
     verifier = verifier or NormalizedDevelopmentVerifier()
-    bundle_path = (
-        repository_root
-        / "data"
-        / "track_x_v02"
-        / "development"
-        / "session_b.json"
-    )
-    bundles = load_bundle_json(bundle_path, split="development")
-    records = expand_bundles(bundles, split="development")
     fixtures = _fixture_map()
-    cases: list[V02DevelopmentCase] = []
+    cases: list[V02Case] = []
 
     for record in records:
-        fixture = fixtures[record.fixture_id]
-        insertion_index = next(
-            index
-            for index, event in enumerate(fixture.events)
-            if event.event_id == record.event_id
-        )
+        fixture = fixtures.get(record.fixture_id)
+        if fixture is None:
+            raise ValueError(f"unknown canonical fixture: {record.fixture_id}")
+        if fixture.family != record.topology_family:
+            raise ValueError(
+                f"passage topology {record.topology_family} does not match "
+                f"fixture family {fixture.family}"
+            )
+        try:
+            insertion_index = next(
+                index
+                for index, event in enumerate(fixture.events)
+                if event.event_id == record.event_id
+            )
+        except StopIteration as exc:
+            raise ValueError(
+                f"{record.passage_id} references unknown event {record.event_id}"
+            ) from exc
         gold_event = fixture.events[insertion_index]
         context_events = tuple(
             event
             for index, event in enumerate(fixture.events)
             if index != insertion_index
         )
-        expected_case = next(
-            case for case in fixture.cases if case.query.query_id == record.query_id
-        )
+        try:
+            expected_case = next(
+                case
+                for case in fixture.cases
+                if case.query.query_id == record.query_id
+            )
+        except StopIteration as exc:
+            raise ValueError(
+                f"{record.passage_id} references unknown query {record.query_id}"
+            ) from exc
         expected_answer = GoldSemantics(fixture.events).answer(expected_case.query)
         primary = primary_extractor.extract(record.raw_text)
-        controlled_candidate = _controlled_candidate_for(record, gold_event, primary)
+        controlled_candidate = _controlled_candidate_for(record, gold_event)
         primary_decision = _verify(
             verifier=verifier,
             record=record,
@@ -165,7 +176,7 @@ def build_development_cases(
             insertion_index=insertion_index,
         )
         cases.append(
-            V02DevelopmentCase(
+            V02Case(
                 record=record,
                 gold_event=gold_event,
                 context_events=context_events,
@@ -179,3 +190,61 @@ def build_development_cases(
             )
         )
     return tuple(cases)
+
+
+def build_cases_from_bundle_file(
+    bundle_path: Path,
+    *,
+    split: str,
+    primary_extractor: DevelopmentPrimaryExtractor | None = None,
+    verifier: DevelopmentIndependentVerifier | None = None,
+) -> tuple[V02Case, ...]:
+    bundles = load_bundle_json(bundle_path, split=split)
+    records = expand_bundles(bundles, split=split)
+    return build_cases_from_records(
+        records,
+        primary_extractor=primary_extractor,
+        verifier=verifier,
+    )
+
+
+def build_development_cases(
+    *,
+    repository_root: Path,
+    primary_extractor: DevelopmentPrimaryExtractor | None = None,
+    verifier: DevelopmentIndependentVerifier | None = None,
+) -> tuple[V02Case, ...]:
+    bundle_path = (
+        repository_root
+        / "data"
+        / "track_x_v02"
+        / "development"
+        / "session_b.json"
+    )
+    return build_cases_from_bundle_file(
+        bundle_path,
+        split="development",
+        primary_extractor=primary_extractor,
+        verifier=verifier,
+    )
+
+
+def build_heldout_cases(
+    *,
+    repository_root: Path,
+    primary_extractor: DevelopmentPrimaryExtractor | None = None,
+    verifier: DevelopmentIndependentVerifier | None = None,
+) -> tuple[V02Case, ...]:
+    bundle_path = (
+        repository_root
+        / "data"
+        / "track_x_v02"
+        / "heldout"
+        / "session_a.json"
+    )
+    return build_cases_from_bundle_file(
+        bundle_path,
+        split="heldout",
+        primary_extractor=primary_extractor,
+        verifier=verifier,
+    )
