@@ -1,6 +1,6 @@
 # Track X v0.2 — Independently Authored Raw-Passage Protocol
 
-**Status:** development implementation frozen; Session A held-out passages not yet supplied  
+**Status:** development implementation freeze candidate; Session A held-out passages not yet supplied  
 **Base:** PR #38 / `track-x-v0.1-manifest-2`  
 **Branch:** `research/track-x-v0.2-independent-raw`  
 **Coordination:** Issue #7
@@ -9,9 +9,9 @@
 
 Track X v0.1 used invertible raw templates. Track X v0.2 asks:
 
-> After the parser and verifier policy are frozen on Session-B-authored development passages, can they improve downstream safety and selective accuracy on Session-A-authored held-out passages whose wording and ambiguity were not visible during implementation?
+> After the primary extractor and verifier policy are frozen on Session-B-authored development passages, can an independent verifier improve downstream safety and selective accuracy on Session-A-authored held-out passages whose wording and ambiguity were not visible during implementation?
 
-The passages remain synthetic and topology-scoped, but the raw prose is authored independently from the parser and verifier code.
+The passages remain synthetic and topology-scoped, but their prose is authored independently from parser/verifier code.
 
 ## 2. Cross-session ownership
 
@@ -39,8 +39,8 @@ Session A must not alter parser/verifier code, thresholds, development passages,
 3. Session A branches from the freeze declaration commit and writes the two allowed held-out files.
 4. Session A posts `ACCEPT WITH PASSAGE CONTRIBUTION`, branch, and commit.
 5. Session B verifies that no frozen path changed.
-6. Session B runs held-out evaluation without changing parser/verifier rules or thresholds.
-7. Any post-result parser or threshold change creates Track X v0.3 and cannot overwrite v0.2.
+6. Session B runs held-out evaluation without changing parser/verifier rules, thresholds, or treatment definitions.
+7. Any post-result parser, threshold, or treatment change creates Track X v0.3 and cannot overwrite v0.2.
 
 ## 4. Frozen topology split
 
@@ -72,7 +72,7 @@ No topology family crosses the split.
 
 ## 5. Compact authored-passage bundle
 
-Each JSON file contains a list of seven bundles. Development example:
+Each JSON file contains seven bundles. Development example:
 
 ```text
 data/track_x_v02/development/session_b.json
@@ -96,18 +96,20 @@ RawPassageBundle(
 )
 ```
 
-The evaluator expands each bundle into six controlled records:
+The evaluator expands each bundle into six raw-passage conditions:
 
-1. `clean` — complete passage and exact primary candidate;
-2. `field_corruption` — complete passage with one candidate-field error;
-3. `candidate_omitted` — complete passage with no primary candidate;
-4. `raw_unavailable` — corrupted candidate with no raw passage;
+1. `clean` — complete passage;
+2. `field_corruption` — complete passage paired with one controlled candidate-field error;
+3. `candidate_omitted` — complete passage paired with no controlled candidate;
+4. `raw_unavailable` — controlled corrupted candidate with no raw passage;
 5. `ambiguous_raw` — passage omits one material field, so abstention is correct;
-6. `misleading_context` — complete selected passage plus a nearby distractor supporting the candidate error.
+6. `misleading_context` — complete selected passage plus a nearby distractor supporting the controlled candidate error.
 
-The condition and mutation are evaluator instructions. They are never included in verifier input.
+Condition and mutation metadata are evaluator instructions. They are never included in primary-extractor or verifier input.
 
 ## 6. Information firewall
+
+The primary extractor receives only the selected raw passage.
 
 The verifier receives only:
 
@@ -119,7 +121,7 @@ context_events
 insertion_index
 ```
 
-It cannot access:
+Neither path can access:
 
 ```text
 bundle or passage ID
@@ -128,7 +130,7 @@ gold event
 query or expected answer
 condition or candidate mutation
 recoverability label
-primary parser trace or field confidence
+other path's parser trace or field confidence
 ```
 
 Forbidden held-out data fields include:
@@ -156,7 +158,7 @@ Each complete passage must:
 - avoid explicit schema labels such as `about_world_branch_id=`;
 - remain within the frozen character budget.
 
-Each ambiguous passage intentionally omits one material field. Each bundle also includes at least one misleading but non-authoritative nearby passage.
+Each ambiguous passage intentionally omits one material field. Each bundle includes at least one misleading but non-authoritative nearby passage.
 
 ## 8. Independent primary and verifier paths
 
@@ -175,7 +177,35 @@ material raw field ambiguous          -> abstain
 candidate event identity conflict     -> reject
 ```
 
-## 9. Correlated-failure cases
+## 9. Two separate evaluation tracks
+
+Track X v0.2 explicitly separates the deployable end-to-end path from the controlled mechanism audit.
+
+### A. End-to-end primary path — primary comparison
+
+```text
+primary_extractor_only
+primary_plus_verifier
+oracle_raw_ceiling
+```
+
+`primary_extractor_only` uses exactly the event emitted by the independent primary extractor. When no event is emitted, it abstains. `primary_plus_verifier` gives that same primary event to the independent verifier. It does not substitute a gold-derived controlled candidate.
+
+This is the primary held-out comparison.
+
+### B. Controlled candidate path — secondary mechanism audit
+
+```text
+controlled_candidate_only
+controlled_plus_verifier
+oracle_raw_ceiling
+```
+
+The evaluator constructs a controlled exact, corrupted, or omitted candidate from the canonical fixture according to condition metadata. This isolates correction and omission behavior even when the primary extractor fails to parse the passage.
+
+Controlled-path gains cannot be presented as end-to-end extractor gains.
+
+## 10. Correlated-failure cases
 
 Held-out authors should include wording where primary and verifier may fail together:
 
@@ -189,7 +219,7 @@ Held-out authors should include wording where primary and verifier may fail toge
 
 The verifier is not assumed to be an independent perfect rescue channel.
 
-## 10. Frozen budgets
+## 11. Frozen budgets
 
 `FREEZE_V02.json` records:
 
@@ -203,28 +233,28 @@ verifier calls:             1
 
 No held-out result is valid after changing these budgets or frozen parser/verifier code.
 
-## 11. Endpoints
+## 12. Endpoints
 
 ### Primary
 
-Held-out unsafe-use rate at matched non-abstained coverage:
+Held-out unsafe-use rate at matched non-abstained coverage for:
+
+```text
+primary_extractor_only
+primary_plus_verifier
+```
+
+where:
 
 ```text
 unsafe use = silent wrong answer OR unauthorized disclosure
 ```
 
-Treatments:
-
-```text
-primary structured candidate only
-primary + independent raw verifier
-oracle raw ceiling
-```
-
-The same selected event is given to complete generic and typed downstream ledgers; they are expected to agree.
+The oracle ceiling is shown separately. The same selected event is given to complete generic and typed downstream ledgers; they are expected to agree.
 
 ### Secondary
 
+- controlled-candidate correction and omission recovery;
 - event and field exact match;
 - clean false-correction and corrupted false-accept rates;
 - appropriate abstention on ambiguous/raw-unavailable passages;
@@ -237,11 +267,11 @@ The same selected event is given to complete generic and typed downstream ledger
 
 Fixed deterministic development checks use exact counts, not p-values. A later stochastic study clusters by topology/scenario rather than individual questions.
 
-## 12. Falsification
+## 13. Falsification
 
-The verifier claim is rejected or narrowed if held-out evaluation shows any of:
+The end-to-end verifier claim is rejected or narrowed if held-out evaluation shows any of:
 
-- no safety improvement at matched coverage;
+- no safety improvement over the primary extractor at matched coverage;
 - excessive clean false correction;
 - confident wrong corrections;
 - gains that depend on fields absent from raw text;
@@ -250,7 +280,9 @@ The verifier claim is rejected or narrowed if held-out evaluation shows any of:
 - verifier cost dominating benefit;
 - unequal selected events or material G/T downstream divergence.
 
-## 13. Session A handoff
+A controlled-candidate recovery result cannot rescue a failed end-to-end comparison.
+
+## 14. Session A handoff
 
 Use the compact development file as the schema example and complete:
 
