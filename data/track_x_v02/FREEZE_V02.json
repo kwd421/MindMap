@@ -1,9 +1,12 @@
 {
-  "protocol_version": "track-x-v0.2-freeze-2",
-  "supersedes_protocol_version": "track-x-v0.2-freeze-1",
-  "supersession_reason": "Before any Session A held-out passage existed, the protocol document was aligned with the implemented compact session_a.json bundle schema. Freeze-1 is not an accepted held-out evaluation base.",
-  "frozen_source_commit": "d53b5b85101ac490799ee06deaef063f3e62dbe3",
-  "passing_ci_run": 32161160492,
+  "protocol_version": "track-x-v0.2-freeze-3",
+  "supersedes_protocol_versions": [
+    "track-x-v0.2-freeze-1",
+    "track-x-v0.2-freeze-2"
+  ],
+  "supersession_reason": "Before any Session A held-out passage existed, the compact bundle schema was aligned with the protocol, the end-to-end primary path was separated from the controlled-candidate mechanism audit, and the shared held-out evaluator plus contribution-isolation CI were frozen. Freeze-1 and freeze-2 are not accepted held-out evaluation bases.",
+  "frozen_source_commit": "1f6ab06c6693c7aa4950d3eeb46d0a177752d1b7",
+  "passing_ci_run": 32162360850,
   "parent_protocol_pr": 38,
   "freeze_scaffold_pr": 44,
   "development_author_session": "B",
@@ -20,7 +23,12 @@
     "src/mindmap/track_x/v02_verifier_adapter.py",
     "src/mindmap/track_x/v02_cases.py",
     "src/mindmap/track_x/v02_evaluate.py",
-    "tests/test_track_x_v02.py"
+    "src/mindmap/track_x/v02_authorship.py",
+    "experiments/validate_track_x_v02_contribution.py",
+    "experiments/track_x_v02_heldout.py",
+    "tests/test_track_x_v02.py",
+    "tests/test_track_x_v02_authorship.py",
+    ".github/workflows/track-x-v02-heldout.yml"
   ],
   "allowed_session_a_paths": [
     "data/track_x_v02/heldout/session_a.json",
@@ -41,5 +49,15 @@
     "material_field_ambiguous": "abstain",
     "candidate_identity_conflict": "reject"
   },
-  "heldout_rule": "No frozen path, parser rule, threshold, or budget may change after Session A authors held-out passages. Any such change creates Track X v0.3 and cannot overwrite the v0.2 result."
+  "primary_heldout_treatments": [
+    "primary_extractor_only",
+    "primary_plus_verifier",
+    "oracle_raw_ceiling"
+  ],
+  "secondary_controlled_treatments": [
+    "controlled_candidate_only",
+    "controlled_plus_verifier",
+    "oracle_raw_ceiling"
+  ],
+  "heldout_rule": "Session A must branch from the freeze-3 declaration commit and change exactly the two allowed paths. No frozen path, parser rule, threshold, budget, treatment, or evaluator may change afterward. Any such change creates Track X v0.3 and cannot overwrite the v0.2 result."
 }
