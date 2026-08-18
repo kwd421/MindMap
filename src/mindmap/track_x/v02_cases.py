@@ -17,6 +17,7 @@ from .v02_pipeline import (
     V02VerifierInput,
     apply_candidate_mutation,
 )
+from .v02_verifier_adapter import NormalizedDevelopmentVerifier
 
 
 @dataclass(frozen=True, slots=True)
@@ -79,7 +80,7 @@ def build_development_cases(
     verifier: DevelopmentIndependentVerifier | None = None,
 ) -> tuple[V02DevelopmentCase, ...]:
     primary_extractor = primary_extractor or DevelopmentPrimaryExtractor()
-    verifier = verifier or DevelopmentIndependentVerifier()
+    verifier = verifier or NormalizedDevelopmentVerifier()
     bundle_path = (
         repository_root
         / "data"
