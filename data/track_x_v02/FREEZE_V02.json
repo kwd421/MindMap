@@ -1,7 +1,9 @@
 {
-  "protocol_version": "track-x-v0.2-freeze-1",
-  "frozen_source_commit": "30aa6f4b1ab38867bbab39cebb165502f7ae44de",
-  "passing_ci_run": 32160768340,
+  "protocol_version": "track-x-v0.2-freeze-2",
+  "supersedes_protocol_version": "track-x-v0.2-freeze-1",
+  "supersession_reason": "Before any Session A held-out passage existed, the protocol document was aligned with the implemented compact session_a.json bundle schema. Freeze-1 is not an accepted held-out evaluation base.",
+  "frozen_source_commit": "d53b5b85101ac490799ee06deaef063f3e62dbe3",
+  "passing_ci_run": 32161160492,
   "parent_protocol_pr": 38,
   "freeze_scaffold_pr": 44,
   "development_author_session": "B",
@@ -11,6 +13,7 @@
   "frozen_paths": [
     "docs/TRACK_X_V02_PROTOCOL.md",
     "data/track_x_v02/development/session_b.json",
+    "data/track_x_v02/heldout/AUTHORSHIP_TEMPLATE.md",
     "src/mindmap/track_x/v02_data.py",
     "src/mindmap/track_x/v02_bundles.py",
     "src/mindmap/track_x/v02_pipeline.py",
@@ -38,5 +41,5 @@
     "material_field_ambiguous": "abstain",
     "candidate_identity_conflict": "reject"
   },
-  "heldout_rule": "No frozen path or threshold may change after Session A authors held-out passages. Any such change creates Track X v0.3 and cannot overwrite the v0.2 result."
+  "heldout_rule": "No frozen path, parser rule, threshold, or budget may change after Session A authors held-out passages. Any such change creates Track X v0.3 and cannot overwrite the v0.2 result."
 }
