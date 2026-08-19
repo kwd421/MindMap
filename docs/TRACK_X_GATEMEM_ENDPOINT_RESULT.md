@@ -1,8 +1,9 @@
 # GateMem Official Endpoint Controls v0.1
 
 **Status:** exploratory external endpoint controls; not a MindMap effectiveness result  
-**Workflow:** `32219620639`  
-**MindMap head:** `8fd14b3e631a8faeae46f2e73273a94c11a129f4`  
+**Primary workflow:** `32219620639`  
+**Repeat workflow:** `32220086173`  
+**Primary MindMap head:** `8fd14b3e631a8faeae46f2e73273a94c11a129f4`  
 **Pinned GateMem:** `603f9f4b4ba4b77f043c20f85687fa016fd720b0`  
 **Official scorer SHA-256:** `3d546a21778202959a9df12bac44c196a7f20a248cf5a2cb34f0d9b9c2623d8a`
 
@@ -36,12 +37,26 @@ The method boundary uses per-run opaque episode, principal, turn, and query iden
 4. This is direct external evidence that unrestricted retrieval and blanket refusal are both poor endpoints for governed memory. It is not evidence that the full MindMap representation improves GateMem; a policy/availability/provenance method must still be run.
 5. No cross-domain average, confidence interval, or hypothesis test is reported because domain aggregation and stochastic inference were not preregistered for these deterministic controls.
 
+## Opaque-ID repeatability
+
+The full 4-domain × 2-endpoint matrix was run again after committing the result files.
+
+```text
+official metric summaries equal:          8/8
+opaque key commitments changed:           8/8
+raw-lexical prediction hashes changed:    4/4
+always-no-memory prediction hashes changed: 0/4
+```
+
+Raw-lexical prediction artifacts changed because evaluator-owned method audits contain newly randomized opaque turn identifiers. All eight official summaries remained byte-for-byte equivalent as parsed JSON. This demonstrates that the official endpoint metrics are invariant to the randomized opaque mapping in the repeated runs. Exact repeat artifact IDs and digests are recorded in `repeatability.json`.
+
 ## Reproducibility
 
-- Eight matrix jobs completed successfully in workflow run `32219620639`.
+- Eight matrix jobs completed successfully in primary workflow `32219620639` and again in repeat workflow `32220086173`.
 - The official GateMem checkout, scorer, episodes, and checkpoints were pinned and hashed independently in every job.
 - Only aggregate `publishable_summary.json` artifacts were retained from CI; raw benchmark text and prediction/audit bundles were not uploaded as public workflow artifacts.
-- `results/gatemem_official_endpoints_v0_1/summary.json` records artifact IDs, digests, data hashes, prediction hashes, and opaque mapping commitments.
+- `results/gatemem_official_endpoints_v0_1/summary.json` records primary artifact IDs, digests, data hashes, prediction hashes, and opaque mapping commitments.
+- `results/gatemem_official_endpoints_v0_1/repeatability.json` records the independent second-run comparisons.
 
 ## Next valid comparison
 
