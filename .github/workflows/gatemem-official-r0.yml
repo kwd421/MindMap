@@ -25,11 +25,13 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Prepare audit directory
+        run: mkdir -p /tmp/gatemem-r0
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: pip
 
       - name: Resolve exact public revisions
         id: revisions
@@ -55,7 +57,6 @@ jobs:
       - name: Run official source and method-boundary audit
         run: |
           set -euo pipefail
-          mkdir -p /tmp/gatemem-r0
           python experiments/audit_gatemem_official.py \
             --gatemem-root /tmp/GateMem \
             --pr43-root /tmp/MindMap-pr43 \
