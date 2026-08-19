@@ -17,6 +17,7 @@ from typing import Any, Iterable
 
 DOMAINS = ("education", "household", "medical", "office")
 METHODS = ("always_no_memory", "raw_lexical")
+SCORER_ENTRYPOINT = Path("bench") / "scripts" / "score_predictions.py"
 EXPECTED_GATEMEM_COMMIT = (
     "603f9f4b4ba4b77f043c20f85687fa016fd720b0"
 )
@@ -343,7 +344,7 @@ def _run_endpoint(
     observed_scorer = metadata["checkout"]["scorer_sha256"]
     if observed_scorer != EXPECTED_SCORER_SHA256:
         raise RuntimeError(
-            f"official scorer hash mismatch: {observed_scorer}"
+            f"official scoring entrypoint hash mismatch: {observed_scorer}"
         )
     expected_hashes = EXPECTED_DATA_HASHES[domain]
     for field, expected in expected_hashes.items():
@@ -528,12 +529,10 @@ def reproduce(
         raise RuntimeError("MindMap producing checkout is dirty")
     if _git(gatemem_root, "status", "--porcelain", "--untracked-files=all"):
         raise RuntimeError("GateMem checkout is dirty")
-    scorer_hash = _sha256(
-        gatemem_root / "bench" / "eval" / "scorer.py"
-    )
+    scorer_hash = _sha256(gatemem_root / SCORER_ENTRYPOINT)
     if scorer_hash != EXPECTED_SCORER_SHA256:
         raise RuntimeError(
-            f"official scorer hash mismatch: {scorer_hash}"
+            f"official scoring entrypoint hash mismatch: {scorer_hash}"
         )
 
     reference_rows = _read_reference_rows(reference_rows_path)
@@ -631,6 +630,7 @@ def reproduce(
         "reference_manifest_commit": reference_manifest_commit,
         "reference_rows_sha256": _sha256(reference_rows_path),
         "gatemem_commit": observed_gatemem,
+        "official_scorer_entrypoint": SCORER_ENTRYPOINT.as_posix(),
         "official_scorer_sha256": scorer_hash,
         "domains": list(DOMAINS),
         "methods": list(METHODS),
@@ -694,7 +694,8 @@ def reproduce(
         f"- MindMap producing commit: `{observed_mindmap}`",
         f"- Reference manifest commit: `{reference_manifest_commit}`",
         f"- GateMem commit: `{observed_gatemem}`",
-        f"- Official scorer SHA-256: `{scorer_hash}`",
+        f"- Official scoring entrypoint: `{SCORER_ENTRYPOINT.as_posix()}`",
+        f"- Official scoring entrypoint SHA-256: `{scorer_hash}`",
         f"- Official checkpoints: `{n_checkpoints}`",
         "- Domains × methods × replicates: `4 × 2 × 2 = 16`",
         "- Reference row comparisons: `16/16 equal`",
