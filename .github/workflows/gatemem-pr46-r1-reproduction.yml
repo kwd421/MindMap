@@ -50,7 +50,8 @@ jobs:
           python -m unittest discover \
             -s tests \
             -p 'test_reproduce_gatemem_pr46.py' \
-            -v | tee /tmp/gatemem-pr46-reproduction/reproduction-unittest.log
+            -v 2>&1 \
+            | tee /tmp/gatemem-pr46-reproduction/reproduction-unittest.log
 
       - name: Clone exact producing implementation and reference manifest
         run: |
@@ -116,13 +117,15 @@ jobs:
           test ! -e /tmp/gatemem-pr46-reproduction/run/protected
           test -f "$PUBLISHABLE/STATUS.md"
           test -f "$PUBLISHABLE/reproduction.json"
-          find "$PUBLISHABLE" \
-            -type f ! -name SHA256SUMS -print0 \
-            | sort -z \
-            | xargs -0 sha256sum \
-            > /tmp/gatemem-pr46-reproduction/SHA256SUMS
-          mv /tmp/gatemem-pr46-reproduction/SHA256SUMS \
-            "$PUBLISHABLE/SHA256SUMS"
+          (
+            cd "$PUBLISHABLE"
+            find . -maxdepth 1 -type f ! -name SHA256SUMS \
+              -printf '%P\0' \
+              | sort -z \
+              | xargs -0 sha256sum \
+              > SHA256SUMS
+            sha256sum -c SHA256SUMS
+          )
           cat "$PUBLISHABLE/STATUS.md" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Post R1 reproduction checkpoint to Issue #4
