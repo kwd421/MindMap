@@ -1,0 +1,105 @@
+name: gatemem-official-baselines
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/gatemem-official-baselines.yml
+      - experiments/gatemem_external.py
+      - src/mindmap/track_x/gatemem_baselines.py
+      - src/mindmap/track_x/gatemem_official.py
+      - src/mindmap/track_x/gatemem_opaque.py
+      - src/mindmap/track_x/gatemem_public.py
+      - src/mindmap/track_x/gatemem_rpc.py
+      - src/mindmap/track_x/gatemem_runner.py
+      - src/mindmap/track_x/gatemem_session.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gatemem-official-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  endpoint:
+    name: ${{ matrix.domain }} / ${{ matrix.method }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        domain: [medical, office, education, household]
+        method: [always_no_memory, raw_lexical]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install MindMap and official scorer runtime
+        run: |
+          python -m pip install -e '.[dev]'
+          python -m pip install numpy tqdm PyYAML requests
+
+      - name: Checkout pinned GateMem
+        run: |
+          git clone --filter=blob:none https://github.com/rzhub/GateMem.git /tmp/GateMem
+          git -C /tmp/GateMem checkout --detach 603f9f4b4ba4b77f043c20f85687fa016fd720b0
+          test "$(git -C /tmp/GateMem rev-parse HEAD)" = "603f9f4b4ba4b77f043c20f85687fa016fd720b0"
+          test -z "$(git -C /tmp/GateMem status --porcelain --untracked-files=no)"
+
+      - name: Run protected endpoint and official scorer
+        run: |
+          python experiments/gatemem_external.py \
+            --gatemem-checkout /tmp/GateMem \
+            --domain '${{ matrix.domain }}' \
+            --method '${{ matrix.method }}' \
+            --output-dir '/tmp/gatemem/${{ matrix.domain }}/${{ matrix.method }}'
+
+      - name: Build publishable aggregate artifact
+        env:
+          DOMAIN: ${{ matrix.domain }}
+          METHOD: ${{ matrix.method }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path('/tmp/gatemem') / os.environ['DOMAIN'] / os.environ['METHOD']
+          metadata = json.loads((root / 'run_metadata.json').read_text(encoding='utf-8'))
+          summary = json.loads((root / 'official_score' / 'summary.json').read_text(encoding='utf-8'))
+          publishable = {
+              'domain': os.environ['DOMAIN'],
+              'method': os.environ['METHOD'],
+              'gate_by_action': False,
+              'official_summary': summary,
+              'gatemem_revision': metadata['checkout']['observed_commit'],
+              'scorer_sha256': metadata['checkout']['scorer_sha256'],
+              'episodes_sha256': metadata['checkout']['episodes_sha256'],
+              'checkpoints_sha256': metadata['checkout']['checkpoints_sha256'],
+              'mindmap_revision': metadata['repository_revision'],
+              'opaque_identity_firewall': metadata['opaque_identity_firewall'],
+              'boundary': metadata['boundary'],
+              'counts': metadata['counts'],
+              'artifact_sha256': metadata['artifact_sha256'],
+              'interpretation': (
+                  'Official deterministic GateMem endpoint control; no LLM judge. '
+                  'Raw lexical is a context-echo endpoint, not a matched answer reader.'
+              ),
+          }
+          out = root / 'publishable_summary.json'
+          out.write_text(json.dumps(publishable, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          PY
+
+      - name: Upload aggregate summary only
+        uses: actions/upload-artifact@v4
+        with:
+          name: gatemem-${{ matrix.domain }}-${{ matrix.method }}-summary
+          path: /tmp/gatemem/${{ matrix.domain }}/${{ matrix.method }}/publishable_summary.json
+          if-no-files-found: error
+          retention-days: 14
