@@ -112,16 +112,18 @@ jobs:
       - name: Validate publishable-only artifact
         run: |
           set -euo pipefail
+          PUBLISHABLE=/tmp/gatemem-pr46-reproduction/run/publishable
           test ! -e /tmp/gatemem-pr46-reproduction/run/protected
-          test -f /tmp/gatemem-pr46-reproduction/run/publishable/STATUS.md
-          test -f /tmp/gatemem-pr46-reproduction/run/publishable/reproduction.json
-          find /tmp/gatemem-pr46-reproduction/run/publishable \
-            -type f -print0 \
+          test -f "$PUBLISHABLE/STATUS.md"
+          test -f "$PUBLISHABLE/reproduction.json"
+          find "$PUBLISHABLE" \
+            -type f ! -name SHA256SUMS -print0 \
             | sort -z \
             | xargs -0 sha256sum \
-            > /tmp/gatemem-pr46-reproduction/run/publishable/SHA256SUMS
-          cat /tmp/gatemem-pr46-reproduction/run/publishable/STATUS.md \
-            >> "$GITHUB_STEP_SUMMARY"
+            > /tmp/gatemem-pr46-reproduction/SHA256SUMS
+          mv /tmp/gatemem-pr46-reproduction/SHA256SUMS \
+            "$PUBLISHABLE/SHA256SUMS"
+          cat "$PUBLISHABLE/STATUS.md" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Post R1 reproduction checkpoint to Issue #4
         if: always()
