@@ -1,0 +1,15 @@
+{
+  "artifact_sha256": {},
+  "classification": "R0 source/boundary audit plus R1 command discovery; not an accepted benchmark score",
+  "gatemem_commit": "",
+  "next_gate": "expose one stable PR #43 all-domain no-API command/API and rerun R1",
+  "official_score_accepted": false,
+  "pr43_commit": "",
+  "pr43_ref": "",
+  "pr43_test_outcome": "skipped",
+  "r0_contract_ok": false,
+  "r0_outcome": "skipped",
+  "r1_data_producing_successes": [],
+  "r1_discovery_outcome": "skipped",
+  "study": "GateMem official public benchmark source/execution gate"
+}
