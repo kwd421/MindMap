@@ -123,7 +123,7 @@ def _json_inventory(data_files: list[Path], data_root: Path) -> dict[str, Any]:
         for object_path, value in _walk_json(payload):
             if isinstance(value, dict):
                 lowered = {str(key).lower(): child for key, child in value.items()}
-                key_frequency.update(lowered)
+                key_frequency.update(lowered.keys())
                 for id_key in CHECKPOINT_ID_KEYS:
                     if id_key in lowered and lowered[id_key] is not None:
                         checkpoint_ids.add(str(lowered[id_key]))
