@@ -1,0 +1,185 @@
+name: GateMem official R0 audit
+
+on:
+  push:
+    branches:
+      - research/gatemem-official-repro-audit
+    paths:
+      - docs/GATEMEM_OFFICIAL_REPRO_PROTOCOL.md
+      - experiments/audit_gatemem_official.py
+      - .github/workflows/gatemem-official-r0.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  r0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout audit branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Resolve exact public revisions
+        id: revisions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git clone --quiet https://github.com/rzhub/GateMem.git /tmp/GateMem
+          GATEMEM_SHA="$(git -C /tmp/GateMem rev-parse HEAD)"
+
+          PR43_SHA="$(gh api repos/kwd421/MindMap/pulls/43 --jq .head.sha)"
+          PR43_REF="$(gh api repos/kwd421/MindMap/pulls/43 --jq .head.ref)"
+          git clone --quiet https://github.com/kwd421/MindMap.git /tmp/MindMap-pr43
+          git -C /tmp/MindMap-pr43 fetch --quiet origin "$PR43_SHA"
+          git -C /tmp/MindMap-pr43 checkout --quiet --detach "$PR43_SHA"
+
+          echo "gatemem_sha=$GATEMEM_SHA" >> "$GITHUB_OUTPUT"
+          echo "pr43_sha=$PR43_SHA" >> "$GITHUB_OUTPUT"
+          echo "pr43_ref=$PR43_REF" >> "$GITHUB_OUTPUT"
+          printf 'GateMem upstream: %s\nPR #43: %s (%s)\n' \
+            "$GATEMEM_SHA" "$PR43_SHA" "$PR43_REF"
+
+      - name: Run official source and method-boundary audit
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/gatemem-r0
+          python experiments/audit_gatemem_official.py \
+            --gatemem-root /tmp/GateMem \
+            --pr43-root /tmp/MindMap-pr43 \
+            --output /tmp/gatemem-r0/audit.json \
+            | tee /tmp/gatemem-r0/audit.log
+
+      - name: Install and test PR #43 code
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          if [ -f /tmp/MindMap-pr43/pyproject.toml ]; then
+            python -m pip install -e '/tmp/MindMap-pr43[dev]'
+          elif [ -f /tmp/MindMap-pr43/requirements.txt ]; then
+            python -m pip install -r /tmp/MindMap-pr43/requirements.txt
+          fi
+          python -m compileall -q /tmp/MindMap-pr43
+          if [ -d /tmp/MindMap-pr43/tests ]; then
+            python -m pytest -q /tmp/MindMap-pr43/tests \
+              | tee /tmp/gatemem-r0/pr43-pytest.log
+          else
+            echo 'PR #43 has no tests directory.' | tee /tmp/gatemem-r0/pr43-pytest.log
+          fi
+
+      - name: Inventory executable GateMem entry points
+        run: |
+          set -euo pipefail
+          python - <<'PY' | tee /tmp/gatemem-r0/entrypoints.log
+          from __future__ import annotations
+          import json
+          from pathlib import Path
+
+          root = Path('/tmp/MindMap-pr43')
+          rows = []
+          for path in sorted(root.rglob('*.py')):
+              text = path.read_text(encoding='utf-8', errors='ignore')
+              if 'if __name__' in text and ('gatemem' in text.lower() or 'gatemem' in path.as_posix().lower()):
+                  rows.append(path.relative_to(root).as_posix())
+          print(json.dumps(rows, indent=2))
+          PY
+
+      - name: Build durable summary
+        env:
+          GATEMEM_SHA: ${{ steps.revisions.outputs.gatemem_sha }}
+          PR43_SHA: ${{ steps.revisions.outputs.pr43_sha }}
+          PR43_REF: ${{ steps.revisions.outputs.pr43_ref }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from __future__ import annotations
+          import json
+          import os
+          from pathlib import Path
+
+          audit = json.loads(Path('/tmp/gatemem-r0/audit.json').read_text())
+          upstream = audit['upstream']
+          inventory = upstream['data_inventory']
+          boundary = audit['mindmap_pr43']['boundary_scan']
+          summary = {
+              'classification': audit['classification'],
+              'gatemem_commit': os.environ['GATEMEM_SHA'],
+              'pr43_commit': os.environ['PR43_SHA'],
+              'pr43_ref': os.environ['PR43_REF'],
+              'official_contract_ok': upstream['required_contract_ok'],
+              'json_files': inventory['json_files'],
+              'files_by_domain': inventory['files_by_domain'],
+              'explicit_checkpoint_ids': inventory['unique_explicit_checkpoint_ids'],
+              'checkpoint_container_total': inventory['checkpoint_container_total'],
+              'data_manifest_rows': upstream['data_manifest_rows'],
+              'data_manifest_bytes': upstream['data_manifest_bytes'],
+              'pr43_candidate_files': len(boundary['candidate_files']),
+              'static_forbidden_token_categories': sorted(boundary['token_findings']),
+          }
+          Path('/tmp/gatemem-r0/summary.json').write_text(
+              json.dumps(summary, indent=2, sort_keys=True) + '\n'
+          )
+          markdown = [
+              '# GateMem official R0 audit',
+              '',
+              '> Source/boundary audit only — not a benchmark score.',
+              '',
+              f"- GateMem commit: `{summary['gatemem_commit']}`",
+              f"- PR #43 commit: `{summary['pr43_commit']}` (`{summary['pr43_ref']}`)",
+              f"- Official README/toolkit contract: `{summary['official_contract_ok']}`",
+              f"- Official JSON/JSONL files: `{summary['json_files']}`",
+              f"- Files by domain: `{summary['files_by_domain']}`",
+              f"- Explicit checkpoint IDs discovered: `{summary['explicit_checkpoint_ids']}`",
+              f"- Rows in checkpoint-like containers: `{summary['checkpoint_container_total']}`",
+              f"- Data manifest: `{summary['data_manifest_rows']}` files / `{summary['data_manifest_bytes']}` bytes",
+              f"- PR #43 GateMem-related candidate files: `{summary['pr43_candidate_files']}`",
+              f"- Static review token categories: `{summary['static_forbidden_token_categories']}`",
+              '',
+              'Static token hits are review leads, not automatic leakage findings.',
+          ]
+          Path('/tmp/gatemem-r0/summary.md').write_text('\n'.join(markdown) + '\n')
+          PY
+          cat /tmp/gatemem-r0/summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Post R0 checkpoint to Issue #4
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          STATUS='${{ job.status }}'
+          {
+            echo '## [Session B] GateMem official R0 CI checkpoint'
+            echo
+            echo "Workflow run: \`${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\`"
+            echo "Job status: \`${STATUS}\`"
+            echo
+            if [ -f /tmp/gatemem-r0/summary.md ]; then
+              tail -n +2 /tmp/gatemem-r0/summary.md
+            else
+              echo 'The audit failed before a summary could be generated. Inspect the run logs; no benchmark result is accepted.'
+            fi
+            echo
+            echo 'Next gate after a successful R0: execute PR #43 always-abstain and raw-BM25 on the pinned official data and validate one prediction per official checkpoint.'
+          } > /tmp/gatemem-r0-comment.md
+          gh issue comment 4 --repo "$GITHUB_REPOSITORY" --body-file /tmp/gatemem-r0-comment.md
+
+      - name: Upload reproducibility artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gatemem-official-r0
+          path: /tmp/gatemem-r0
+          if-no-files-found: error
