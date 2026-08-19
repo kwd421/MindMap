@@ -69,7 +69,7 @@ jobs:
           git -C /tmp/GateMem checkout --quiet --detach "$GATEMEM_COMMIT"
           test "$(git -C /tmp/GateMem rev-parse HEAD)" = "$GATEMEM_COMMIT"
           test -z "$(git -C /tmp/GateMem status --porcelain --untracked-files=all)"
-          echo "$GATEMEM_SCORER_SHA256  /tmp/GateMem/bench/eval/scorer.py" \
+          echo "$GATEMEM_SCORER_SHA256  /tmp/GateMem/bench/scripts/score_predictions.py" \
             | sha256sum -c -
 
       - name: Install and test the exact PR46 producing commit
@@ -114,7 +114,8 @@ jobs:
               '',
               f"- MindMap producing commit: `{target['commit']}`",
               f"- GateMem commit: `{upstream['commit']}`",
-              f"- Official scorer SHA-256: `{upstream['scorer_sha256']}`",
+              f"- Official scoring entrypoint: `{upstream['scorer_entrypoint']}`",
+              f"- Official scoring entrypoint SHA-256: `{upstream['scorer_sha256']}`",
               f"- Official contract valid: `{upstream['required_contract_ok']}`",
               f"- Official checkpoint IDs: `{inventory['unique_explicit_checkpoint_ids']}`",
               f"- Official data files: `{inventory['json_files']}`",
