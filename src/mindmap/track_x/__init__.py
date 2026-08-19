@@ -86,6 +86,13 @@ from .gatemem_runner import (
     run_protected_benchmark,
     run_protected_episode,
 )
+from .gatemem_selective import (
+    AnsweredSlice,
+    GateMemSelectiveAudit,
+    GateMemSelectiveError,
+    PromptExposureSummary,
+    audit_gate_mem_scores,
+)
 from .gatemem_session import GateMemPublicSession, PublicGateMemAgent
 from .metrics import (
     EventSimilarityWeights,
@@ -110,6 +117,7 @@ from .model import (
 __all__ = [
     "AlignmentPair",
     "AlwaysNoMemoryGateMemAgent",
+    "AnsweredSlice",
     "BENCHMARK_SPEC_BY_NAME",
     "BENCHMARK_SPECS",
     "CheckpointBoundaryAudit",
@@ -130,6 +138,8 @@ __all__ = [
     "GateMemPublicSession",
     "GateMemRPCError",
     "GateMemRPCTimeout",
+    "GateMemSelectiveAudit",
+    "GateMemSelectiveError",
     "HALUMEM",
     "HiddenAnnotationError",
     "HiddenPathHit",
@@ -143,6 +153,7 @@ __all__ = [
     "PredictionCoverage",
     "PredictionCoverageError",
     "PromptExposure",
+    "PromptExposureSummary",
     "ProtectedBenchmarkResult",
     "ProtectedEpisodeResult",
     "PublicCheckpoint",
@@ -161,6 +172,7 @@ __all__ = [
     "TurnBoundaryAudit",
     "assert_hidden_annotations_absent",
     "assert_prediction_coverage_complete",
+    "audit_gate_mem_scores",
     "brier_score",
     "canonical_json_sha256",
     "conditional_brier_score",
