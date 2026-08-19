@@ -4,7 +4,7 @@
 
 - GateMem commit: `603f9f4b4ba4b77f043c20f85687fa016fd720b0`
 - PR #43 commit: `ac533d0ca880dee3c689ce13443b42c672315ff8` (`research/track-x-v0.5-gatemem-baselines`)
-- R0 source contract: `failure` / contract `False`
+- R0 source contract: `success` / contract `True`
 - PR #43 tests: `success`
 - R1 discovery: `success`
 - Data-producing no-API surfaces: `[]`
