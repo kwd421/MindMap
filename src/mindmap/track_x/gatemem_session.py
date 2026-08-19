@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from copy import deepcopy
 from typing import Any, Protocol
 
 from .gatemem_public import (
@@ -15,7 +14,7 @@ from .gatemem_public import (
 
 
 class PublicGateMemAgent(Protocol):
-    """Method-side interface containing no evaluator-only checkpoint fields."""
+    """Method-side interface containing only opaque raw-language capabilities."""
 
     def reset(self, episode: PublicEpisode) -> None:
         ...
@@ -32,19 +31,25 @@ def _clone_episode(value: PublicEpisode) -> PublicEpisode:
         episode_id=value.episode_id,
         domain=value.domain,
         principals=tuple(value.principals),
-        relationships=tuple(deepcopy(item) for item in value.relationships),
     )
 
 
 class GateMemPublicSession:
-    """Chronology and identity guard storing public objects only."""
+    """Method-side chronology guard storing opaque public objects only.
+
+    Exact source as-of chronology remains an evaluator responsibility in the
+    outer runner. The method receives a query only after all eligible public
+    turns have been incrementally ingested; it receives no source turn key or
+    dataset position field.
+    """
 
     def __init__(self, episode: PublicEpisode) -> None:
         self.episode = _clone_episode(episode)
         self._turns: list[PublicTurn] = []
         self._turn_ids: set[str] = set()
         self._principal_roles = {
-            principal.principal_id: principal.role for principal in self.episode.principals
+            principal.principal_id: principal.role
+            for principal in self.episode.principals
         }
 
     @property
@@ -70,32 +75,12 @@ class GateMemPublicSession:
     def validate_checkpoint(self, checkpoint: PublicCheckpoint) -> None:
         if checkpoint.episode_id != self.episode.episode_id:
             raise GateMemBoundaryError("checkpoint belongs to a different episode")
-        if self.last_turn_id != checkpoint.as_of_turn_id:
-            raise GateMemBoundaryError(
-                "checkpoint must be queried exactly after its as-of turn; "
-                f"last={self.last_turn_id}, as_of={checkpoint.as_of_turn_id}"
-            )
         known_role = self._principal_roles.get(checkpoint.asker_principal_id)
         if known_role is not None and known_role != checkpoint.asker_role:
             raise GateMemBoundaryError(
                 "asker role disagrees with episode principal metadata: "
                 f"{checkpoint.asker_principal_id}"
             )
-
-    def requester_relationships(
-        self, checkpoint: PublicCheckpoint
-    ) -> tuple[dict[str, Any], ...]:
-        self.validate_checkpoint(checkpoint)
-        principal_id = checkpoint.asker_principal_id
-        selected: list[dict[str, Any]] = []
-        for relationship in self.episode.relationships:
-            if any(
-                key.endswith("_id") and value == principal_id
-                for key, value in relationship.items()
-                if isinstance(value, str)
-            ):
-                selected.append(deepcopy(relationship))
-        return tuple(selected)
 
     def reset_agent(self, agent: PublicGateMemAgent) -> None:
         agent.reset(_clone_episode(self.episode))
