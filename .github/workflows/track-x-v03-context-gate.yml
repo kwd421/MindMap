@@ -1,0 +1,86 @@
+name: track-x-v03-context-gate
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/track-x-v03-context-gate.yml
+      - src/mindmap/track_x/v03_context_gate.py
+      - experiments/track_x_v03_context_gate_p0.py
+      - tests/test_track_x_v03_context_gate.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: track-x-v03-context-gate-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  development-p0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install
+        run: python -m pip install -e '.[dev]'
+
+      - name: Verify development-only tests
+        run: pytest -q tests/test_track_x_v03_context_gate.py
+
+      - name: Run deterministic context-gate P0 twice
+        run: |
+          set -euo pipefail
+          python experiments/track_x_v03_context_gate_p0.py \
+            --repository-root "$GITHUB_WORKSPACE" \
+            --output-dir /tmp/track-x-v03-first \
+            > /tmp/track-x-v03-first.stdout
+          python experiments/track_x_v03_context_gate_p0.py \
+            --repository-root "$GITHUB_WORKSPACE" \
+            --output-dir /tmp/track-x-v03-second \
+            > /tmp/track-x-v03-second.stdout
+
+      - name: Verify deterministic drift and held-out boundary
+        run: |
+          set -euo pipefail
+          diff -u /tmp/track-x-v03-first/rows.csv /tmp/track-x-v03-second/rows.csv
+          diff -u /tmp/track-x-v03-first/summary.json /tmp/track-x-v03-second/summary.json
+          diff -u /tmp/track-x-v03-first/run_metadata.json /tmp/track-x-v03-second/run_metadata.json
+          test "$(jq -r .heldout_read /tmp/track-x-v03-first/run_metadata.json)" = false
+          test "$(jq -r .base_freeze_commit /tmp/track-x-v03-first/run_metadata.json)" = \
+            b7faf750df7f9db018b97ec224b0c83142c4efe4
+          test "$(jq -r .n_rows /tmp/track-x-v03-first/summary.json)" = 420
+          test "$(jq -r '.generic_typed_disagreements | length' /tmp/track-x-v03-first/summary.json)" = 0
+
+      - name: Publish exact fixed result to job summary
+        run: |
+          {
+            echo '## Track X v0.3 context-gate development P0'
+            echo
+            echo '> Fixed Session-B-authored development mechanism audit; no held-out or public-benchmark claim.'
+            echo
+            echo '```json'
+            cat /tmp/track-x-v03-first/summary.json
+            echo '```'
+            echo
+            echo '### Artifact digests'
+            echo '```text'
+            sha256sum /tmp/track-x-v03-first/rows.csv \
+              /tmp/track-x-v03-first/summary.json \
+              /tmp/track-x-v03-first/run_metadata.json
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload deterministic result bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: track-x-v03-context-gate-p0
+          path: /tmp/track-x-v03-first
+          if-no-files-found: error
+          retention-days: 30
