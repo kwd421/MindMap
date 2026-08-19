@@ -1,14 +1,16 @@
 # Track X GateMem Official-Run Harness
 
-**Status:** pre-outcome execution contract  
+**Status:** pre-outcome execution contract; opaque-firewall CI required  
 **Pinned upstream:** `rzhub/GateMem@603f9f4b4ba4b77f043c20f85687fa016fd720b0`  
 **Benchmark result:** none in this document
 
 ## 1. Purpose
 
-This harness connects the capability-reduced GateMem runner to a clean, pinned local checkout of GateMem and its unmodified official scorer. It is the final plumbing gate before exploratory external baseline runs.
+This harness connects a capability-reduced GateMem runner to a clean, pinned local checkout of GateMem and its unmodified official scorer.
 
 It does not vendor or commit GateMem data. Episodes and checkpoints are read in place from the pinned checkout.
+
+No benchmark outcome is valid unless the v0.7 opaque method firewall is enabled and its source-ID, relationship-policy, chronology, RPC, and fresh-key invariance tests pass.
 
 ## 2. Checkout verification
 
@@ -22,23 +24,52 @@ the tracked checkout is clean
 SHA-256 of scorer, episodes, and checkpoints
 ```
 
-A later upstream revision requires a new audit and an explicitly changed pin. `--allow-dirty-checkout` exists only for local debugging and must not be used in a confirmatory run.
+A later upstream revision requires a new audit and an explicitly changed pin. `--allow-dirty-checkout` exists only for local debugging and must not be used in a reported run.
 
-## 3. Run path
+## 3. Opaque method boundary
+
+The evaluator creates a fresh secret for every benchmark run and maps source identifiers into non-sequential HMAC surrogates:
+
+```text
+source episode ID    -> method episode ID
+source principal ID  -> method principal ID
+source turn ID       -> method turn ID
+source checkpoint ID -> method query ID
+```
+
+The method receives only opaque identifiers. The secret and mapping are never passed to the method subprocess, prompt, prediction, or method audit and are never serialized. `run_metadata.json` records only key/mapping commitments and the mapping count.
+
+The primary raw-language method capability excludes:
+
+```text
+source checkpoint / episode / turn / principal IDs
+source as_of_turn_id or dataset turn position
+entities.relationships policy annotations
+future turns and checkpoints
+gold records, record_refs, and memory_ops
+query_type, attack_type, expected_action, judge_spec,
+leak_targets, policy_snapshot, gold answers, and refusal labels
+```
+
+The evaluator retains source chronology outside the method boundary, ingests exactly through the source checkpoint's as-of turn, invokes the method with an opaque query object, and restores the official source checkpoint ID only after method return.
+
+A method output containing a known source dataset identifier is a hard boundary failure rather than a scored prediction.
+
+## 4. Run path
 
 ```text
 pinned episodes/checkpoints
-  -> capability-reduced public stream
+  -> evaluator-owned source chronology
+  -> opaque capability-reduced public stream
   -> one fresh method instance per episode
   -> exact checkpoint coverage
+  -> evaluator restores source checkpoint IDs
   -> scorer-facing predictions.jsonl
   -> unmodified official score_predictions.py
   -> official summary and per-checkpoint outputs
 ```
 
-The method receives no hidden checkpoint labels, gold record catalog, `record_refs`, or `memory_ops` in the primary raw-language condition.
-
-## 4. Result directory
+## 5. Result directory
 
 The harness writes:
 
@@ -52,9 +83,11 @@ official_score/summary.json
 official_score/per_checkpoint.jsonl
 ```
 
-Audit rows contain source/public hashes and removed path names, not complete source episodes or checkpoints. Predictions may contain method-generated answers or retrieved public-context excerpts, because those are required for official utility and context-leakage scoring. Result redistribution must therefore follow the benchmark's data terms even though the raw source files are not copied wholesale.
+Audit rows are evaluator-owned and contain source IDs, hashes, counts, timings, and removed path names. They do not contain the source↔method mapping or complete source episodes/checkpoints. The method never reads the result directory.
 
-## 5. Metadata
+Predictions may contain method-generated answers or exact prompt-context excerpts because the official utility and context-leakage scorers require them. Redistribution must follow GateMem's dataset terms.
+
+## 6. Metadata
 
 `run_metadata.json` records:
 
@@ -65,6 +98,7 @@ tracked-dirty state
 scorer/data hashes
 method name and configuration
 counts for episodes/checkpoints/predictions/audits
+opaque key and mapping commitments, never the secret/mapping
 artifact hashes
 official scorer command and output hashes
 official aggregate summary
@@ -72,11 +106,11 @@ boundary flags
 UTC creation time
 ```
 
-The timestamp is descriptive. Scientific identity comes from revisions, method configuration, and hashes.
+The timestamp is descriptive. Scientific identity comes from revisions, configuration, hashes, and boundary commitments.
 
-## 6. Official-score boundary
+## 7. Official-score boundary
 
-The scorer is invoked as:
+The scorer is invoked unmodified:
 
 ```bash
 python <pinned checkout>/bench/scripts/score_predictions.py \
@@ -85,11 +119,11 @@ python <pinned checkout>/bench/scripts/score_predictions.py \
   --out_dir <result>/official_score
 ```
 
-The optional official `--gate_by_action` mode must be declared in advance. The first deterministic baseline run should report both the default official score and, if desired, the action-gated result as a sensitivity analysis rather than choosing after inspection.
+The optional official `--gate_by_action` mode must be declared in advance. The first deterministic control run reports the default official score; action-gated output, when run, is a labelled sensitivity analysis rather than an outcome-selected replacement.
 
-No LLM judge is enabled by this harness. A later judge run must pin judge provider/model/prompt, record all calls and costs, and manually calibrate a blinded subset.
+No LLM judge is enabled. A later judge run must pin provider/model/prompt, record calls and cost, and manually calibrate a blinded subset.
 
-## 7. CLI
+## 8. CLI
 
 ```bash
 python experiments/gatemem_external.py \
@@ -99,16 +133,18 @@ python experiments/gatemem_external.py \
   --output-dir /tmp/gatemem-medical-raw
 ```
 
-Available initial controls:
+Initial endpoint controls:
 
 ```text
-raw_lexical
-always_no_memory
+always_no_memory     # zero-coverage safety edge
+raw_lexical          # BM25 raw-context echo; no answer reader
 ```
 
-For the raw lexical control, `top_k`, BM25 parameters, recency weight, and maximum answer length are written to metadata.
+The raw lexical control is explicitly **not** a capacity-matched QA baseline. It always echoes exact retrieved context when public turns exist and is used to expose the policy-unaware high-coverage/leakage endpoint. Prompt audit rows describe only the post-truncation text actually returned/scored, with source and prompt character spans and a context hash.
 
-## 8. Required first external sequence
+`top_k`, BM25 parameters, recency weight, and maximum context characters are written to metadata. The primary recency weight is zero.
+
+## 9. Required first external sequence
 
 Run without changing code or data between methods:
 
@@ -117,30 +153,31 @@ all four domains, always_no_memory
 all four domains, raw_lexical with frozen defaults
 ```
 
-The order of method execution should not affect results because each episode receives fresh state. Run directories remain separate and hash-addressed.
+The order should not affect semantic predictions because each episode receives fresh state and opaque IDs never enter answer text. Run directories remain separate and hash-addressed.
 
-Report official domain-level metrics separately. Do not average domains into one memory score unless the aggregation rule is preregistered and all source metrics remain visible.
+Report official domain-level metrics separately. Do not average domains unless an aggregation rule is preregistered and every source metric remains visible.
 
-## 9. Interpretation
+## 10. Interpretation
 
 These runs establish only:
 
 ```text
 official scorer compatibility
-boundary and artifact integrity
-zero-coverage and policy-unaware retrieval endpoints
+opaque boundary and artifact integrity
+zero-coverage and policy-unaware raw-context endpoints
 external utility/governance behavior of those controls
 ```
 
-They do not yet test G-flat versus T-normalized extraction, raw fallback, bitemporal consolidation, branch isolation beyond GateMem's task surface, or calibrated selective prediction.
+They do not test a matched answer reader, G-flat versus T-normalized extraction, raw fallback, bitemporal consolidation, MindInstance lineage beyond GateMem's task surface, or calibrated selective prediction.
 
-## 10. Remaining confirmatory gates
+## 11. Remaining confirmatory gates
 
-- run the method in a filesystem/network sandbox rather than only a trusted subprocess;
-- resolve GateMem dataset redistribution terms;
+- run method code in a filesystem/network sandbox rather than only trusted subprocess isolation;
+- resolve GateMem dataset/result redistribution terms;
 - freeze domain aggregation and action-gating policy;
-- add token, memory-byte, and monetary cost accounting;
-- add a raw+dense baseline;
-- implement matched G-flat and T-normalized systems;
+- add tokenizer-based context budget and token/call/cost accounting;
+- add matched raw+dense retrieval and a shared answer reader;
+- implement capacity/validator-matched G-flat and T-normalized systems;
 - freeze development thresholds before held-out evaluation;
-- preserve official and supplemental metric namespaces.
+- preserve official and supplemental metric namespaces;
+- add eligible-denominator safety metrics and source-span attribution outside the official namespace.
