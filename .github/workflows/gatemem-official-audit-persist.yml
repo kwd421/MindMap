@@ -29,10 +29,12 @@ jobs:
           fetch-depth: 0
           ref: research/gatemem-official-repro-audit
 
+      - name: Prepare persisted audit directory
+        run: mkdir -p /tmp/gatemem-public-audit
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: pip
 
       - name: Clone exact public inputs
         id: revisions
