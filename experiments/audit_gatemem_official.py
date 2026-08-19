@@ -255,14 +255,14 @@ def audit(
     expected_scorer_sha256: str,
 ) -> dict[str, Any]:
     data_root = gatemem_root / "bench" / "data"
-    scorer_path = gatemem_root / "bench" / "eval" / "scorer.py"
+    scorer_path = gatemem_root / "bench" / "scripts" / "score_predictions.py"
     if not data_root.is_dir():
         raise FileNotFoundError(
             f"official GateMem data root missing: {data_root}"
         )
     if not scorer_path.is_file():
         raise FileNotFoundError(
-            f"official GateMem scorer missing: {scorer_path}"
+            f"official GateMem scoring entrypoint missing: {scorer_path}"
         )
 
     observed_gatemem_commit = _git(gatemem_root, "rev-parse", "HEAD")
@@ -280,7 +280,7 @@ def audit(
         )
     if scorer_sha256 != expected_scorer_sha256:
         raise RuntimeError(
-            "official scorer hash mismatch: "
+            "official scoring entrypoint hash mismatch: "
             f"{scorer_sha256} != {expected_scorer_sha256}"
         )
 
@@ -314,6 +314,7 @@ def audit(
             "repository": "rzhub/GateMem",
             "commit": observed_gatemem_commit,
             "remote": _git(gatemem_root, "remote", "get-url", "origin"),
+            "scorer_entrypoint": "bench/scripts/score_predictions.py",
             "scorer_sha256": scorer_sha256,
             "readme_contract": contract,
             "required_contract_ok": required_contract_ok,
