@@ -75,7 +75,7 @@ jobs:
           git -C /tmp/GateMem checkout --quiet --detach "$GATEMEM_COMMIT"
           test "$(git -C /tmp/GateMem rev-parse HEAD)" = "$GATEMEM_COMMIT"
           test -z "$(git -C /tmp/GateMem status --porcelain --untracked-files=all)"
-          echo "$GATEMEM_SCORER_SHA256  /tmp/GateMem/bench/eval/scorer.py" \
+          echo "$GATEMEM_SCORER_SHA256  /tmp/GateMem/bench/scripts/score_predictions.py" \
             | sha256sum -c -
 
       - name: Install exact runtime
