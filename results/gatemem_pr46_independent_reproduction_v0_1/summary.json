@@ -1,0 +1,62 @@
+{
+  "accepted": true,
+  "architecture_effectiveness_claim": false,
+  "classification": "deterministic official GateMem B0/B1a endpoint reproduction only; not an architecture-effect result",
+  "durable_files": [
+    "STATUS.md",
+    "SHA256SUMS",
+    "WORKFLOW_PAYLOAD_SHA256SUMS",
+    "repeatability.json",
+    "replicate_1_rows.csv",
+    "replicate_2_rows.csv",
+    "run_commitments.csv",
+    "summary.json"
+  ],
+  "execution": {
+    "always_no_memory_prediction_hashes_changed": "0/4",
+    "domains": 4,
+    "fresh_key_replicates": 2,
+    "methods": 2,
+    "official_checkpoints": 2218,
+    "official_scorer_runs": 16,
+    "official_summaries_equal": "8/8",
+    "opaque_key_commitments_changed": "8/8",
+    "opaque_mapping_commitments_changed": "8/8",
+    "raw_lexical_prediction_hashes_changed": "4/4",
+    "reference_row_comparisons_equal": "16/16"
+  },
+  "pins": {
+    "gatemem_commit": "603f9f4b4ba4b77f043c20f85687fa016fd720b0",
+    "mindmap_producing_commit": "8fd14b3e631a8faeae46f2e73273a94c11a129f4",
+    "official_scoring_entrypoint": "bench/scripts/score_predictions.py",
+    "official_scoring_entrypoint_sha256": "3d546a21778202959a9df12bac44c196a7f20a248cf5a2cb34f0d9b9c2623d8a",
+    "reference_manifest_commit": "5e877bf5e4bfffda700ae0b8b5634bc734ac7e65",
+    "reference_rows_sha256": "8d17aa6915f02e6abbc2f1c7b50410996ca354c2f177cec46c2cc5cfcd789212"
+  },
+  "public_boundary": {
+    "endpoint_stderr_logs_empty": "16/16",
+    "endpoint_stdout_logs_allowlisted": "16/16",
+    "protected_output_directory_uploaded": false,
+    "raw_benchmark_text_uploaded": false,
+    "raw_predictions_uploaded": false,
+    "sensitive_field_name_scan_matches": 0
+  },
+  "schema_version": "track-x-gatemem-pr46-independent-reproduction-committed-v0.1",
+  "workflow": {
+    "artifact_id": 9372852830,
+    "artifact_name": "gatemem-pr46-r1-independent-reproduction",
+    "artifact_zip_sha256": "ae4e2734468b8020885ee0da2c4cc26c3fa8b601b48cf936b748506d04cf1f8c",
+    "audit_source_commit": "0a4173a4bdf96fd51578ea17121f27de45029917",
+    "independent_tests_passed": 2,
+    "producing_commit_tests_passed": 67,
+    "run_id": 32272755237
+  },
+  "workflow_payload_sha256": {
+    "STATUS.md": "2409162d568480a92e576ab64d49ba8cd12170d68ada027b6f8a27537b8a5c51",
+    "repeatability.json": "d9fdfd2f29c27f32341cfc6cd378d74e29b36060dcffd59ad957e05e766a0b0e",
+    "replicate_1_rows.csv": "992bf15857aa71b2a4c35b7d20160b3f09494ee3f61de95bd547d50897433fdd",
+    "replicate_2_rows.csv": "992bf15857aa71b2a4c35b7d20160b3f09494ee3f61de95bd547d50897433fdd",
+    "reproduction.json": "72c3b283dcc32b80709c1e9e9dc6c9ae31313913cce074d72d3baae7df6d6c80",
+    "run_records.json": "d21f14d4c0e99fcc849724bfb7f53351ae9918bbea00678c1c890c980dd9c3e6"
+  }
+}
