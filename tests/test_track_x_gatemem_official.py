@@ -18,6 +18,9 @@ from mindmap.track_x.gatemem_official import (
 )
 
 
+_SECRET = b"official-harness-test-secret-000001"
+
+
 def _run(command: list[str], cwd: Path) -> None:
     subprocess.run(command, cwd=cwd, check=True, capture_output=True, text=True)
 
@@ -37,31 +40,47 @@ def _fake_checkout(tmp_path: Path) -> tuple[Path, str]:
 
     episodes = [
         {
-            "episode_id": "ep-1",
+            "episode_id": "medical_episode_source_001",
             "domain": "medical",
             "entities": {
                 "principals": [
-                    {"principal_id": "p1", "role": "patient"},
+                    {
+                        "principal_id": "patient_source_001",
+                        "role": "patient",
+                    },
                 ],
-                "relationships": [],
+                "relationships": [
+                    {
+                        "patient_id": "patient_source_001",
+                        "access_level": "HIDDEN_RELATIONSHIP_POLICY",
+                    }
+                ],
             },
             "turns": [
                 {
-                    "turn_id": "t1",
-                    "speaker": {"principal_id": "p1", "role": "patient"},
+                    "turn_id": "medical_turn_source_001",
+                    "speaker": {
+                        "principal_id": "patient_source_001",
+                        "role": "patient",
+                    },
                     "text": "DO_NOT_COPY_SOURCE_TEXT",
                     "record_refs": ["gold-record"],
                 }
             ],
-            "records": [{"record_id": "gold-record", "canonical_values": ["secret"]}],
+            "records": [
+                {"record_id": "gold-record", "canonical_values": ["secret"]}
+            ],
         }
     ]
     checkpoints = [
         {
-            "checkpoint_id": "c1",
-            "episode_id": "ep-1",
-            "as_of_turn_id": "t1",
-            "asker": {"principal_id": "p1", "role": "patient"},
+            "checkpoint_id": "medical_checkpoint_source_001",
+            "episode_id": "medical_episode_source_001",
+            "as_of_turn_id": "medical_turn_source_001",
+            "asker": {
+                "principal_id": "patient_source_001",
+                "role": "patient",
+            },
             "query_text": "What do you remember?",
             "query_type": "utility",
             "expected_action": "answer",
@@ -110,7 +129,9 @@ def test_jsonl_loader_rejects_non_object_rows(tmp_path: Path):
         load_jsonl(path)
 
 
-def test_checkout_verification_pins_revision_and_detects_tracked_dirt(tmp_path: Path):
+def test_checkout_verification_pins_revision_and_detects_tracked_dirt(
+    tmp_path: Path,
+):
     checkout, revision = _fake_checkout(tmp_path)
     audit = verify_gatemem_checkout(
         checkout,
@@ -129,7 +150,10 @@ def test_checkout_verification_pins_revision_and_detects_tracked_dirt(tmp_path: 
         )
 
     scorer = checkout / "bench" / "scripts" / "score_predictions.py"
-    scorer.write_text(scorer.read_text(encoding="utf-8") + "\n# dirty\n", encoding="utf-8")
+    scorer.write_text(
+        scorer.read_text(encoding="utf-8") + "\n# dirty\n",
+        encoding="utf-8",
+    )
     with pytest.raises(GateMemOfficialError, match="tracked modifications"):
         verify_gatemem_checkout(
             checkout,
@@ -138,7 +162,9 @@ def test_checkout_verification_pins_revision_and_detects_tracked_dirt(tmp_path: 
         )
 
 
-def test_external_harness_runs_protected_method_and_official_scorer(tmp_path: Path):
+def test_external_harness_runs_opaque_method_and_unmodified_official_scorer(
+    tmp_path: Path,
+):
     checkout, revision = _fake_checkout(tmp_path)
     output = tmp_path / "result"
     result = run_external_gatemem(
@@ -152,6 +178,7 @@ def test_external_harness_runs_protected_method_and_official_scorer(tmp_path: Pa
         invoke_official_scorer=True,
         scorer_python=sys.executable,
         repository_revision="mindmap-test-sha",
+        opaque_id_secret=_SECRET,
     )
 
     assert result.prediction_count == 1
@@ -160,18 +187,34 @@ def test_external_harness_runs_protected_method_and_official_scorer(tmp_path: Pa
         "n_predictions": 1,
         "gate_by_action": False,
     }
-    prediction = json.loads((output / "predictions.jsonl").read_text(encoding="utf-8"))
-    assert prediction["checkpoint_id"] == "c1"
+    prediction = json.loads(
+        (output / "predictions.jsonl").read_text(encoding="utf-8")
+    )
+    assert prediction["checkpoint_id"] == "medical_checkpoint_source_001"
     assert prediction["output"]["action"] == "no_memory"
+    assert "checkpoint_id" not in prediction["output"].get("memory_audit", {})
 
-    metadata = json.loads((output / "run_metadata.json").read_text(encoding="utf-8"))
+    metadata = json.loads(
+        (output / "run_metadata.json").read_text(encoding="utf-8")
+    )
+    assert metadata["schema_version"] == "track-x-gatemem-external-run-v0.2"
     assert metadata["repository_revision"] == "mindmap-test-sha"
     assert metadata["checkout"]["observed_commit"] == revision
     assert metadata["counts"]["checkpoints"] == 1
     assert metadata["artifact_sha256"]["predictions.jsonl"]
+    firewall = metadata["opaque_identity_firewall"]
+    assert firewall["enabled"] is True
+    assert firewall["mapping_serialized"] is False
+    assert len(firewall["key_commitment_sha256"]) == 64
+    assert len(firewall["mapping_commitment_sha256"]) == 64
+    assert firewall["mapping_count"] >= 4
+    assert metadata["boundary"]["source_identifiers_passed_to_method"] is False
+    assert metadata["boundary"]["source_as_of_turn_id_passed_to_method"] is False
+    assert metadata["boundary"]["relationships_passed_to_method"] is False
 
-    # Source episode/checkpoint text and gold record values are not copied into
-    # the all-no-memory result bundle. Hashes and removed-path names are retained.
+    # Source text, gold records, relationship-policy labels, and the mapping are
+    # not copied into the all-no-memory method/scorer bundle. Evaluator-owned
+    # audit files may retain source IDs needed to identify benchmark rows.
     result_text = "\n".join(
         path.read_text(encoding="utf-8", errors="ignore")
         for path in output.rglob("*")
@@ -180,3 +223,6 @@ def test_external_harness_runs_protected_method_and_official_scorer(tmp_path: Pa
     assert "DO_NOT_COPY_SOURCE_TEXT" not in result_text
     assert "gold-record" not in result_text
     assert "canonical_values" not in result_text
+    assert "HIDDEN_RELATIONSHIP_POLICY" not in result_text
+    assert "source_to_method" not in result_text
+    assert "patient_source_001" not in prediction["output"].get("answer", "")

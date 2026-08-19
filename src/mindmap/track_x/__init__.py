@@ -27,6 +27,7 @@ from .benchmark_specs import (
 from .gatemem_baselines import (
     AlwaysNoMemoryGateMemAgent,
     LexicalHit,
+    PromptExposure,
     RawLexicalConfig,
     RawLexicalGateMemAgent,
     lexical_tokens,
@@ -46,6 +47,7 @@ from .gatemem_official import (
     sha256_file,
     verify_gatemem_checkout,
 )
+from .gatemem_opaque import GateMemOpaqueIds, OpaqueIdError
 from .gatemem_public import (
     GateMemAction,
     GateMemBoundaryError,
@@ -84,6 +86,13 @@ from .gatemem_runner import (
     run_protected_benchmark,
     run_protected_episode,
 )
+from .gatemem_selective import (
+    AnsweredSlice,
+    GateMemSelectiveAudit,
+    GateMemSelectiveError,
+    PromptExposureSummary,
+    audit_gate_mem_scores,
+)
 from .gatemem_session import GateMemPublicSession, PublicGateMemAgent
 from .metrics import (
     EventSimilarityWeights,
@@ -108,6 +117,7 @@ from .model import (
 __all__ = [
     "AlignmentPair",
     "AlwaysNoMemoryGateMemAgent",
+    "AnsweredSlice",
     "BENCHMARK_SPEC_BY_NAME",
     "BENCHMARK_SPECS",
     "CheckpointBoundaryAudit",
@@ -124,9 +134,12 @@ __all__ = [
     "GateMemExternalRunResult",
     "GateMemOfficialError",
     "GateMemOfficialScore",
+    "GateMemOpaqueIds",
     "GateMemPublicSession",
     "GateMemRPCError",
     "GateMemRPCTimeout",
+    "GateMemSelectiveAudit",
+    "GateMemSelectiveError",
     "HALUMEM",
     "HiddenAnnotationError",
     "HiddenPathHit",
@@ -134,10 +147,13 @@ __all__ = [
     "LOCOMO_PLUS",
     "LONGMEMEVAL_V2",
     "LexicalHit",
+    "OpaqueIdError",
     "OperatingPoint",
     "PINNED_GATEMEM_COMMIT",
     "PredictionCoverage",
     "PredictionCoverageError",
+    "PromptExposure",
+    "PromptExposureSummary",
     "ProtectedBenchmarkResult",
     "ProtectedEpisodeResult",
     "PublicCheckpoint",
@@ -156,6 +172,7 @@ __all__ = [
     "TurnBoundaryAudit",
     "assert_hidden_annotations_absent",
     "assert_prediction_coverage_complete",
+    "audit_gate_mem_scores",
     "brier_score",
     "canonical_json_sha256",
     "conditional_brier_score",

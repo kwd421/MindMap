@@ -7,10 +7,11 @@ from typing import Any, Literal, cast
 
 from .adapter_guard import assert_hidden_annotations_absent, strip_hidden_annotations
 from .benchmark_specs import GATEMEM
+from .gatemem_opaque import GateMemOpaqueIds
 
 GateMemAction = Literal["answer", "answer_redacted", "refuse", "no_memory"]
 _ALLOWED_ACTIONS = frozenset({"answer", "answer_redacted", "refuse", "no_memory"})
-_PUBLIC_CHECKPOINT_KEYS = frozenset(
+_SOURCE_CHECKPOINT_KEYS = frozenset(
     {"checkpoint_id", "episode_id", "as_of_turn_id", "asker", "query_text"}
 )
 
@@ -21,6 +22,8 @@ class GateMemBoundaryError(ValueError):
 
 @dataclass(frozen=True, slots=True)
 class PublicPrincipal:
+    """Method-facing principal with an evaluator-generated opaque identity."""
+
     principal_id: str
     role: str
     display_name: str | None = None
@@ -28,10 +31,16 @@ class PublicPrincipal:
 
 @dataclass(frozen=True, slots=True)
 class PublicEpisode:
+    """Raw-language reset view.
+
+    Relationships are intentionally absent because the pinned GateMem objects
+    contain answer-defining policy and authorization annotations. Policy must be
+    inferred from the incrementally ingested public dialogue in this condition.
+    """
+
     episode_id: str
     domain: str
     principals: tuple[PublicPrincipal, ...]
-    relationships: tuple[dict[str, Any], ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -46,9 +55,14 @@ class PublicTurn:
 
 @dataclass(frozen=True, slots=True)
 class PublicCheckpoint:
-    checkpoint_id: str
+    """Least-capability method query.
+
+    Source checkpoint identity and source chronology are evaluator-only. The
+    method receives the active opaque episode, requester identity/role, and raw
+    query text only.
+    """
+
     episode_id: str
-    as_of_turn_id: str
     asker_principal_id: str
     asker_role: str
     query_text: str
@@ -99,10 +113,14 @@ def _json_clone(value: Any) -> Any:
     return json.loads(encoded)
 
 
-def public_episode_from_raw(raw: Mapping[str, Any]) -> PublicEpisode:
-    """Build a reset view without future turns, records, or checkpoints."""
+def public_episode_from_raw(
+    raw: Mapping[str, Any],
+    *,
+    opaque_ids: GateMemOpaqueIds,
+) -> PublicEpisode:
+    """Build a reset view without future turns, records, or policy relationships."""
 
-    episode_id = _required_text(raw.get("episode_id"), "episode_id")
+    source_episode_id = _required_text(raw.get("episode_id"), "episode_id")
     domain = _required_text(raw.get("domain"), "domain")
     entities = raw.get("entities") or {}
     if not isinstance(entities, Mapping):
@@ -110,7 +128,9 @@ def public_episode_from_raw(raw: Mapping[str, Any]) -> PublicEpisode:
 
     principals_raw = entities.get("principals") or []
     relationships_raw = entities.get("relationships") or []
-    if not isinstance(principals_raw, Sequence) or isinstance(principals_raw, (str, bytes)):
+    if not isinstance(principals_raw, Sequence) or isinstance(
+        principals_raw, (str, bytes)
+    ):
         raise GateMemBoundaryError("entities.principals must be a list")
     if not isinstance(relationships_raw, Sequence) or isinstance(
         relationships_raw, (str, bytes)
@@ -118,19 +138,30 @@ def public_episode_from_raw(raw: Mapping[str, Any]) -> PublicEpisode:
         raise GateMemBoundaryError("entities.relationships must be a list")
 
     principals: list[PublicPrincipal] = []
-    seen: set[str] = set()
+    seen_source: set[str] = set()
+    seen_method: set[str] = set()
     for index, item in enumerate(principals_raw):
         if not isinstance(item, Mapping):
-            raise GateMemBoundaryError(f"entities.principals[{index}] must be an object")
-        principal_id = _required_text(
+            raise GateMemBoundaryError(
+                f"entities.principals[{index}] must be an object"
+            )
+        source_principal_id = _required_text(
             item.get("principal_id"), f"entities.principals[{index}].principal_id"
         )
-        if principal_id in seen:
-            raise GateMemBoundaryError(f"duplicate principal_id: {principal_id}")
-        seen.add(principal_id)
+        if source_principal_id in seen_source:
+            raise GateMemBoundaryError(
+                f"duplicate source principal_id: {source_principal_id}"
+            )
+        seen_source.add(source_principal_id)
+        method_principal_id = opaque_ids.principal(
+            source_episode_id, source_principal_id
+        )
+        if method_principal_id in seen_method:  # pragma: no cover - HMAC collision guard
+            raise GateMemBoundaryError("opaque principal identifier collision")
+        seen_method.add(method_principal_id)
         principals.append(
             PublicPrincipal(
-                principal_id=principal_id,
+                principal_id=method_principal_id,
                 role=_required_text(
                     item.get("role"), f"entities.principals[{index}].role"
                 ),
@@ -141,36 +172,36 @@ def public_episode_from_raw(raw: Mapping[str, Any]) -> PublicEpisode:
             )
         )
 
-    relationships: list[dict[str, Any]] = []
-    for index, item in enumerate(relationships_raw):
-        if not isinstance(item, Mapping):
-            raise GateMemBoundaryError(
-                f"entities.relationships[{index}] must be an object"
-            )
-        cloned = _json_clone(dict(item))
-        if not isinstance(cloned, dict):
-            raise AssertionError("JSON object clone changed type")
-        relationships.append(cloned)
-
+    # `entities.relationships` is validated as a list above but deliberately not
+    # copied. It contains source-dataset policy labels such as access levels.
     return PublicEpisode(
-        episode_id=episode_id,
+        episode_id=opaque_ids.episode(source_episode_id),
         domain=domain,
         principals=tuple(principals),
-        relationships=tuple(relationships),
     )
 
 
-def public_turn_from_raw(raw: Mapping[str, Any]) -> PublicTurn:
-    """Build the raw-language Track X turn view without gold record metadata."""
+def public_turn_from_raw(
+    raw: Mapping[str, Any],
+    *,
+    source_episode_id: str,
+    opaque_ids: GateMemOpaqueIds,
+) -> PublicTurn:
+    """Build a raw-language turn view without source IDs or gold record metadata."""
 
+    source_episode_id = _required_text(source_episode_id, "source_episode_id")
+    source_turn_id = _required_text(raw.get("turn_id"), "turn_id")
     speaker = raw.get("speaker") or {}
     if not isinstance(speaker, Mapping):
         raise GateMemBoundaryError("turn speaker must be an object")
+    source_principal_id = _required_text(
+        speaker.get("principal_id"), "speaker.principal_id"
+    )
     return PublicTurn(
-        turn_id=_required_text(raw.get("turn_id"), "turn_id"),
+        turn_id=opaque_ids.turn(source_episode_id, source_turn_id),
         timestamp=_optional_text(raw.get("timestamp"), "timestamp"),
-        speaker_principal_id=_required_text(
-            speaker.get("principal_id"), "speaker.principal_id"
+        speaker_principal_id=opaque_ids.principal(
+            source_episode_id, source_principal_id
         ),
         speaker_role=_required_text(speaker.get("role"), "speaker.role"),
         turn_kind=_required_text(raw.get("turn_kind", "dialogue"), "turn_kind"),
@@ -178,42 +209,72 @@ def public_turn_from_raw(raw: Mapping[str, Any]) -> PublicTurn:
     )
 
 
-def public_checkpoint_from_raw(raw: Mapping[str, Any]) -> PublicCheckpointBundle:
+def public_checkpoint_from_raw(
+    raw: Mapping[str, Any],
+    *,
+    opaque_ids: GateMemOpaqueIds,
+) -> PublicCheckpointBundle:
+    """Redact scorer fields and omit source chronology/query identity capabilities."""
+
     redaction = strip_hidden_annotations(dict(raw), GATEMEM.hidden_paths)
     assert_hidden_annotations_absent(redaction.payload, GATEMEM.hidden_paths)
     if not isinstance(redaction.payload, Mapping):
         raise GateMemBoundaryError("checkpoint must be an object")
 
-    unexpected = sorted(set(redaction.payload) - _PUBLIC_CHECKPOINT_KEYS)
+    unexpected = sorted(set(redaction.payload) - _SOURCE_CHECKPOINT_KEYS)
     if unexpected:
         raise GateMemBoundaryError(
-            "unreviewed GateMem checkpoint fields crossed the public boundary: "
+            "unreviewed GateMem checkpoint fields crossed the source boundary: "
             + ", ".join(unexpected)
         )
+
+    # Both fields are consumed only by the outer evaluator for identity and
+    # exact source chronology. Neither becomes a method capability.
+    _required_text(redaction.payload.get("checkpoint_id"), "checkpoint_id")
+    source_episode_id = _required_text(
+        redaction.payload.get("episode_id"), "episode_id"
+    )
+    _required_text(redaction.payload.get("as_of_turn_id"), "as_of_turn_id")
 
     asker = redaction.payload.get("asker") or {}
     if not isinstance(asker, Mapping):
         raise GateMemBoundaryError("checkpoint asker must be an object")
+    source_asker_id = _required_text(
+        asker.get("principal_id"), "asker.principal_id"
+    )
     checkpoint = PublicCheckpoint(
-        checkpoint_id=_required_text(
-            redaction.payload.get("checkpoint_id"), "checkpoint_id"
-        ),
-        episode_id=_required_text(redaction.payload.get("episode_id"), "episode_id"),
-        as_of_turn_id=_required_text(
-            redaction.payload.get("as_of_turn_id"), "as_of_turn_id"
-        ),
-        asker_principal_id=_required_text(
-            asker.get("principal_id"), "asker.principal_id"
+        episode_id=opaque_ids.episode(source_episode_id),
+        asker_principal_id=opaque_ids.principal(
+            source_episode_id, source_asker_id
         ),
         asker_role=_required_text(asker.get("role"), "asker.role"),
         query_text=_required_text(redaction.payload.get("query_text"), "query_text"),
     )
+    removed_paths = tuple(
+        sorted(
+            set(redaction.removed_paths)
+            | {"$.checkpoint_id", "$.as_of_turn_id"}
+        )
+    )
     return PublicCheckpointBundle(
         checkpoint=checkpoint,
         source_sha256=redaction.source_sha256,
-        public_sha256=redaction.payload_sha256,
-        removed_paths=redaction.removed_paths,
+        public_sha256=canonical_public_sha256(checkpoint),
+        removed_paths=removed_paths,
     )
+
+
+def canonical_public_sha256(value: Any) -> str:
+    from hashlib import sha256
+
+    payload = json.dumps(
+        _json_clone(asdict(value)),
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    return sha256(payload).hexdigest()
 
 
 def public_prediction_from_raw(raw: Mapping[str, Any]) -> PublicPrediction:

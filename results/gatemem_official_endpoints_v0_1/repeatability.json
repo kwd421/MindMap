@@ -1,0 +1,24 @@
+{
+  "schema_version": "track-x-gatemem-endpoint-repeatability-v0.1",
+  "first_run_id": 32219620639,
+  "first_run_head_sha": "8fd14b3e631a8faeae46f2e73273a94c11a129f4",
+  "repeat_run_id": 32220086173,
+  "repeat_run_head_sha": "5e877bf5e4bfffda700ae0b8b5634bc734ac7e65",
+  "comparisons": [
+    {"domain":"education","method":"always_no_memory","official_summary_equal":true,"predictions_sha256_equal":true,"opaque_key_commitment_equal":false,"repeat_artifact_id":9353635215,"repeat_artifact_digest":"sha256:8572359e9adbab1f6ba9ee100979e4c6ff7e41c75c2c144f28fec13cbfaed662"},
+    {"domain":"education","method":"raw_lexical","official_summary_equal":true,"predictions_sha256_equal":false,"opaque_key_commitment_equal":false,"repeat_artifact_id":9353637464,"repeat_artifact_digest":"sha256:6dc79a984bd9bc6e1c5e4c28093e9418d82422122ae92f751aba9aabd3ba0bf3"},
+    {"domain":"household","method":"always_no_memory","official_summary_equal":true,"predictions_sha256_equal":true,"opaque_key_commitment_equal":false,"repeat_artifact_id":9353635681,"repeat_artifact_digest":"sha256:d368b2869c8ef4ab4f53fda3691c0304a23380dde14f64e88f1fe87ef7bf46d4"},
+    {"domain":"household","method":"raw_lexical","official_summary_equal":true,"predictions_sha256_equal":false,"opaque_key_commitment_equal":false,"repeat_artifact_id":9353636595,"repeat_artifact_digest":"sha256:ce5931ed45e12f9debf0633b0b475d71f2bd618ae6a1a1e12e1c717cb1b7f348"},
+    {"domain":"medical","method":"always_no_memory","official_summary_equal":true,"predictions_sha256_equal":true,"opaque_key_commitment_equal":false,"repeat_artifact_id":9353638075,"repeat_artifact_digest":"sha256:499022c905686430ddf5ba885ecdf2125dd9fe824e4b82a16f8a1ed729f43b03"},
+    {"domain":"medical","method":"raw_lexical","official_summary_equal":true,"predictions_sha256_equal":false,"opaque_key_commitment_equal":false,"repeat_artifact_id":9353639346,"repeat_artifact_digest":"sha256:b76a6a1c4eb80fcedbc4d16f3d8a89991bb5e03312bef5def8488bcd0d617e0f"},
+    {"domain":"office","method":"always_no_memory","official_summary_equal":true,"predictions_sha256_equal":true,"opaque_key_commitment_equal":false,"repeat_artifact_id":9353636828,"repeat_artifact_digest":"sha256:71fbb0c4805a03df29ee93e6d937c952cbe4e09735bf440fdd1fb8a74dc90fb8"},
+    {"domain":"office","method":"raw_lexical","official_summary_equal":true,"predictions_sha256_equal":false,"opaque_key_commitment_equal":false,"repeat_artifact_id":9353636431,"repeat_artifact_digest":"sha256:4cf6afa12e11e6886fc718174837b72cdecd5b4c18d0939b3abff51c5f1cdf95"}
+  ],
+  "aggregate": {
+    "official_summary_equal": "8/8",
+    "opaque_key_commitment_changed": "8/8",
+    "raw_lexical_predictions_hash_changed": "4/4",
+    "always_no_memory_predictions_hash_changed": "0/4"
+  },
+  "interpretation": "Per-run opaque keys changed every time. Raw-lexical prediction artifacts changed because method audits contain opaque turn identifiers, while all eight official metric summaries remained exactly equal. The official scorer outcome is invariant to the randomized opaque identifier mapping for these endpoints."
+}

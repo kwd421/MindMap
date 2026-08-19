@@ -12,14 +12,13 @@ import sys
 from typing import Any
 
 from .adapter_guard import canonical_json_sha256
-from .gatemem_runner import (
-    ProtectedBenchmarkResult,
-    run_protected_benchmark,
-)
+from .gatemem_runner import ProtectedBenchmarkResult, run_protected_benchmark
 from .gatemem_session import PublicGateMemAgent
 
 PINNED_GATEMEM_COMMIT = "603f9f4b4ba4b77f043c20f85687fa016fd720b0"
-SUPPORTED_GATEMEM_DOMAINS = frozenset({"medical", "education", "household", "office"})
+SUPPORTED_GATEMEM_DOMAINS = frozenset(
+    {"medical", "education", "household", "office"}
+)
 
 
 class GateMemOfficialError(RuntimeError):
@@ -122,7 +121,9 @@ def _write_jsonl(path: Path, rows: Sequence[Mapping[str, Any]]) -> str:
     return digest.hexdigest()
 
 
-def _run_capture(command: Sequence[str], *, cwd: Path) -> subprocess.CompletedProcess[str]:
+def _run_capture(
+    command: Sequence[str], *, cwd: Path
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         list(command),
         cwd=cwd,
@@ -197,7 +198,9 @@ def verify_gatemem_checkout(
     )
 
 
-def _audit_rows(result: ProtectedBenchmarkResult) -> tuple[
+def _audit_rows(
+    result: ProtectedBenchmarkResult,
+) -> tuple[
     tuple[dict[str, Any], ...],
     tuple[dict[str, Any], ...],
     tuple[dict[str, Any], ...],
@@ -241,7 +244,9 @@ def run_official_scorer(
     if summary_path.is_file():
         value = json.loads(summary_path.read_text(encoding="utf-8"))
         if not isinstance(value, dict):
-            raise GateMemOfficialError("official GateMem summary is not a JSON object")
+            raise GateMemOfficialError(
+                "official GateMem summary is not a JSON object"
+            )
         summary = value
         summary_hash = sha256_file(summary_path)
 
@@ -260,7 +265,9 @@ def run_official_scorer(
             f"stderr:\n{process.stderr}"
         )
     if summary is None:
-        raise GateMemOfficialError("official GateMem scorer produced no summary.json")
+        raise GateMemOfficialError(
+            "official GateMem scorer produced no summary.json"
+        )
     return score
 
 
@@ -278,12 +285,13 @@ def run_external_gatemem(
     scorer_python: str = sys.executable,
     gate_by_action: bool = False,
     repository_revision: str | None = None,
+    opaque_id_secret: bytes | None = None,
 ) -> GateMemExternalRunResult:
-    """Execute a protected GateMem run without copying benchmark text to results.
+    """Execute a pinned GateMem run behind the opaque method firewall.
 
-    The output directory contains predictions, hash/audit manifests, metadata, and
-    official aggregate scorer outputs. Raw episodes/checkpoints are read from the
-    pinned checkout and are never written into this package's result directory.
+    The evaluator reads source data and restores source checkpoint IDs only in
+    scorer-facing rows. Source↔method mappings and the opaque key are never
+    written to the result directory or passed to the method process.
     """
 
     checkout = checkout.resolve()
@@ -301,20 +309,27 @@ def run_external_gatemem(
     episodes = load_jsonl(data_dir / "episodes.jsonl")
     checkpoints = load_jsonl(data_dir / "checkpoints.jsonl")
     if not episodes or not checkpoints:
-        raise GateMemOfficialError("GateMem domain contains no episodes or checkpoints")
+        raise GateMemOfficialError(
+            "GateMem domain contains no episodes or checkpoints"
+        )
 
     output_dir.mkdir(parents=True, exist_ok=True)
     protected = run_protected_benchmark(
         agent_factory=agent_factory,
         episodes=episodes,
         checkpoints=checkpoints,
+        opaque_id_secret=opaque_id_secret,
     )
     predictions_path = output_dir / "predictions.jsonl"
     predictions_hash = _write_jsonl(predictions_path, protected.predictions)
 
     episode_rows, turn_rows, checkpoint_rows = _audit_rows(protected)
-    episode_audit_hash = _write_jsonl(output_dir / "episode_audit.jsonl", episode_rows)
-    turn_audit_hash = _write_jsonl(output_dir / "turn_audit.jsonl", turn_rows)
+    episode_audit_hash = _write_jsonl(
+        output_dir / "episode_audit.jsonl", episode_rows
+    )
+    turn_audit_hash = _write_jsonl(
+        output_dir / "turn_audit.jsonl", turn_rows
+    )
     checkpoint_audit_hash = _write_jsonl(
         output_dir / "checkpoint_audit.jsonl", checkpoint_rows
     )
@@ -331,7 +346,7 @@ def run_external_gatemem(
         )
 
     metadata = {
-        "schema_version": "track-x-gatemem-external-run-v0.1",
+        "schema_version": "track-x-gatemem-external-run-v0.2",
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "domain": domain,
         "method": {
@@ -350,15 +365,29 @@ def run_external_gatemem(
             "turn_audits": len(protected.turn_audits),
             "checkpoint_audits": len(protected.checkpoint_audits),
         },
+        "opaque_identity_firewall": {
+            "enabled": True,
+            "key_commitment_sha256": protected.opaque_key_commitment_sha256,
+            "mapping_commitment_sha256": (
+                protected.opaque_mapping_commitment_sha256
+            ),
+            "mapping_count": protected.opaque_mapping_count,
+            "mapping_serialized": False,
+        },
         "artifact_sha256": {
             "predictions.jsonl": predictions_hash,
             "episode_audit.jsonl": episode_audit_hash,
             "turn_audit.jsonl": turn_audit_hash,
             "checkpoint_audit.jsonl": checkpoint_audit_hash,
         },
-        "official_score": asdict(official_score) if official_score is not None else None,
+        "official_score": (
+            asdict(official_score) if official_score is not None else None
+        ),
         "boundary": {
             "raw_benchmark_text_copied_to_result": False,
+            "source_identifiers_passed_to_method": False,
+            "source_as_of_turn_id_passed_to_method": False,
+            "relationships_passed_to_method": False,
             "hidden_checkpoint_fields_passed_to_method": False,
             "record_refs_passed_to_method": False,
             "memory_ops_passed_to_method": False,
@@ -367,7 +396,6 @@ def run_external_gatemem(
     }
     metadata_hash = _write_json(output_dir / "run_metadata.json", metadata)
 
-    # Re-read to ensure the written file is strict JSON and hash-addressable.
     written_metadata = json.loads(
         (output_dir / "run_metadata.json").read_text(encoding="utf-8")
     )

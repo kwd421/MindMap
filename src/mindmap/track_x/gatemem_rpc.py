@@ -70,16 +70,15 @@ def _optional_text(value: Any, field: str) -> str | None:
 
 
 def public_episode_from_json(payload: Mapping[str, Any]) -> PublicEpisode:
+    if "relationships" in payload:
+        raise GateMemRPCError(
+            "relationships are forbidden in the raw-language reset capability"
+        )
     principals_value = payload.get("principals") or []
-    relationships_value = payload.get("relationships") or []
     if not isinstance(principals_value, Sequence) or isinstance(
         principals_value, (str, bytes)
     ):
         raise GateMemRPCError("principals must be a list")
-    if not isinstance(relationships_value, Sequence) or isinstance(
-        relationships_value, (str, bytes)
-    ):
-        raise GateMemRPCError("relationships must be a list")
 
     principals: list[PublicPrincipal] = []
     for index, item in enumerate(principals_value):
@@ -96,16 +95,10 @@ def public_episode_from_json(payload: Mapping[str, Any]) -> PublicEpisode:
             )
         )
 
-    relationships: list[dict[str, Any]] = []
-    for index, item in enumerate(relationships_value):
-        row = _object(item, f"relationships[{index}]")
-        relationships.append(dict(row))
-
     return PublicEpisode(
         episode_id=_text(payload.get("episode_id"), "episode_id"),
         domain=_text(payload.get("domain"), "domain"),
         principals=tuple(principals),
-        relationships=tuple(relationships),
     )
 
 
@@ -123,10 +116,11 @@ def public_turn_from_json(payload: Mapping[str, Any]) -> PublicTurn:
 
 
 def public_checkpoint_from_json(payload: Mapping[str, Any]) -> PublicCheckpoint:
+    if "as_of_turn_id" in payload:
+        raise GateMemRPCError("source as_of_turn_id is forbidden in method queries")
     return PublicCheckpoint(
         checkpoint_id=_text(payload.get("checkpoint_id"), "checkpoint_id"),
         episode_id=_text(payload.get("episode_id"), "episode_id"),
-        as_of_turn_id=_text(payload.get("as_of_turn_id"), "as_of_turn_id"),
         asker_principal_id=_text(
             payload.get("asker_principal_id"), "asker_principal_id"
         ),
@@ -154,7 +148,7 @@ def serve_jsonl(
     input_stream: TextIO | None = None,
     output_stream: TextIO | None = None,
 ) -> None:
-    """Serve a public GateMem agent over a one-request-at-a-time JSONL protocol."""
+    """Serve an opaque public GateMem agent over a JSONL protocol."""
 
     source = input_stream or sys.stdin
     sink = output_stream or sys.stdout
@@ -390,7 +384,16 @@ def minimal_subprocess_environment(
     """
 
     env: dict[str, str] = {}
-    for key in ("PATH", "SYSTEMROOT", "WINDIR", "LANG", "LC_ALL", "TMPDIR", "TEMP", "TMP"):
+    for key in (
+        "PATH",
+        "SYSTEMROOT",
+        "WINDIR",
+        "LANG",
+        "LC_ALL",
+        "TMPDIR",
+        "TEMP",
+        "TMP",
+    ):
         value = os.environ.get(key)
         if value:
             env[key] = value
@@ -402,7 +405,13 @@ def minimal_subprocess_environment(
             for key in additions
             if any(
                 marker in key.upper()
-                for marker in ("TOKEN", "SECRET", "PASSWORD", "CREDENTIAL", "API_KEY")
+                for marker in (
+                    "TOKEN",
+                    "SECRET",
+                    "PASSWORD",
+                    "CREDENTIAL",
+                    "API_KEY",
+                )
             )
         }
         if forbidden:
