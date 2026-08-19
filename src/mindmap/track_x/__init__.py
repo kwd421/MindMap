@@ -27,6 +27,7 @@ from .benchmark_specs import (
 from .gatemem_baselines import (
     AlwaysNoMemoryGateMemAgent,
     LexicalHit,
+    PromptExposure,
     RawLexicalConfig,
     RawLexicalGateMemAgent,
     lexical_tokens,
@@ -46,6 +47,7 @@ from .gatemem_official import (
     sha256_file,
     verify_gatemem_checkout,
 )
+from .gatemem_opaque import GateMemOpaqueIds, OpaqueIdError
 from .gatemem_public import (
     GateMemAction,
     GateMemBoundaryError,
@@ -124,6 +126,7 @@ __all__ = [
     "GateMemExternalRunResult",
     "GateMemOfficialError",
     "GateMemOfficialScore",
+    "GateMemOpaqueIds",
     "GateMemPublicSession",
     "GateMemRPCError",
     "GateMemRPCTimeout",
@@ -134,10 +137,12 @@ __all__ = [
     "LOCOMO_PLUS",
     "LONGMEMEVAL_V2",
     "LexicalHit",
+    "OpaqueIdError",
     "OperatingPoint",
     "PINNED_GATEMEM_COMMIT",
     "PredictionCoverage",
     "PredictionCoverageError",
+    "PromptExposure",
     "ProtectedBenchmarkResult",
     "ProtectedEpisodeResult",
     "PublicCheckpoint",
