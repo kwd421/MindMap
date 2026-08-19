@@ -55,9 +55,13 @@ class PublicTurn:
 
 @dataclass(frozen=True, slots=True)
 class PublicCheckpoint:
-    """Method-facing query capability with no source chronology identifier."""
+    """Least-capability method query.
 
-    checkpoint_id: str
+    Source checkpoint identity and source chronology are evaluator-only. The
+    method receives the active opaque episode, requester identity/role, and raw
+    query text only.
+    """
+
     episode_id: str
     asker_principal_id: str
     asker_role: str
@@ -210,7 +214,7 @@ def public_checkpoint_from_raw(
     *,
     opaque_ids: GateMemOpaqueIds,
 ) -> PublicCheckpointBundle:
-    """Redact scorer fields and replace every dataset identity with a surrogate."""
+    """Redact scorer fields and omit source chronology/query identity capabilities."""
 
     redaction = strip_hidden_annotations(dict(raw), GATEMEM.hidden_paths)
     assert_hidden_annotations_absent(redaction.payload, GATEMEM.hidden_paths)
@@ -224,14 +228,12 @@ def public_checkpoint_from_raw(
             + ", ".join(unexpected)
         )
 
-    source_checkpoint_id = _required_text(
-        redaction.payload.get("checkpoint_id"), "checkpoint_id"
-    )
+    # Both fields are consumed only by the outer evaluator for identity and
+    # exact source chronology. Neither becomes a method capability.
+    _required_text(redaction.payload.get("checkpoint_id"), "checkpoint_id")
     source_episode_id = _required_text(
         redaction.payload.get("episode_id"), "episode_id"
     )
-    # The source as-of identifier is validated and consumed only by the outer
-    # runner. It is intentionally absent from PublicCheckpoint.
     _required_text(redaction.payload.get("as_of_turn_id"), "as_of_turn_id")
 
     asker = redaction.payload.get("asker") or {}
@@ -241,7 +243,6 @@ def public_checkpoint_from_raw(
         asker.get("principal_id"), "asker.principal_id"
     )
     checkpoint = PublicCheckpoint(
-        checkpoint_id=opaque_ids.query(source_episode_id, source_checkpoint_id),
         episode_id=opaque_ids.episode(source_episode_id),
         asker_principal_id=opaque_ids.principal(
             source_episode_id, source_asker_id
@@ -250,7 +251,10 @@ def public_checkpoint_from_raw(
         query_text=_required_text(redaction.payload.get("query_text"), "query_text"),
     )
     removed_paths = tuple(
-        sorted(set(redaction.removed_paths) | {"$.as_of_turn_id"})
+        sorted(
+            set(redaction.removed_paths)
+            | {"$.checkpoint_id", "$.as_of_turn_id"}
+        )
     )
     return PublicCheckpointBundle(
         checkpoint=checkpoint,
