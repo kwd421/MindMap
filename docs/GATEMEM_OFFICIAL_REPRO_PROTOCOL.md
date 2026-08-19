@@ -1,146 +1,191 @@
-# GateMem Official Public-Benchmark Reproducibility Gate
+# GateMem PR #46 Independent Reproduction Protocol
 
-**Status:** pre-result execution gate  
+**Status:** exact external endpoint reproduction gate  
 **Coordination:** Issue #4  
-**Upstream:** `rzhub/GateMem`  
-**Local prior work:** PRs #40–#43
+**Implementation under reproduction:** PR #46  
+**Audit branch:** `research/gatemem-official-repro-audit`
 
 ## 1. Purpose
 
-GateMem is the first external benchmark used for the MindMap governance subset because its official toolkit measures three deployment-relevant quantities:
+This branch independently reproduces the two deterministic GateMem endpoint
+controls already produced by PR #46. It does not rediscover a command in the
+older PR #43, implement a second BM25 runner, or extend the result into a
+MindMap effectiveness claim.
 
-- utility for authorized requests;
-- access-control violations;
-- active-forgetting failures after deletion.
-
-This gate prevents a local smoke test, a synthetic fixture, or a capability-reduced adapter test from being reported as an official public-benchmark result.
-
-## 2. Source-of-truth hierarchy
-
-The execution must preserve and identify:
-
-1. an exact upstream GateMem Git commit;
-2. the official public data tree from that commit;
-3. the official prediction/evaluation contract from that commit;
-4. the exact MindMap method commit;
-5. the exact model, prompt, retrieval, and cost configuration when model calls are used.
-
-The upstream repository and its own evaluator take precedence over copied metric code. Additional MindMap diagnostics are supplementary and must not replace official category metrics.
-
-## 3. Staged execution
-
-### R0 — source and boundary audit
-
-No API keys or model calls.
-
-- resolve and record the upstream `main` commit;
-- clone and hash the official repository/data tree;
-- verify the official README/toolkit identifies the four domains and the advertised episode/checkpoint scale;
-- fetch PR #43's exact head commit;
-- install and test the protected runner/BM25/always-abstain code;
-- inventory executable GateMem entry points and candidate commands;
-- scan method-facing code for forbidden evaluator-only field dependencies;
-- publish a machine-readable artifact and Issue #4 checkpoint.
-
-R0 is not a benchmark score.
-
-### R1 — no-API public baseline
-
-- run the always-abstain and raw-BM25 methods on the actual official public data;
-- generate one prediction row per official checkpoint;
-- verify IDs, row count, duplicates, and missing checkpoints against the official loader;
-- run every deterministic official metric available without a model judge;
-- preserve official per-domain/per-category counts;
-- report our safe-coverage diagnostics separately;
-- report CPU/runtime, bytes indexed, and retrieval operations.
-
-### R2 — fixed-model evaluation
-
-Only after R1 passes.
-
-Freeze:
-
-- model provider and immutable revision where available;
-- system/user prompts;
-- temperature/decoding;
-- maximum calls, retries, input/output tokens;
-- retrieval and answer-context budgets;
-- judge model and prompt if the official protocol requires a judge;
-- dated monetary prices.
-
-Run capacity-matched systems on identical checkpoint order and raw inputs.
-
-## 4. Method boundary
-
-The memory method must not receive evaluator-only information, including hidden labels, future turns, gold records, answer labels, deletion targets unavailable at that point, or official scoring annotations.
-
-The protected incremental runner must expose only the information causally available at each checkpoint. Any capability reduction relative to the official public task is documented as a separate condition rather than silently replacing the benchmark.
-
-## 5. Required baselines
-
-Minimum first run:
+The accepted target is:
 
 ```text
-A0 always abstain
-A1 raw BM25
-A2 official long-context or official raw baseline, when its required model is fixed
-G  complete generic event representation
-T  normalized MindMap representation
-T+raw normalized representation plus preregistered raw fallback
+MindMap producing commit:
+8fd14b3e631a8faeae46f2e73273a94c11a129f4
+
+Reference result snapshot:
+5e877bf5e4bfffda700ae0b8b5634bc734ac7e65
+
+GateMem:
+603f9f4b4ba4b77f043c20f85687fa016fd720b0
+
+Official scorer SHA-256:
+3d546a21778202959a9df12bac44c196a7f20a248cf5a2cb34f0d9b9c2623d8a
 ```
 
-A0 and A1 are pipeline/safety references, not competitive memory systems.
-
-## 6. Reporting
-
-Always report:
-
-- exact upstream and method commits;
-- official domains, episodes, and checkpoints actually loaded;
-- missing/duplicate prediction counts;
-- official utility, access-control, active-forgetting, and summary metric where available;
-- numerator and denominator for every violation rate;
-- answered/abstained counts and safe coverage;
-- per-domain and per-category results;
-- all failures, retries, and exclusions;
-- runtime, tokens/calls, and dated cost;
-- whether an LLM judge was used.
-
-Do not merge utility and governance into an unlabelled custom score. Do not interpret all-checkpoint abstention as safety success without its zero utility/coverage cost.
-
-## 7. MindMap claim boundary
-
-GateMem can test the governance subset:
+The reference snapshot is used only to obtain the committed eight-row endpoint
+table. Its byte SHA-256 is frozen as:
 
 ```text
-principal/requester scope
-AVAILABLE versus historical exposure
-revoke/delete/seal lifecycle
-DISCLOSE eligibility
-provenance and deletion propagation
+8d17aa6915f02e6abbc2f1c7b50410996ca354c2f177cec46c2cc5cfcd789212
 ```
 
-It does not, by itself, establish the value of:
+## 2. Why PR #43 discovery was superseded
+
+PR #43 introduced the raw lexical and always-no-memory agent classes, but it
+does not expose the official all-domain execution CLI. PR #46 subsequently
+added the protected official harness, opaque identity firewall, exact
+post-budget prompt accounting, and this reviewed command:
+
+```bash
+python experiments/gatemem_external.py \
+  --gatemem-checkout <PINNED_CHECKOUT> \
+  --domain <medical|office|education|household> \
+  --method <always_no_memory|raw_lexical> \
+  --output-dir <NEW_OUTPUT_DIR>
+```
+
+Therefore the earlier heuristic PR #43 command discovery is retained only as a
+historical failed interface probe. It is not evidence that a stable runner is
+missing.
+
+## 3. R0 — source, scorer, data, implementation and capability audit
+
+R0 performs no endpoint interpretation. It must:
+
+1. check out the exact MindMap producing commit;
+2. check out the exact GateMem commit;
+3. verify the official scorer hash;
+4. verify 2,218 unique official checkpoint IDs across the four domains;
+5. verify the frozen reference-row file hash;
+6. run the producing commit's complete test suite;
+7. inventory GateMem-related executable entry points;
+8. scan capability-boundary code for review-sensitive field names.
+
+Static name hits are review leads, not automatic leaks. Tests and evaluator
+adapters legitimately mention hidden fields. The actual boundary is tested by
+PR #46 and then exercised in R1.
+
+## 4. R1 — exact official B0/B1a reproduction
+
+R1 invokes only PR #46's reviewed CLI. It executes:
 
 ```text
-identity fork semantics
-same-principal unsynchronized replicas
-snapshot identity continuity
-first-person memory attribution
-world-branch versus mind-lineage separation
+4 domains
+× 2 deterministic methods
+× 2 fresh opaque-key replicates
+= 16 official scorer runs
 ```
 
-Those require the canonical topology suite or another benchmark that directly varies them.
+Methods:
 
-## 8. Acceptance criteria
+```text
+always_no_memory
+  deterministic task-action endpoint
+  zero utility, zero leakage, full utility over-refusal
 
-A result may be called an official GateMem public-benchmark run only when:
+raw_lexical
+  policy-unaware BM25 raw-context echo endpoint
+  no answer reader
+  not a capacity-matched QA baseline
+```
 
-- the upstream commit and data manifest are immutable in the artifact;
-- official IDs/checkpoint coverage are complete or exclusions are explicitly reported;
-- the official evaluator or a byte-for-byte validated equivalent produced the official metrics;
-- the method boundary audit passes;
-- result rows, configuration, logs, and costs are retained;
-- CI can regenerate the deterministic portions.
+For every run, R1 requires:
 
-Silence or a passing unit test is not benchmark evidence.
+- a new output directory;
+- the exact GateMem revision and official scorer hash;
+- the exact domain episode/checkpoint hashes;
+- a clean producing implementation and benchmark checkout;
+- the opaque identity firewall enabled;
+- source IDs, relationships, `record_refs`, `memory_ops`, source as-of
+  chronology, and hidden checkpoint fields absent from method capability;
+- exactly one method prediction, normalized prediction, and official score row
+  per checkpoint;
+- the pinned official scorer filenames:
+  `predictions.normalized.jsonl`, `scores.jsonl`, and `summary.json`;
+- all official metrics and denominators equal to the frozen eight-row table.
+
+R1 reports disagreement and fails closed if any value differs.
+
+## 5. R1b — fresh-key repeatability
+
+The two independent replicates must satisfy:
+
+```text
+official summaries equal:                    8/8
+opaque key commitments changed:              8/8
+opaque mapping commitments changed:          8/8
+raw_lexical prediction hashes changed:       4/4
+always_no_memory prediction hashes changed:  0/4
+```
+
+The raw lexical prediction artifacts change because protected method audits
+retain opaque turn identifiers. The official metric summary must remain
+invariant.
+
+## 6. Publishable versus protected material
+
+Protected endpoint output contains raw benchmark text in predictions and audit
+records. It is never uploaded by this branch.
+
+The workflow destroys the protected output tree after validation and uploads
+only:
+
+```text
+STATUS.md
+reproduction.json
+repeatability.json
+replicate_1_rows.csv
+replicate_2_rows.csv
+run_records.json
+SHA256SUMS
+execution logs that contain no prediction rows
+```
+
+The old `results/gatemem_official_audit/` folder records the superseded PR #43
+probe. It is not the current result namespace and must not be cited as a
+benchmark result.
+
+## 7. Interpretation boundary
+
+A successful R1 establishes only that the published PR #46 deterministic
+endpoint controls are independently reproducible on the pinned official
+benchmark.
+
+It does not estimate:
+
+- MindMap effectiveness;
+- G-flat or T-normalized memory;
+- policy/availability/provenance filtering;
+- raw fallback;
+- a shared answer reader;
+- checkpoint-isolated stateful methods;
+- native GateMem relationship-capability compatibility;
+- a cross-domain aggregate effect.
+
+The next causal comparison must use one frozen answer reader and matched
+retrieval, token, call, retry, latency, and cost budgets across raw retrieval,
+pre-reader governance filtering, G-flat, T-normalized, and any T+raw fallback
+condition.
+
+## 8. Workflow and provenance policy
+
+The active workflows are:
+
+```text
+GateMem PR46 R0 source and boundary audit
+GateMem PR46 R1 exact endpoint reproduction
+```
+
+The previous self-mutating persistence workflow is removed. CI artifacts and
+Issue #4 checkpoints bind the audit source commit to the execution. After a
+successful run, a reviewed publishable artifact may be committed manually
+under a new result namespace; the workflow does not advance its own source
+branch.
+
+No approval, scientific acceptance, or merge is inferred from silence.

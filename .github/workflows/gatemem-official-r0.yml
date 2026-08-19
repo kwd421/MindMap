@@ -1,4 +1,4 @@
-name: GateMem official R0 audit
+name: GateMem PR46 R0 source and boundary audit
 
 on:
   push:
@@ -8,160 +8,127 @@ on:
       - docs/GATEMEM_OFFICIAL_REPRO_PROTOCOL.md
       - experiments/audit_gatemem_official.py
       - tests/test_audit_gatemem_official.py
+      - tests/test_reproduce_gatemem_pr46.py
       - .github/workflows/gatemem-official-r0.yml
   workflow_dispatch:
 
 permissions:
   contents: read
   issues: write
-  pull-requests: read
+
+env:
+  MINDMAP_PRODUCING_COMMIT: 8fd14b3e631a8faeae46f2e73273a94c11a129f4
+  MINDMAP_REFERENCE_COMMIT: 5e877bf5e4bfffda700ae0b8b5634bc734ac7e65
+  GATEMEM_COMMIT: 603f9f4b4ba4b77f043c20f85687fa016fd720b0
+  GATEMEM_SCORER_SHA256: 3d546a21778202959a9df12bac44c196a7f20a248cf5a2cb34f0d9b9c2623d8a
+  REFERENCE_ROWS_SHA256: 8d17aa6915f02e6abbc2f1c7b50410996ca354c2f177cec46c2cc5cfcd789212
 
 jobs:
   r0:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
-      - name: Checkout audit branch
+      - name: Checkout independent audit source
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - name: Prepare audit directory
-        run: mkdir -p /tmp/gatemem-r0
+      - name: Prepare artifact directory
+        run: mkdir -p /tmp/gatemem-pr46-r0
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Run audit regression tests
+      - name: Run independent audit unit tests
         run: |
           set -euo pipefail
           python -m unittest discover \
             -s tests \
-            -p 'test_audit_gatemem_official.py' \
-            -v | tee /tmp/gatemem-r0/audit-unittest.log
+            -p 'test_*gatemem*.py' \
+            -v | tee /tmp/gatemem-pr46-r0/audit-unittest.log
 
-      - name: Resolve exact public revisions
-        id: revisions
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Clone exact producing implementation and official benchmark
         run: |
           set -euo pipefail
-          git clone --quiet https://github.com/rzhub/GateMem.git /tmp/GateMem
-          GATEMEM_SHA="$(git -C /tmp/GateMem rev-parse HEAD)"
+          git clone --filter=blob:none https://github.com/kwd421/MindMap.git /tmp/MindMap-pr46
+          git -C /tmp/MindMap-pr46 fetch --quiet origin "$MINDMAP_PRODUCING_COMMIT"
+          git -C /tmp/MindMap-pr46 checkout --quiet --detach "$MINDMAP_PRODUCING_COMMIT"
+          test "$(git -C /tmp/MindMap-pr46 rev-parse HEAD)" = "$MINDMAP_PRODUCING_COMMIT"
+          test -z "$(git -C /tmp/MindMap-pr46 status --porcelain --untracked-files=all)"
 
-          PR43_SHA="$(gh api repos/kwd421/MindMap/pulls/43 --jq .head.sha)"
-          PR43_REF="$(gh api repos/kwd421/MindMap/pulls/43 --jq .head.ref)"
-          git clone --quiet https://github.com/kwd421/MindMap.git /tmp/MindMap-pr43
-          git -C /tmp/MindMap-pr43 fetch --quiet origin "$PR43_SHA"
-          git -C /tmp/MindMap-pr43 checkout --quiet --detach "$PR43_SHA"
+          git -C /tmp/MindMap-pr46 fetch --quiet origin "$MINDMAP_REFERENCE_COMMIT"
+          git -C /tmp/MindMap-pr46 show \
+            "$MINDMAP_REFERENCE_COMMIT:results/gatemem_official_endpoints_v0_1/rows.csv" \
+            > /tmp/gatemem-pr46-r0/reference_rows.csv
+          echo "$REFERENCE_ROWS_SHA256  /tmp/gatemem-pr46-r0/reference_rows.csv" \
+            | sha256sum -c -
 
-          echo "gatemem_sha=$GATEMEM_SHA" >> "$GITHUB_OUTPUT"
-          echo "pr43_sha=$PR43_SHA" >> "$GITHUB_OUTPUT"
-          echo "pr43_ref=$PR43_REF" >> "$GITHUB_OUTPUT"
-          printf 'GateMem upstream: %s\nPR #43: %s (%s)\n' \
-            "$GATEMEM_SHA" "$PR43_SHA" "$PR43_REF"
+          git clone --filter=blob:none https://github.com/rzhub/GateMem.git /tmp/GateMem
+          git -C /tmp/GateMem checkout --quiet --detach "$GATEMEM_COMMIT"
+          test "$(git -C /tmp/GateMem rev-parse HEAD)" = "$GATEMEM_COMMIT"
+          test -z "$(git -C /tmp/GateMem status --porcelain --untracked-files=all)"
+          echo "$GATEMEM_SCORER_SHA256  /tmp/GateMem/bench/eval/scorer.py" \
+            | sha256sum -c -
 
-      - name: Run official source and method-boundary audit
+      - name: Install and test the exact PR46 producing commit
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -e '/tmp/MindMap-pr46[dev]'
+          python -m pip install numpy tqdm PyYAML requests scikit-learn
+          python -m pytest -q /tmp/MindMap-pr46/tests \
+            | tee /tmp/gatemem-pr46-r0/producing-commit-pytest.log
+
+      - name: Audit source, scorer, data and capability boundary
         run: |
           set -euo pipefail
           python experiments/audit_gatemem_official.py \
             --gatemem-root /tmp/GateMem \
-            --pr43-root /tmp/MindMap-pr43 \
-            --output /tmp/gatemem-r0/audit.json \
-            | tee /tmp/gatemem-r0/audit.log
+            --mindmap-root /tmp/MindMap-pr46 \
+            --output /tmp/gatemem-pr46-r0/audit.json \
+            --expected-gatemem-commit "$GATEMEM_COMMIT" \
+            --expected-mindmap-commit "$MINDMAP_PRODUCING_COMMIT" \
+            --expected-scorer-sha256 "$GATEMEM_SCORER_SHA256" \
+            | tee /tmp/gatemem-pr46-r0/audit.stdout.log
 
-      - name: Install and test PR #43 code
-        run: |
-          set -euo pipefail
-          python -m pip install --upgrade pip
-          if [ -f /tmp/MindMap-pr43/pyproject.toml ]; then
-            python -m pip install -e '/tmp/MindMap-pr43[dev]'
-          elif [ -f /tmp/MindMap-pr43/requirements.txt ]; then
-            python -m pip install -r /tmp/MindMap-pr43/requirements.txt
-          fi
-          python -m compileall -q /tmp/MindMap-pr43
-          if [ -d /tmp/MindMap-pr43/tests ]; then
-            python -m pytest -q /tmp/MindMap-pr43/tests \
-              | tee /tmp/gatemem-r0/pr43-pytest.log
-          else
-            echo 'PR #43 has no tests directory.' | tee /tmp/gatemem-r0/pr43-pytest.log
-          fi
-
-      - name: Inventory executable GateMem entry points
-        run: |
-          set -euo pipefail
-          python - <<'PY' | tee /tmp/gatemem-r0/entrypoints.log
-          from __future__ import annotations
-          import json
-          from pathlib import Path
-
-          root = Path('/tmp/MindMap-pr43')
-          rows = []
-          for path in sorted(root.rglob('*.py')):
-              text = path.read_text(encoding='utf-8', errors='ignore')
-              if 'if __name__' in text and ('gatemem' in text.lower() or 'gatemem' in path.as_posix().lower()):
-                  rows.append(path.relative_to(root).as_posix())
-          print(json.dumps(rows, indent=2))
-          PY
-
-      - name: Build durable summary
-        env:
-          GATEMEM_SHA: ${{ steps.revisions.outputs.gatemem_sha }}
-          PR43_SHA: ${{ steps.revisions.outputs.pr43_sha }}
-          PR43_REF: ${{ steps.revisions.outputs.pr43_ref }}
+      - name: Build R0 summary
         run: |
           set -euo pipefail
           python - <<'PY'
-          from __future__ import annotations
           import json
-          import os
           from pathlib import Path
 
-          audit = json.loads(Path('/tmp/gatemem-r0/audit.json').read_text())
+          audit = json.loads(
+              Path('/tmp/gatemem-pr46-r0/audit.json').read_text()
+          )
           upstream = audit['upstream']
           inventory = upstream['data_inventory']
-          boundary = audit['mindmap_pr43']['boundary_scan']
-          summary = {
-              'classification': audit['classification'],
-              'gatemem_commit': os.environ['GATEMEM_SHA'],
-              'pr43_commit': os.environ['PR43_SHA'],
-              'pr43_ref': os.environ['PR43_REF'],
-              'official_contract_ok': upstream['required_contract_ok'],
-              'json_files': inventory['json_files'],
-              'files_by_domain': inventory['files_by_domain'],
-              'explicit_checkpoint_ids': inventory['unique_explicit_checkpoint_ids'],
-              'checkpoint_container_total': inventory['checkpoint_container_total'],
-              'data_manifest_rows': upstream['data_manifest_rows'],
-              'data_manifest_bytes': upstream['data_manifest_bytes'],
-              'pr43_candidate_files': len(boundary['candidate_files']),
-              'static_forbidden_token_categories': sorted(boundary['token_findings']),
-          }
-          Path('/tmp/gatemem-r0/summary.json').write_text(
-              json.dumps(summary, indent=2, sort_keys=True) + '\n'
-          )
-          markdown = [
-              '# GateMem official R0 audit',
+          target = audit['mindmap_target']
+          boundary = target['boundary_scan']
+          lines = [
+              '# GateMem PR #46 R0 audit',
               '',
-              '> Source/boundary audit only — not a benchmark score.',
+              '> Exact-source and capability audit; not an endpoint rerun or architecture result.',
               '',
-              f"- GateMem commit: `{summary['gatemem_commit']}`",
-              f"- PR #43 commit: `{summary['pr43_commit']}` (`{summary['pr43_ref']}`)",
-              f"- Official README/toolkit contract: `{summary['official_contract_ok']}`",
-              f"- Official JSON/JSONL files: `{summary['json_files']}`",
-              f"- Files by domain: `{summary['files_by_domain']}`",
-              f"- Explicit checkpoint IDs discovered: `{summary['explicit_checkpoint_ids']}`",
-              f"- Rows in checkpoint-like containers: `{summary['checkpoint_container_total']}`",
-              f"- Data manifest: `{summary['data_manifest_rows']}` files / `{summary['data_manifest_bytes']}` bytes",
-              f"- PR #43 GateMem-related candidate files: `{summary['pr43_candidate_files']}`",
-              f"- Static review token categories: `{summary['static_forbidden_token_categories']}`",
+              f"- MindMap producing commit: `{target['commit']}`",
+              f"- GateMem commit: `{upstream['commit']}`",
+              f"- Official scorer SHA-256: `{upstream['scorer_sha256']}`",
+              f"- Official contract valid: `{upstream['required_contract_ok']}`",
+              f"- Official checkpoint IDs: `{inventory['unique_explicit_checkpoint_ids']}`",
+              f"- Official data files: `{inventory['json_files']}`",
+              f"- Files by domain: `{inventory['files_by_domain']}`",
+              f"- GateMem-related executable entry points: `{target['entry_points']}`",
+              f"- Static review-token categories: `{sorted(boundary['token_findings'])}`",
               '',
-              'Static token hits are review leads, not automatic leakage findings.',
+              'Static token hits are review leads only. The R1 workflow executes the exact reviewed CLI and validates complete official outputs.',
           ]
-          Path('/tmp/gatemem-r0/summary.md').write_text('\n'.join(markdown) + '\n')
+          Path('/tmp/gatemem-pr46-r0/STATUS.md').write_text(
+              '\n'.join(lines) + '\n'
+          )
           PY
-          cat /tmp/gatemem-r0/summary.md >> "$GITHUB_STEP_SUMMARY"
+          cat /tmp/gatemem-pr46-r0/STATUS.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Post R0 checkpoint to Issue #4
         if: always()
@@ -169,27 +136,26 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          STATUS='${{ job.status }}'
           {
-            echo '## [Session B] GateMem official R0 CI checkpoint'
+            echo '## [Session B] GateMem PR #46 independent R0 checkpoint'
             echo
-            echo "Workflow run: \`${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\`"
-            echo "Job status: \`${STATUS}\`"
+            echo "Run: \`${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\`"
+            echo "Status: \`${{ job.status }}\`"
             echo
-            if [ -f /tmp/gatemem-r0/summary.md ]; then
-              tail -n +2 /tmp/gatemem-r0/summary.md
+            if [ -f /tmp/gatemem-pr46-r0/STATUS.md ]; then
+              tail -n +2 /tmp/gatemem-pr46-r0/STATUS.md
             else
-              echo 'The audit failed before a summary could be generated. Inspect the run logs; no benchmark result is accepted.'
+              echo 'R0 failed before a summary was produced. No endpoint reproduction is accepted.'
             fi
-            echo
-            echo 'Next gate after a successful R0: execute PR #43 always-abstain and raw-BM25 on the pinned official data and validate one prediction per official checkpoint.'
-          } > /tmp/gatemem-r0-comment.md
-          gh issue comment 4 --repo "$GITHUB_REPOSITORY" --body-file /tmp/gatemem-r0-comment.md
+          } > /tmp/gatemem-pr46-r0/issue-comment.md
+          gh issue comment 4 --repo "$GITHUB_REPOSITORY" \
+            --body-file /tmp/gatemem-pr46-r0/issue-comment.md
 
-      - name: Upload reproducibility artifact
+      - name: Upload R0 audit artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: gatemem-official-r0
-          path: /tmp/gatemem-r0
+          name: gatemem-pr46-r0-audit
+          path: /tmp/gatemem-pr46-r0
           if-no-files-found: error
+          retention-days: 30

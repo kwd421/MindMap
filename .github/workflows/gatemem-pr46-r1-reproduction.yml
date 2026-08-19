@@ -1,0 +1,163 @@
+name: GateMem PR46 R1 exact endpoint reproduction
+
+on:
+  push:
+    branches:
+      - research/gatemem-official-repro-audit
+    paths:
+      - docs/GATEMEM_OFFICIAL_REPRO_PROTOCOL.md
+      - experiments/reproduce_gatemem_pr46.py
+      - tests/test_reproduce_gatemem_pr46.py
+      - .github/workflows/gatemem-pr46-r1-reproduction.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: gatemem-pr46-r1-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MINDMAP_PRODUCING_COMMIT: 8fd14b3e631a8faeae46f2e73273a94c11a129f4
+  MINDMAP_REFERENCE_COMMIT: 5e877bf5e4bfffda700ae0b8b5634bc734ac7e65
+  GATEMEM_COMMIT: 603f9f4b4ba4b77f043c20f85687fa016fd720b0
+  GATEMEM_SCORER_SHA256: 3d546a21778202959a9df12bac44c196a7f20a248cf5a2cb34f0d9b9c2623d8a
+  REFERENCE_ROWS_SHA256: 8d17aa6915f02e6abbc2f1c7b50410996ca354c2f177cec46c2cc5cfcd789212
+
+jobs:
+  reproduce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout independent audit source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Prepare reproduction root
+        run: mkdir -p /tmp/gatemem-pr46-reproduction
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run independent reproduction unit tests
+        run: |
+          set -euo pipefail
+          python -m unittest discover \
+            -s tests \
+            -p 'test_reproduce_gatemem_pr46.py' \
+            -v | tee /tmp/gatemem-pr46-reproduction/reproduction-unittest.log
+
+      - name: Clone exact producing implementation and reference manifest
+        run: |
+          set -euo pipefail
+          git clone --filter=blob:none https://github.com/kwd421/MindMap.git /tmp/MindMap-pr46
+          git -C /tmp/MindMap-pr46 fetch --quiet origin "$MINDMAP_PRODUCING_COMMIT"
+          git -C /tmp/MindMap-pr46 checkout --quiet --detach "$MINDMAP_PRODUCING_COMMIT"
+          test "$(git -C /tmp/MindMap-pr46 rev-parse HEAD)" = "$MINDMAP_PRODUCING_COMMIT"
+          test -z "$(git -C /tmp/MindMap-pr46 status --porcelain --untracked-files=all)"
+
+          git -C /tmp/MindMap-pr46 fetch --quiet origin "$MINDMAP_REFERENCE_COMMIT"
+          git -C /tmp/MindMap-pr46 show \
+            "$MINDMAP_REFERENCE_COMMIT:results/gatemem_official_endpoints_v0_1/rows.csv" \
+            > /tmp/gatemem-pr46-reproduction/reference_rows.csv
+          echo "$REFERENCE_ROWS_SHA256  /tmp/gatemem-pr46-reproduction/reference_rows.csv" \
+            | sha256sum -c -
+
+      - name: Clone exact official GateMem checkout
+        run: |
+          set -euo pipefail
+          git clone --filter=blob:none https://github.com/rzhub/GateMem.git /tmp/GateMem
+          git -C /tmp/GateMem checkout --quiet --detach "$GATEMEM_COMMIT"
+          test "$(git -C /tmp/GateMem rev-parse HEAD)" = "$GATEMEM_COMMIT"
+          test -z "$(git -C /tmp/GateMem status --porcelain --untracked-files=all)"
+          echo "$GATEMEM_SCORER_SHA256  /tmp/GateMem/bench/eval/scorer.py" \
+            | sha256sum -c -
+
+      - name: Install exact runtime
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -e '/tmp/MindMap-pr46[dev]'
+          python -m pip install numpy tqdm PyYAML requests scikit-learn
+          python -m pip freeze \
+            | sort \
+            > /tmp/gatemem-pr46-reproduction/pip-freeze.txt
+          python --version \
+            > /tmp/gatemem-pr46-reproduction/python-version.txt
+
+      - name: Enforce producing-commit tests before endpoint execution
+        run: |
+          set -euo pipefail
+          python -m pytest -q /tmp/MindMap-pr46/tests \
+            | tee /tmp/gatemem-pr46-reproduction/producing-commit-pytest.log
+
+      - name: Run two fresh-key exact endpoint replicates
+        run: |
+          set -euo pipefail
+          python experiments/reproduce_gatemem_pr46.py \
+            --mindmap-root /tmp/MindMap-pr46 \
+            --gatemem-root /tmp/GateMem \
+            --reference-rows /tmp/gatemem-pr46-reproduction/reference_rows.csv \
+            --output-root /tmp/gatemem-pr46-reproduction/run \
+            --expected-mindmap-commit "$MINDMAP_PRODUCING_COMMIT" \
+            --reference-manifest-commit "$MINDMAP_REFERENCE_COMMIT" \
+            --audit-source-commit "$GITHUB_SHA" \
+            | tee /tmp/gatemem-pr46-reproduction/reproduction.stdout.log
+
+      - name: Validate publishable-only artifact
+        run: |
+          set -euo pipefail
+          test ! -e /tmp/gatemem-pr46-reproduction/run/protected
+          test -f /tmp/gatemem-pr46-reproduction/run/publishable/STATUS.md
+          test -f /tmp/gatemem-pr46-reproduction/run/publishable/reproduction.json
+          find /tmp/gatemem-pr46-reproduction/run/publishable \
+            -type f -print0 \
+            | sort -z \
+            | xargs -0 sha256sum \
+            > /tmp/gatemem-pr46-reproduction/run/publishable/SHA256SUMS
+          cat /tmp/gatemem-pr46-reproduction/run/publishable/STATUS.md \
+            >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Post R1 reproduction checkpoint to Issue #4
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          {
+            echo '## [Session B] GateMem PR #46 independent R1 reproduction'
+            echo
+            echo "Run: \`${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\`"
+            echo "Status: \`${{ job.status }}\`"
+            echo
+            if [ -f /tmp/gatemem-pr46-reproduction/run/publishable/STATUS.md ]; then
+              tail -n +2 /tmp/gatemem-pr46-reproduction/run/publishable/STATUS.md
+            else
+              echo 'Exact endpoint reproduction failed before an accepted publishable summary was produced.'
+              echo
+              echo 'No benchmark result or disagreement claim is accepted from this run.'
+            fi
+          } > /tmp/gatemem-pr46-reproduction/issue-comment.md
+          gh issue comment 4 --repo "$GITHUB_REPOSITORY" \
+            --body-file /tmp/gatemem-pr46-reproduction/issue-comment.md
+
+      - name: Upload publishable reproduction and execution logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gatemem-pr46-r1-independent-reproduction
+          path: |
+            /tmp/gatemem-pr46-reproduction/run/publishable
+            /tmp/gatemem-pr46-reproduction/run/logs
+            /tmp/gatemem-pr46-reproduction/reproduction-unittest.log
+            /tmp/gatemem-pr46-reproduction/producing-commit-pytest.log
+            /tmp/gatemem-pr46-reproduction/pip-freeze.txt
+            /tmp/gatemem-pr46-reproduction/python-version.txt
+            /tmp/gatemem-pr46-reproduction/reproduction.stdout.log
+          if-no-files-found: warn
+          retention-days: 30
