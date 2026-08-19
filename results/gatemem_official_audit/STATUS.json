@@ -1,9 +1,10 @@
 {
   "artifact_sha256": {
+    "audit-unittest.log": "2ec6551953edc83cba137acb4783933acccbd394d432cc173aaac4ff35890cc5",
     "pr43/compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "pr43/install.log": "adfaef656aafd01c83ab4b46da235cb593fd6f12faf676db4b5623d7e59903a5",
+    "pr43/install.log": "20267839e73a786871875fbfd37240bb02f12df099e7cea0f9519643a2b2f17d",
     "pr43/pip-upgrade.log": "3b584a1a7f8226a1ba9c7d4b19842ee843fc7e4f1998a20e4390d5b3b0fc3e55",
-    "pr43/pytest.log": "5b94aa6ace8212dd20d8ca81085456a6ba6277f4c898f2637146eb49ab59995c",
+    "pr43/pytest.log": "887e906dfbdac66b1667b0ac5eeda85c0f52f4811a0c1fc44469765bbd31a4b8",
     "r0/audit.json": "fc548bd09deaf3bd61d796d68edbb345762514e7777ae29af138fb0a9b535b7e",
     "r0/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "r0/stdout.log": "3f562699f188c7a3e8de7318585cc2f9a2fc8958a44033476460ed08598476f0",

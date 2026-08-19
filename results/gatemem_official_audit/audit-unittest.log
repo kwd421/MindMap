@@ -1,0 +1,6 @@
+test_counts_keys_without_using_json_values_as_counter_deltas (test_audit_gatemem_official.JsonInventoryTest.test_counts_keys_without_using_json_values_as_counter_deltas) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+OK
