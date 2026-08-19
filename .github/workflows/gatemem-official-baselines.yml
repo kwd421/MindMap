@@ -43,7 +43,16 @@ jobs:
       - name: Install MindMap and official scorer runtime
         run: |
           python -m pip install -e '.[dev]'
-          python -m pip install numpy tqdm PyYAML requests
+          # The pinned scorer imports GateMem's complete agent registry even
+          # when no LLM judge or retrieval agent is instantiated. Install only
+          # the eager deterministic import set; model/embedding stacks remain
+          # excluded from these CPU endpoint controls.
+          python -m pip install \
+            numpy \
+            tqdm \
+            PyYAML \
+            requests \
+            scikit-learn
 
       - name: Checkout pinned GateMem
         run: |
