@@ -8,10 +8,7 @@ import json
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
-from mindmap.track_x.v03_context_gate import (
-    ContextGateRow,
-    evaluate_development_context_gate,
-)
+from mindmap.track_x.v03_context_gate import evaluate_development_context_gate
 
 
 def _canonical_json_bytes(value: Any) -> bytes:
@@ -70,12 +67,11 @@ def run(*, repository_root: Path, output_dir: Path) -> dict[str, object]:
             "rows.csv": rows_hash,
             "summary.json": summary_hash,
         },
+        "self_hash_policy": (
+            "run_metadata.json does not embed a recursive hash of itself; "
+            "external manifests hash the completed file"
+        ),
     }
-    metadata_hash = _write_json(output_dir / "run_metadata.json", metadata)
-    metadata["artifact_sha256"]["run_metadata.json"] = metadata_hash
-    # Re-write after inserting its first-pass content hash. The external file
-    # hash remains the filesystem digest printed by the CLI, while the embedded
-    # value commits to the metadata fields before self-reference.
     _write_json(output_dir / "run_metadata.json", metadata)
     return summary
 
