@@ -1,0 +1,135 @@
+name: GateMem PR43 R1 discovery
+
+on:
+  push:
+    branches:
+      - research/gatemem-official-repro-audit
+    paths:
+      - experiments/run_pr43_gatemem_noapi.py
+      - .github/workflows/gatemem-pr43-r1-discovery.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Clone exact upstream and PR #43 heads
+        id: revisions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git clone --quiet https://github.com/rzhub/GateMem.git /tmp/GateMem
+          GATEMEM_SHA="$(git -C /tmp/GateMem rev-parse HEAD)"
+          PR43_SHA="$(gh api repos/kwd421/MindMap/pulls/43 --jq .head.sha)"
+          PR43_REF="$(gh api repos/kwd421/MindMap/pulls/43 --jq .head.ref)"
+          git clone --quiet https://github.com/kwd421/MindMap.git /tmp/MindMap-pr43
+          git -C /tmp/MindMap-pr43 fetch --quiet origin "$PR43_SHA"
+          git -C /tmp/MindMap-pr43 checkout --quiet --detach "$PR43_SHA"
+          echo "gatemem_sha=$GATEMEM_SHA" >> "$GITHUB_OUTPUT"
+          echo "pr43_sha=$PR43_SHA" >> "$GITHUB_OUTPUT"
+          echo "pr43_ref=$PR43_REF" >> "$GITHUB_OUTPUT"
+
+      - name: Install PR #43
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          if [ -f /tmp/MindMap-pr43/pyproject.toml ]; then
+            python -m pip install -e '/tmp/MindMap-pr43[dev]'
+          elif [ -f /tmp/MindMap-pr43/requirements.txt ]; then
+            python -m pip install -r /tmp/MindMap-pr43/requirements.txt
+          fi
+
+      - name: Discover and attempt no-API public entry points
+        run: |
+          set -euo pipefail
+          python experiments/run_pr43_gatemem_noapi.py \
+            --pr43-root /tmp/MindMap-pr43 \
+            --gatemem-root /tmp/GateMem \
+            --output-root /tmp/gatemem-pr43-r1 \
+            | tee /tmp/gatemem-pr43-r1.log
+          cp /tmp/gatemem-pr43-r1.log /tmp/gatemem-pr43-r1/discovery.stdout.log
+
+      - name: Build summary
+        env:
+          GATEMEM_SHA: ${{ steps.revisions.outputs.gatemem_sha }}
+          PR43_SHA: ${{ steps.revisions.outputs.pr43_sha }}
+          PR43_REF: ${{ steps.revisions.outputs.pr43_ref }}
+        run: |
+          python - <<'PY'
+          from __future__ import annotations
+          import json
+          import os
+          from pathlib import Path
+
+          result = json.loads(Path('/tmp/gatemem-pr43-r1/discovery.json').read_text())
+          attempts = result['attempts']
+          successes = result['successes']
+          rows = [
+              '# GateMem PR #43 R1 discovery',
+              '',
+              '> Exploratory command discovery only. A successful process is not yet an official score.',
+              '',
+              f"- GateMem commit: `{os.environ['GATEMEM_SHA']}`",
+              f"- PR #43 commit: `{os.environ['PR43_SHA']}` (`{os.environ['PR43_REF']}`)",
+              f"- Candidate entry points: `{len(result['candidates'])}`",
+              f"- Commands attempted: `{len(attempts)}`",
+              f"- Data-producing process successes: `{sorted(successes)}`",
+          ]
+          if successes:
+              rows += ['', 'Successful discovery surfaces:']
+              for method, item in sorted(successes.items()):
+                  command = ' '.join(item['command'])
+                  rows.append(f"- `{method}` via `{item['candidate']}`: `{command}`")
+              rows += [
+                  '',
+                  'These outputs still require official checkpoint-coverage and metric validation before acceptance.',
+              ]
+          else:
+              rows += [
+                  '',
+                  'No automatically discoverable data-producing CLI was found. This is an explicit R1 interface blocker; use the artifact to expose a stable command/API in PR #43 rather than inventing a second runner.',
+              ]
+          Path('/tmp/gatemem-pr43-r1/summary.md').write_text('\n'.join(rows) + '\n')
+          PY
+          cat /tmp/gatemem-pr43-r1/summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Post discovery checkpoint to Issue #4
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          {
+            echo '## [Session B] GateMem PR #43 R1 command-discovery checkpoint'
+            echo
+            echo "Workflow run: \`${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\`"
+            echo "Job status: \`${{ job.status }}\`"
+            echo
+            if [ -f /tmp/gatemem-pr43-r1/summary.md ]; then
+              tail -n +2 /tmp/gatemem-pr43-r1/summary.md
+            else
+              echo 'Discovery failed before summary generation. No public benchmark result is accepted.'
+            fi
+          } > /tmp/gatemem-r1-comment.md
+          gh issue comment 4 --repo "$GITHUB_REPOSITORY" --body-file /tmp/gatemem-r1-comment.md
+
+      - name: Upload discovery artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gatemem-pr43-r1-discovery
+          path: /tmp/gatemem-pr43-r1
+          if-no-files-found: error
