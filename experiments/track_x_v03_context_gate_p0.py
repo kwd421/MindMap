@@ -8,7 +8,9 @@ import json
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
-from mindmap.track_x.v03_context_gate import evaluate_development_context_gate
+from mindmap.track_x.v03_context_gate_report import (
+    evaluate_development_context_gate_report,
+)
 
 
 def _canonical_json_bytes(value: Any) -> bytes:
@@ -44,7 +46,7 @@ def _write_csv(path: Path, rows: Iterable[Mapping[str, object]]) -> str:
 
 def run(*, repository_root: Path, output_dir: Path) -> dict[str, object]:
     output_dir.mkdir(parents=True, exist_ok=True)
-    rows, summary = evaluate_development_context_gate(repository_root)
+    rows, summary = evaluate_development_context_gate_report(repository_root)
 
     row_dicts = [row.to_dict() for row in rows]
     rows_hash = _write_csv(output_dir / "rows.csv", row_dicts)
