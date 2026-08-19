@@ -9,7 +9,7 @@ from typing import Final
 
 
 _ID_HEX_LENGTH: Final = 32
-_ALLOWED_NAMESPACES: Final = frozenset({"episode", "principal", "turn", "query"})
+_ALLOWED_NAMESPACES: Final = frozenset({"episode", "principal", "turn"})
 
 
 class OpaqueIdError(ValueError):
@@ -22,8 +22,9 @@ class GateMemOpaqueIds:
 
     The secret and mapping object must never cross into the method subprocess,
     prompt, method audit, or scorer-facing prediction. Method IDs are scoped and
-    non-sequential so public GateMem source IDs cannot reveal checkpoint class,
-    episode template, or turn position.
+    non-sequential so public GateMem source IDs cannot reveal episode templates,
+    principal identity, or turn position. Checkpoint IDs are not method
+    capabilities at all; the evaluator rejoins them only after method return.
     """
 
     _secret: bytes = field(repr=False)
@@ -119,11 +120,6 @@ class GateMemOpaqueIds:
 
     def turn(self, source_episode_id: str, source_turn_id: str) -> str:
         return self.method_id("turn", source_turn_id, scope=source_episode_id)
-
-    def query(self, source_episode_id: str, source_checkpoint_id: str) -> str:
-        return self.method_id(
-            "query", source_checkpoint_id, scope=source_episode_id
-        )
 
     def mapping_commitment_sha256(self) -> str:
         """Commit to the mapping without serializing source↔method pairs."""
