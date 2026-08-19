@@ -1,0 +1,55 @@
+{
+  "attempts": [
+    {
+      "candidate": "src/mindmap/track_x/gatemem_baselines.py",
+      "command": [
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+        "src/mindmap/track_x/gatemem_baselines.py"
+      ],
+      "method": "raw_bm25",
+      "produced_files": [
+        "attempt-1.stderr.txt",
+        "attempt-1.stdout.txt"
+      ],
+      "returncode": 1,
+      "stderr_path": "runs/raw_bm25/src__mindmap__track_x__gatemem_baselines.py/attempt-1.stderr.txt",
+      "stdout_path": "runs/raw_bm25/src__mindmap__track_x__gatemem_baselines.py/attempt-1.stdout.txt"
+    }
+  ],
+  "candidates": [
+    {
+      "contains_abstain": false,
+      "contains_argparse": true,
+      "contains_bm25": false,
+      "has_main": true,
+      "path": "experiments/epistemic_branch_pilot.py",
+      "score": 11
+    },
+    {
+      "contains_abstain": false,
+      "contains_argparse": true,
+      "contains_bm25": false,
+      "has_main": true,
+      "path": "experiments/extraction_noise_pilot.py",
+      "score": 11
+    },
+    {
+      "contains_abstain": false,
+      "contains_argparse": true,
+      "contains_bm25": false,
+      "has_main": true,
+      "path": "experiments/track_e_v02_p0.py",
+      "score": 11
+    },
+    {
+      "contains_abstain": false,
+      "contains_argparse": false,
+      "contains_bm25": true,
+      "has_main": false,
+      "path": "src/mindmap/track_x/gatemem_baselines.py",
+      "score": 11
+    }
+  ],
+  "classification": "exploratory PR #43 entry-point discovery; an attempt is not an accepted official benchmark result until prediction coverage and official metrics are validated",
+  "successes": {}
+}

@@ -1,0 +1,34 @@
+Obtaining file:///tmp/MindMap-pr43
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+  Getting requirements to build editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Collecting pytest>=8 (from mindmap-ncm==0.2.0)
+  Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)
+Collecting iniconfig>=1.0.1 (from pytest>=8->mindmap-ncm==0.2.0)
+  Downloading iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)
+Collecting packaging>=22 (from pytest>=8->mindmap-ncm==0.2.0)
+  Using cached packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+Collecting pluggy<2,>=1.5 (from pytest>=8->mindmap-ncm==0.2.0)
+  Downloading pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)
+Collecting pygments>=2.7.2 (from pytest>=8->mindmap-ncm==0.2.0)
+  Downloading pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+Downloading pytest-9.1.1-py3-none-any.whl (386 kB)
+Downloading pluggy-1.6.0-py3-none-any.whl (20 kB)
+Downloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)
+Using cached packaging-26.3-py3-none-any.whl (129 kB)
+Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 47.5 MB/s  0:00:00
+Building wheels for collected packages: mindmap-ncm
+  Building editable for mindmap-ncm (pyproject.toml): started
+  Building editable for mindmap-ncm (pyproject.toml): finished with status 'done'
+  Created wheel for mindmap-ncm: filename=mindmap_ncm-0.2.0-0.editable-py3-none-any.whl size=2553 sha256=e968be390458e1157463ac890d3f635827fe6679e6e86dc73acb96c5c59767d3
+  Stored in directory: /tmp/pip-ephem-wheel-cache-ogv_xhkp/wheels/c8/ff/69/e35fe291526848c93520474dc04e215920510778c4383d914c
+Successfully built mindmap-ncm
+Installing collected packages: pygments, pluggy, packaging, mindmap-ncm, iniconfig, pytest
+
+Successfully installed iniconfig-2.3.0 mindmap-ncm-0.2.0 packaging-26.3 pluggy-1.6.0 pygments-2.21.0 pytest-9.1.1

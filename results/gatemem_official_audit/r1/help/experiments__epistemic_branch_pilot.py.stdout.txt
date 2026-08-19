@@ -1,0 +1,9 @@
+usage: epistemic_branch_pilot.py [-h] [--seed SEED]
+                                 [--per-template PER_TEMPLATE]
+                                 [--output-dir OUTPUT_DIR]
+
+options:
+  -h, --help            show this help message and exit
+  --seed SEED
+  --per-template PER_TEMPLATE
+  --output-dir OUTPUT_DIR
