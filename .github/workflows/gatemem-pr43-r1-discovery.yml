@@ -20,10 +20,13 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+
+      - name: Prepare discovery directory
+        run: mkdir -p /tmp/gatemem-pr43-r1
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: pip
 
       - name: Clone exact upstream and PR #43 heads
         id: revisions
