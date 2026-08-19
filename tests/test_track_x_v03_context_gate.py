@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import subprocess
+import sys
 
 import pytest
 
@@ -183,15 +185,34 @@ def test_condition_level_prompt_counts_match_the_declared_mechanism():
     assert sum(row.clean_false_intervention for row in controlled_gate) == 0
 
 
-def test_runner_writes_deterministic_artifacts_without_reading_heldout(tmp_path: Path):
-    from experiments.track_x_v03_context_gate_p0 import run
+def _run_cli(output_dir: Path) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        [
+            sys.executable,
+            str(REPOSITORY_ROOT / "experiments" / "track_x_v03_context_gate_p0.py"),
+            "--repository-root",
+            str(REPOSITORY_ROOT),
+            "--output-dir",
+            str(output_dir),
+        ],
+        cwd=REPOSITORY_ROOT,
+        text=True,
+        encoding="utf-8",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
 
+
+def test_runner_writes_deterministic_artifacts_without_reading_heldout(tmp_path: Path):
     first = tmp_path / "first"
     second = tmp_path / "second"
-    first_summary = run(repository_root=REPOSITORY_ROOT, output_dir=first)
-    second_summary = run(repository_root=REPOSITORY_ROOT, output_dir=second)
+    first_run = _run_cli(first)
+    second_run = _run_cli(second)
 
-    assert first_summary == second_summary
+    assert first_run.returncode == 0, first_run.stderr
+    assert second_run.returncode == 0, second_run.stderr
+    assert json.loads(first_run.stdout) == json.loads(second_run.stdout)
     assert (first / "rows.csv").read_bytes() == (second / "rows.csv").read_bytes()
     assert (first / "summary.json").read_bytes() == (second / "summary.json").read_bytes()
     assert (first / "run_metadata.json").read_bytes() == (
