@@ -224,6 +224,17 @@ It narrows the 75/75 conformance claim to the authored suite and creates a new
 schema obligation: reject reference-before-creation during validation, or
 enforce entity creation time at every historical resolver.
 
+EXP-20260828-010 hardened that attribution with an exact base/head factorial.
+On main `069c5f4...` and PR #55 `2bda2ff...`, destination creation at t5, t6,
+and t7 around state replication at t6 produced 18/18 Boolean outputs. All nine
+matched implementation-by-time cells were identical across revisions, paired
+difference 0/9. Both revisions returned Gold/Generic/Typed True/True/True at t5
+and t6, then False/False/True at t7. The correct base/head comparison
+denominator is nine paired cells; eighteen is the total raw-output denominator
+across both revisions. The run had complete prior outcome access and remains a
+development reproduction of one synthetic family, not independent
+confirmation or a PR #56 validation test.
+
 ### 4.6 Full-set LongMemEval lexical retrieval reproduction
 
 EXP-20260828-006 preregistered and ran a source-aligned reproduction of the

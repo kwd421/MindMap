@@ -1,0 +1,61 @@
+{
+  "boolean_outputs": {
+    "denominator": 18,
+    "numerator": 18
+  },
+  "claim_boundary": "Prior-access deterministic development reproduction of one synthetic event family; not independent confirmation, prevalence, an official benchmark score, or the PR 56 invalid-input contract.",
+  "destination_creation_system_times": [
+    5,
+    6,
+    7
+  ],
+  "official_benchmark_score": false,
+  "outputs_by_role": {
+    "main": {
+      "5": {
+        "generic": true,
+        "gold": true,
+        "typed": true
+      },
+      "6": {
+        "generic": true,
+        "gold": true,
+        "typed": true
+      },
+      "7": {
+        "generic": false,
+        "gold": false,
+        "typed": true
+      }
+    },
+    "pr55": {
+      "5": {
+        "generic": true,
+        "gold": true,
+        "typed": true
+      },
+      "6": {
+        "generic": true,
+        "gold": true,
+        "typed": true
+      },
+      "7": {
+        "generic": false,
+        "gold": false,
+        "typed": true
+      }
+    }
+  },
+  "paired_revision_differences": {
+    "denominator": 9,
+    "numerator": 0
+  },
+  "prior_outcome_access": true,
+  "replication_system_time": 6,
+  "schema_version": "late-destination-factorial-v1",
+  "source_revisions": {
+    "main": "069c5f4b16b2f594aec48924161ae8944f39652e",
+    "pr55": "2bda2ff38ea79dd0901f6329490d2f9940690261"
+  },
+  "study_class": "development"
+}

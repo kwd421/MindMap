@@ -16,6 +16,8 @@ explain why it is not applicable.
 | IV-05 | memory update method | append, replace, reconcile, abstain | update inputs fixed |
 | IV-06 | evidence topology | single-hop, multi-hop, conflicting, stale | authored/frozen split |
 | IV-07 | benchmark | GateMem, LongMemEval, HaluMem, MemoryAgentBench | official revision and license recorded |
+| IV-08 | source revision | base/main, feature PR, remediation PR | exact revisions and executable-tree equality recorded |
+| IV-09 | entity creation time relative to use | before, equal, after lineage/replication | all other event fields and query time fixed |
 
 ## Dependent variables
 
@@ -37,6 +39,7 @@ explain why it is not applicable.
 | DV-14 | storage | bytes and memory items per user/session | lower at matched quality |
 | DV-15 | audit completeness | decisions with reconstructable support / decisions | higher |
 | DV-16 | deletion target grounding | exact gold memory-object ID or frozen target span matched / deletion-positive requests | higher |
+| DV-17 | paired revision divergence | unequal answers / matched implementation-by-condition cells | lower when testing no-regression equivalence |
 
 ## Control variables
 

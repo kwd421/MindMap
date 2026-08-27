@@ -311,7 +311,8 @@ Machine-readable records live in `records/`.
 ## EXP-20260828-010 — Late-destination base/head factorial
 
 - **Class:** development reproduction with complete prior outcome access
-- **Status:** planned; no independent-confirmation claim is possible because
+- **Status:** completed; plan `00b4acd`, runner `c8a3f15`; no
+  independent-confirmation claim is possible because
   GPT Pro Session B and a local inline smoke already exposed the outcomes
 - **Sources:** exact main `069c5f4b16b2f594aec48924161ae8944f39652e`
   and current PR #55 head `2bda2ff38ea79dd0901f6329490d2f9940690261`
@@ -324,6 +325,14 @@ Machine-readable records live in `records/`.
   t10; clean exact checkouts; Python 3.11; no hosted judge
 - **Stopping rule:** commit the runner, execute exactly once, emit 18 outputs
   and nine paired comparisons, and do not tune or add cells after output
+- **Result:** all 18 raw Boolean outputs were emitted. Main and PR #55 were
+  identical in all nine paired implementation-by-time cells, difference 0/9.
+  At destination creation t5 and t6, Gold/Generic/Typed were True/True/True on
+  both revisions; at t7, both were False/False/True. Session B's earlier 0/18
+  phrasing mixed the raw-output denominator with the matched comparison
+  denominator; the prespecified paired denominator is nine.
+- **Artifacts:** clean exact runner/main/PR55 checkouts; `cells.csv` 18 rows;
+  summary and manifest; artifact hashes fixed in the machine record
 - **Claim boundary:** deterministic reproducibility hardening of one already
   known synthetic family, not independent confirmation, prevalence, or an
   official benchmark score

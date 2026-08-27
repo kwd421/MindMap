@@ -2,15 +2,15 @@
   "schema_version": "0.1.0",
   "experiment_id": "EXP-20260828-010",
   "title": "Factorial base-head reproduction of late destination creation",
-  "status": "planned",
+  "status": "completed",
   "study_class": "development",
   "research_question_ids": ["RQ1", "RQ2"],
   "hypothesis_ids": ["H1"],
-  "started_at": null,
-  "ended_at": null,
+  "started_at": "2026-08-27T20:40:34Z",
+  "ended_at": "2026-08-27T20:40:34Z",
   "timing": {
-    "precision": "unknown",
-    "note": "Execution has not started; exact UTC timestamps will be recorded around the frozen run."
+    "precision": "exact",
+    "note": "UTC timestamps immediately before and after the single clean-checkout deterministic run were identical to the second."
   },
   "preregistration_commit": null,
   "source": {
@@ -37,6 +37,9 @@
   ],
   "models": [],
   "controls": {
+    "planning_commit": "00b4acd8ef6b2de30a9db4b4368845b4d84027ef",
+    "runner_revision": "c8a3f151b395211643f1b14548bc4fb51e93efc0",
+    "runner_sha256": "854673185952b7185870ee9281edaa2786c40a5b3d6afc2b96283efa7a65d16c",
     "comparison_revision": "2bda2ff38ea79dd0901f6329490d2f9940690261",
     "executable_pr55_revision": "f26e148602099d7be01c2759be394c6ee4ff6204",
     "python": "3.11",
@@ -79,20 +82,47 @@
     "paired_revision_cells": 9
   },
   "results": {
-    "status": "planned",
+    "status": "completed",
     "primary_outcome": "paired base/head Boolean difference count over 9 matched implementation-by-time cells",
     "secondary_outcomes": [
       "18 raw Boolean outputs",
       "within-revision Gold/Generic/Typed agreement by creation-time stratum"
-    ]
+    ],
+    "boolean_outputs": {"numerator": 18, "denominator": 18},
+    "paired_revision_differences": {"numerator": 0, "denominator": 9},
+    "main": {
+      "destination_time_5": {"gold": true, "generic": true, "typed": true},
+      "destination_time_6": {"gold": true, "generic": true, "typed": true},
+      "destination_time_7": {"gold": false, "generic": false, "typed": true}
+    },
+    "pr55": {
+      "destination_time_5": {"gold": true, "generic": true, "typed": true},
+      "destination_time_6": {"gold": true, "generic": true, "typed": true},
+      "destination_time_7": {"gold": false, "generic": false, "typed": true}
+    },
+    "interpretation": "PR 55 changes 0/9 paired implementation-by-time answers in this frozen factorial. The late-destination Gold/Generic false versus Typed true divergence is present on exact main and PR 55, so it is not introduced or repaired by PR 55. The paired base/head denominator is nine; eighteen is the total raw Boolean-output denominator across both revisions."
   },
   "cost": {
     "provider_usd": 0.0,
-    "note": "Planned local deterministic run only; no hosted model or official scorer call."
+    "note": "One local deterministic run from three clean exact checkouts; no hosted model or official scorer call."
   },
-  "artifact_retention": {
-    "status": "not_retained",
-    "reason": "Runner and result artifacts are not yet frozen or executed."
+  "artifacts": {
+    "runner": "tools/run_late_destination_factorial.py",
+    "clean_checkouts": "runner, main, and PR 55 git status were all empty after execution"
   },
+  "artifact_files": [
+    {
+      "path": "results/research/EXP-20260828-010/cells.csv",
+      "sha256": "b6446315a5d0e12c2d13445be85bf375fe1d6fd3fcfb0f77f63a5213a21ac02e"
+    },
+    {
+      "path": "results/research/EXP-20260828-010/summary.json",
+      "sha256": "3641e2c180f87a4f43817cdb4b58646740815694e25bce4533d41cfb212e96c7"
+    },
+    {
+      "path": "results/research/EXP-20260828-010/artifact_manifest.json",
+      "sha256": "e4e734b3e9d163f176116cc231a0e41fb389d901d5a310e47bb648ca9b4656d8"
+    }
+  ],
   "claim_boundary": "Prior-access development reproduction of one synthetic temporal event family. It can distinguish whether PR 55 changes these nine matched outputs and characterize this exact reference-before-creation mechanism; it cannot estimate natural prevalence, establish confirmatory causality, or replace the PR 56 invalid-input contract."
 }
