@@ -24,7 +24,8 @@
       "No official GateMem semantic label or scorer is used.",
       "The manual row-key label manifest was encoded after the planning/codebook commit and after prior item access. The exact runner was then committed at dd0f857427566ff49dbdc3fa9c71e866b5d349e8 and executed once from a separate clean detached clone; this improves reproducibility but does not create blinding.",
       "target_grounding in this record labels whether the input utterance is explicit or deictic. It is not parser target-grounding accuracy: PR 52 GovernanceSignal has no memory-object target identifier or gold-target span output.",
-      "A later Daybreak model-assisted manual review found that the original runner represented only two four-key exception sets and silently defaulted every other label. The already-known labels were frozen explicitly for all 57 rows at 615539bab286b9a8a5ba8ad910085a7608eaab7e and the fail-closed runner at 7c77db91a1871fe269e872a0718ee2c60c7de7d1 regenerated the annotation byte-identically. This closes representation completeness only; it is not a new coding pass, independent coder, blinding, or semantic validation."
+      "A later Daybreak model-assisted manual review found that the original runner represented only two four-key exception sets and silently defaulted every other label. The already-known labels were frozen explicitly for all 57 rows at 615539bab286b9a8a5ba8ad910085a7608eaab7e and the fail-closed runner at 7c77db91a1871fe269e872a0718ee2c60c7de7d1 regenerated the annotation byte-identically. This closes representation completeness only; it is not a new coding pass, independent coder, blinding, or semantic validation.",
+      "A later independent GPT Pro artifact audit found 55 unique current-turn text hashes across 57 source rows. One hash occurs in three separate episode-turn units, all encoded as information deletion with deictic prior-context grounding. This post-result template diagnostic does not change row labels or denominators and cannot be used as confirmation."
     ]
   },
   "dataset": {
@@ -43,6 +44,12 @@
       "model": "Codex current session model",
       "reasoning_effort": "not independently exposed in the artifact",
       "claim_boundary": "model-assisted single-coder development annotation, not independent human adjudication"
+    },
+    {
+      "role": "independent historical artifact verifier",
+      "model": "ChatGPT GPT Pro",
+      "reasoning_effort": "Pro UI; underlying model version and token usage not exposed",
+      "claim_boundary": "model-assisted artifact audit, not human peer review or independent semantic gold"
     }
   ],
   "controls": {
@@ -98,6 +105,9 @@
   "sample": {
     "unit": "official public GateMem turn",
     "population_rows": 57,
+    "unique_current_turn_text_hashes": 55,
+    "duplicate_text_hash_groups": 1,
+    "maximum_text_hash_multiplicity": 3,
     "sampling": "exhaustive within the frozen referent-absent EXP-008 stratum",
     "deduplication": "none; source row identity and text SHA-256 are retained",
     "raw_text_retention": "pinned upstream checkout only; not copied into the repository annotation artifact"
@@ -126,12 +136,23 @@
       "authorization_revocation": {"numerator": 0, "denominator": 4}
     },
     "authorization_mixed": {"numerator": 0, "denominator": 57},
+    "template_diagnostics": {
+      "row_units": 57,
+      "unique_current_turn_text_hashes": 55,
+      "duplicate_hash_groups": 1,
+      "maximum_multiplicity": 3,
+      "deduplicated_request_types": {
+        "information_deletion": {"numerator": 51, "denominator": 55},
+        "authorization_revocation": {"numerator": 4, "denominator": 55}
+      },
+      "deduplicated_deictic_forms": {"numerator": 2, "denominator": 55}
+    },
     "official_benchmark_score": false,
-    "interpretation": "Under the frozen one-coder post-hoc codebook, 53/57 missed rows are information-deletion requests and 4/57 are authorization revocations; none was labelled physical/domain removal or ambiguous. PR 52 emitted DELETE on 0/53 annotated information-deletion rows. The explicit 57/57 label manifest removes silent default coercion from the deterministic representation but does not add a second coder or semantic validity. This is one-coder counterevidence against, not a confirmation-level contradiction of, the earlier physical-removal alternative. The explicit/deictic counts characterize source utterances only and do not measure parser target-grounding accuracy."
+    "interpretation": "Under the frozen one-coder post-hoc codebook, 53/57 missed rows are information-deletion requests and 4/57 are authorization revocations; none was labelled physical/domain removal or ambiguous. PR 52 emitted DELETE on 0/53 annotated information-deletion rows. The explicit 57/57 label manifest removes silent default coercion from the deterministic representation but does not add a second coder or semantic validity. This is one-coder counterevidence against, not a confirmation-level contradiction of, the earlier physical-removal alternative. The explicit/deictic counts characterize episode-turn units only and do not measure parser target-grounding accuracy. There are 55 unique current-turn text hashes; one deictic information-deletion wording hash occurs in three episodes, so the four deictic rows represent only two exact-text forms after deduplication."
   },
   "cost": {
     "provider_usd": 0.0,
-    "note": "One original local deterministic clean-checkout aggregation plus one zero-cost clean-checkout representation-hardening reproduction at 2026-08-27T19:38:47Z; no metered API or official scorer call. Subscription token usage was not exposed or dollar-attributed."
+    "note": "One original local deterministic clean-checkout aggregation plus one zero-cost clean-checkout representation-hardening reproduction at 2026-08-27T19:38:47Z and one later GPT Pro artifact audit; no metered API or official scorer call. Subscription token usage was not exposed or dollar-attributed."
   },
   "artifacts": {
     "codebook": "docs/research/GATEMEM_REFERENT_ABSENT_CODEBOOK.md",
@@ -157,5 +178,5 @@
       "sha256": "c95640666c57468c633f52e8503b3a632fc4b4b1775999b6d0df997c0db0efa1"
     }
   ],
-  "claim_boundary": "Post-hoc one-coder description of the 57 referent-absent EXP-008 rows after complete item-level outcome access. The complete explicit label manifest and eight structural rejection controls establish representation completeness, not cross-field semantic correctness, note-code validity, or independence. The result cannot establish official GateMem performance, semantic recall over all deletion speech acts, independent target-grounding accuracy, state mutation, suppression, persistence, erasure, blinded adjudication, or confirmatory evidence."
+  "claim_boundary": "Post-hoc one-coder description of the 57 referent-absent EXP-008 episode-turn rows after complete item-level outcome access. The complete explicit label manifest and eight structural rejection controls establish representation completeness, not cross-field semantic correctness, note-code validity, text-form independence, or independence of coding. The result cannot establish official GateMem performance, semantic recall over all deletion speech acts, independent target-grounding accuracy, state mutation, suppression, persistence, erasure, blinded adjudication, or confirmatory evidence."
 }

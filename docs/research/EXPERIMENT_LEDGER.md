@@ -274,8 +274,11 @@ Machine-readable records live in `records/`.
   versioned annotation artifact, but after all 57 source turns had already been
   read; original clean runner revision `dd0f857`; representation-hardening
   runner `7c77db9`
-- **Population:** all 57 EXP-008 strict-imperative rows without any PR #52
-  manifest information referent; no deduplication
+- **Population:** all 57 EXP-008 strict-imperative episode-turn rows without
+  any PR #52 manifest information referent; no deduplication. They contain 55
+  unique current-turn text hashes: one deictic information-deletion hash occurs
+  in three episodes, so row identity must not be confused with independent
+  linguistic forms
 - **Primary outcome:** one mutually exclusive request-type label per row:
   information deletion, authorization revocation, physical/domain removal, or
   ambiguous/other
@@ -336,3 +339,12 @@ Machine-readable records live in `records/`.
 - **Claim boundary:** deterministic reproducibility hardening of one already
   known synthetic family, not independent confirmation, prevalence, or an
   official benchmark score
+- **Post-result review and hardening:** Daybreak model-assisted manual review
+  independently regenerated 18/18 outputs, 0/9 paired differences, and 3/3
+  artifact bytes, then found that CI did not execute both exact revisions and
+  `summarize()` coerced non-Boolean inputs. Exact `3a75243` adds a current-head
+  fail-closed Boolean contract and a CI checker that runs frozen runner
+  `c8a3f15` against exact main/PR #55 checkouts and byte-compares all three
+  artifacts. Exact hardening run `33119118697` passed 6/6 checks, Python 3.11
+  121/121, raw outputs 18/18, paired differences 0/9, and artifact matches 3/3.
+  It changes neither the frozen experiment nor its claim ceiling

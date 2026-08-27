@@ -21,7 +21,8 @@
     "deviations": [
       "GPT Pro Session B reported the three creation-time outcomes before this local design freeze.",
       "A local inline smoke run reproduced the reported pattern on both exact revisions before this machine record was written. The frozen runner is therefore reproducibility hardening under complete outcome access, not an independent or confirmatory replication.",
-      "The current PR 55 documentation head is 2bda2ff38ea79dd0901f6329490d2f9940690261; its executable canonical code is unchanged from f26e148602099d7be01c2759be394c6ee4ff6204."
+      "The current PR 55 documentation head is 2bda2ff38ea79dd0901f6329490d2f9940690261; its executable canonical code is unchanged from f26e148602099d7be01c2759be394c6ee4ff6204.",
+      "A post-result Daybreak model-assisted manual review independently regenerated the frozen result but found that the then-current CI did not execute both pinned revisions and that the reusable summarizer coerced non-Boolean values with bool(). Post-result hardening at 3a75243338b5df2e60d638005c6dc486ad7e11bd added exact two-checkout artifact reproduction and fail-closed Boolean validation without changing the frozen c8a3f15 runner or result bytes."
     ]
   },
   "dataset": {
@@ -35,11 +36,37 @@
     "main_069c5f4_Gold_Generic_Typed",
     "pr55_2bda2ff_Gold_Generic_Typed"
   ],
-  "models": [],
+  "models": [
+    {
+      "role": "pre-freeze external result source",
+      "model": "ChatGPT GPT Pro Session B",
+      "reasoning_effort": "Pro UI; underlying model version and token usage not exposed",
+      "claim_boundary": "complete prior outcome access disclosed as a deviation, not an independent judge"
+    },
+    {
+      "role": "post-result manual verifier",
+      "model": "gpt-daybreak-blue-latest high",
+      "reasoning_effort": "high",
+      "claim_boundary": "model-assisted manual review, not human peer review"
+    }
+  ],
   "controls": {
     "planning_commit": "00b4acd8ef6b2de30a9db4b4368845b4d84027ef",
     "runner_revision": "c8a3f151b395211643f1b14548bc4fb51e93efc0",
     "runner_sha256": "854673185952b7185870ee9281edaa2786c40a5b3d6afc2b96283efa7a65d16c",
+    "post_result_hardening_revision": "3a75243338b5df2e60d638005c6dc486ad7e11bd",
+    "post_result_runner_sha256": "b13e34aae22f04542b5c8eb1ff3fdb7533c2b17b8665f48afa5147e832d3af04",
+    "ci_reproduction_checker_sha256": "b6da0750ae75f3b4abaf82c82ee46da1e311012d21c2bb9a766d4a0917b63988",
+    "post_result_hardening_ci_run": 33119118697,
+    "post_result_hardening_ci_result": {
+      "checks_successful": {"numerator": 6, "denominator": 6},
+      "python_3_11_tests": {"numerator": 121, "denominator": 121},
+      "exact_revision_reproduction": {
+        "boolean_outputs": {"numerator": 18, "denominator": 18},
+        "paired_revision_differences": {"numerator": 0, "denominator": 9},
+        "artifact_byte_matches": {"numerator": 3, "denominator": 3}
+      }
+    },
     "comparison_revision": "2bda2ff38ea79dd0901f6329490d2f9940690261",
     "executable_pr55_revision": "f26e148602099d7be01c2759be394c6ee4ff6204",
     "python": "3.11",
@@ -104,11 +131,12 @@
   },
   "cost": {
     "provider_usd": 0.0,
-    "note": "One local deterministic run from three clean exact checkouts; no hosted model or official scorer call."
+    "note": "One local deterministic run from three clean exact checkouts plus a later Daybreak model-assisted manual review and zero-cost deterministic CI hardening; no metered hosted model or official scorer call. Subscription token usage was not exposed or dollar-attributed."
   },
   "artifacts": {
-    "runner": "tools/run_late_destination_factorial.py",
-    "clean_checkouts": "runner, main, and PR 55 git status were all empty after execution"
+    "runner": "tools/run_late_destination_factorial.py at frozen revision c8a3f151b395211643f1b14548bc4fb51e93efc0",
+    "clean_checkouts": "runner, main, and PR 55 git status were all empty after execution",
+    "post_result_reproducibility_hardening": "At 3a75243 the current summarizer rejects non-Boolean values and CI invokes tools/check_late_destination_factorial_reproduction.py, which runs frozen runner c8a3f15 against exact main and PR 55 checkouts and byte-compares all three committed artifacts. This is reproducibility hardening, not a second experiment."
   },
   "artifact_files": [
     {

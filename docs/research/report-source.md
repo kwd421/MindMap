@@ -171,6 +171,13 @@ adjudicated semantic gold. A clean detached checkout reproduced the three
 annotation artifacts byte-for-byte, 3/3; reproducibility does not remove the
 single-coder and prior-access limitations.
 
+An independent GPT Pro artifact audit later counted 55 unique current-turn
+text hashes among the 57 episode-turn rows. One deictic information-deletion
+hash occurs in three different episodes; after exact-text deduplication the
+four deictic rows become two forms over 55 hashes. Episode turns remain the
+declared row unit because their antecedent context can differ, but linguistic
+form independence and template-cluster generalization are unmeasured.
+
 A later Daybreak model-assisted manual review found a representation flaw: the
 original runner listed only four authorization and four deictic exceptions and
 defaulted every other row, so an omitted annotation was indistinguishable from
@@ -183,9 +190,9 @@ exact-checkout run preserved `annotations.csv` byte-for-byte and three mutation
 controls initially rejected 3/3; the committed suite now freezes all eight
 structural paths: missing, extra, duplicate, hash mismatch, and four unknown
 enum fields reject 8/8. Cross-field label semantics and the note-code vocabulary
-remain outside this structural claim. This closes deterministic representation completeness,
-not single-coder semantic validity; C-014 therefore remains open with one-coder
-counterevidence rather than contradicted.
+remain outside this structural claim. This closes deterministic representation
+completeness, not single-coder semantic validity; C-014 therefore remains open
+with one-coder counterevidence rather than contradicted.
 
 The 53 explicit and four deictic counts describe the input utterances, not
 parser target-grounding accuracy. At PR #52, `GovernanceSignal` contains
@@ -234,6 +241,17 @@ denominator is nine paired cells; eighteen is the total raw-output denominator
 across both revisions. The run had complete prior outcome access and remains a
 development reproduction of one synthetic family, not independent
 confirmation or a PR #56 validation test.
+
+A Daybreak model-assisted manual review independently regenerated the frozen
+18/18 outputs, 0/9 comparison, and all three artifact bytes. It also found that
+the green workflow did not actually run both pinned revisions, and that the
+reusable summary helper could coerce the string `"False"` to Boolean true.
+Post-result hardening `3a75243` makes non-Boolean values fail closed and adds a
+CI path that checks out exact main, PR #55, and frozen runner `c8a3f15`, then
+byte-compares all three artifacts. This is adaptive reproducibility hardening,
+not new outcome evidence. Exact run `33119118697` passed 6/6 jobs; its new
+step reported raw outputs 18/18, paired differences 0/9, and artifact byte
+matches 3/3, while Python 3.11 passed 121/121 tests.
 
 ### 4.6 Full-set LongMemEval lexical retrieval reproduction
 
@@ -304,10 +322,11 @@ The first benchmark ladder is intentionally multi-dimensional:
    understanding, and a revision-sensitive fourth competency. Official arXiv
    v1 called it conflict resolution and v4 calls it selective forgetting, while
    official code `fe1735de8cf8b9908e1e3d3b5612afc815698062` still labels
-   `fact_mh`/`fact_sh` Conflict Resolution and maps them to
-   `substring_exact_match`. Paper and code revisions must therefore be pinned
-   separately, and the label must not be treated as evidence of physical
-   erasure, reader suppression, or restart persistence;
+   `fact_mh`/`fact_sh` Conflict Resolution and maps their reported Accuracy to
+   `substring_exact_match` while calculating other QA metrics as well. Paper
+   and code revisions must therefore be pinned separately, and the label must
+   not be treated as evidence of physical erasure, reader suppression, or
+   restart persistence;
 4. [LoCoMo](https://github.com/snap-research/locomo) as a long-conversation QA
    comparison, with evaluator and leakage audits before trusting a headline
    score.
