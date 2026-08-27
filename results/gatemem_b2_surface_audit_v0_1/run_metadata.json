@@ -1,0 +1,22 @@
+{
+  "artifact": {
+    "downloaded_zip_sha256": "982256926d7f1ea2f05dba152a7dd5e7a2b66b0cfc3363046c972b66c38068e5",
+    "github_api_digest": "sha256:982256926d7f1ea2f05dba152a7dd5e7a2b66b0cfc3363046c972b66c38068e5",
+    "id": 9650493789,
+    "name": "gatemem-b2-surface-audit-1c013a3ef8d363f63bb3c0254b1a9ffd0791f373"
+  },
+  "classification": "fixed synthetic pre-outcome information-surface audit; no public GateMem performance or MindMap effectiveness result",
+  "producing_head": "c96977332117b0190778a53b43a3323008dd8c30",
+  "schema_version": "track-x-gatemem-b2-surface-audit-provenance-v0.1",
+  "surface_manifest_sha256": "687e64fc7f67a846adbdcb9afb519826b6d511dcc904955cf3311bfb452720f6",
+  "tests": {
+    "contract_and_reader_tests_passed": 16,
+    "surface_audit_cases_passed": 9,
+    "surface_audit_cases_failed": 0
+  },
+  "workflow": {
+    "job_id": 98551797066,
+    "run_id": 33082101193,
+    "status": "success"
+  }
+}
