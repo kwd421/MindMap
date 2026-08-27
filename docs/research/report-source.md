@@ -171,6 +171,19 @@ adjudicated semantic gold. A clean detached checkout reproduced the three
 annotation artifacts byte-for-byte, 3/3; reproducibility does not remove the
 single-coder and prior-access limitations.
 
+A later Daybreak model-assisted manual review found a representation flaw: the
+original runner listed only four authorization and four deictic exceptions and
+defaulted every other row, so an omitted annotation was indistinguishable from
+an intentional complement. The already-known labels were frozen explicitly for
+57/57 rows without recoding any item. Exact runner `7c77db9` now requires the
+manual manifest's key set and text hashes to equal the frozen source, rejects
+missing, extra, duplicate, hash-mismatched, and unknown-enum entries, and can
+represent physical, ambiguous, mixed, and low-confidence outcomes. A clean
+exact-checkout run preserved `annotations.csv` byte-for-byte and three mutation
+controls rejected 3/3. This closes deterministic representation completeness,
+not single-coder semantic validity; C-014 therefore remains open with one-coder
+counterevidence rather than contradicted.
+
 The 53 explicit and four deictic counts describe the input utterances, not
 parser target-grounding accuracy. At PR #52, `GovernanceSignal` contains
 principal IDs/roles for access policy plus lexical `anchor_tokens`; it has no

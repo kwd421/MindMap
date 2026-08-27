@@ -272,7 +272,8 @@ Machine-readable records live in `records/`.
 - **Class:** development; explicitly post-hoc and non-blinded
 - **Status:** completed; codebook `GM-RA-CB-001` frozen at `c17d308` before the
   versioned annotation artifact, but after all 57 source turns had already been
-  read; clean runner revision `dd0f857`
+  read; original clean runner revision `dd0f857`; representation-hardening
+  runner `7c77db9`
 - **Population:** all 57 EXP-008 strict-imperative rows without any PR #52
   manifest information referent; no deduplication
 - **Primary outcome:** one mutually exclusive request-type label per row:
@@ -291,5 +292,16 @@ Machine-readable records live in `records/`.
   ambiguous/other 0/57. Target grounding was explicit in the current turn for
   53/57 and deictic/prior-context-dependent for 4/57. PR #52 emitted `DELETE`
   on 0/53 annotated information-deletion rows and 0/4 authorization rows.
-- **Reproduction:** a detached clean clone at exact runner revision regenerated
-  annotations, summary, and manifest byte-identically, 3/3.
+- **Representation deviation and repair:** the original runner encoded two
+  four-key exception sets and silently defaulted the other rows. Daybreak
+  model-assisted manual review identified that omission could not be separated
+  from a deliberate complement. The already-known labels were frozen as an
+  explicit 57/57 manifest at `615539b`; no item was recoded. Runner `7c77db9`
+  now requires exact source-key and text-hash equality, rejects invalid enums,
+  and has no label default. This hardens provenance only and adds no second
+  coder, blinding, or semantic validity.
+- **Reproduction:** the original detached clean clone regenerated annotations,
+  summary, and manifest byte-identically, 3/3. A second detached clean clone at
+  `7c77db9` kept annotations byte-identical and regenerated the v2 summary and
+  manifest; missing, duplicate, and unknown-enum mutation controls rejected
+  3/3.

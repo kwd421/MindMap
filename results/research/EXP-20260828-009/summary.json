@@ -22,6 +22,9 @@
     }
   },
   "independent_human_adjudication": false,
+  "manual_label_manifest_complete": true,
+  "manual_label_manifest_rows": 57,
+  "manual_label_manifest_sha256": "0145e0eea25e50491288bd7f756e4fab796c24a124f5b44867a1182a44ac1bd9",
   "official_benchmark_score": false,
   "planning_commit": "c17d308ba10028ba20e2655a0597ea426bd32005",
   "population_rows": 57,
@@ -32,7 +35,7 @@
     "information_deletion": 53,
     "physical_domain_removal": 0
   },
-  "schema_version": "gatemem-referent-absent-semantic-audit-v1",
+  "schema_version": "gatemem-referent-absent-semantic-audit-v2",
   "source_csv_sha256": "5133fae854abb92cf3856f03efc346e2e6dcf1e13b3f7d86285ba3f3faf8f66d",
   "study_class": "development",
   "target_grounding_counts": {
