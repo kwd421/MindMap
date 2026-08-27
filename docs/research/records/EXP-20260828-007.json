@@ -1,0 +1,145 @@
+{
+  "schema_version": "0.1.0",
+  "experiment_id": "EXP-20260828-007",
+  "title": "Adaptive adversarial validation of the canonical temporal-reference gate",
+  "status": "completed",
+  "study_class": "development",
+  "research_question_ids": ["RQ1", "RQ2"],
+  "hypothesis_ids": ["H1", "H4"],
+  "started_at": "2026-08-27T15:37:13Z",
+  "ended_at": "2026-08-27T16:10:19Z",
+  "timing": {
+    "precision": "exact",
+    "note": "Start is the first intervention commit time; end is the timestamp of the final exact-head review receipt posted to PR 56."
+  },
+  "source": {
+    "repository": "https://github.com/kwd421/MindMap",
+    "source_revision": "be1f9219ce5d9a424f5e44e42faa0f5ea6935ff8",
+    "checkout_revision": "be1f9219ce5d9a424f5e44e42faa0f5ea6935ff8",
+    "dirty": false,
+    "deviations": [
+      "The counterexamples and fixes were generated adaptively after inspecting each preceding review outcome; this is development evidence, not a preregistered or confirmatory test.",
+      "The final checkout had an ignored/untracked local virtual environment, but no tracked source or result change was present.",
+      "The independent reviewer was gpt-daybreak-blue-latest at high reasoning effort operating ordinary git, gh, pytest, Python, code, document, and artifact tools. It was not a human or blinded reviewer.",
+      "Codex Security plugins, skills, MCP tools, and automated security-scan phases were explicitly excluded from review rounds after the user's instruction.",
+      "Track X v0.1 changes are a post-hoc downstream schema intervention and are not attributed to the frozen raw verifier."
+    ]
+  },
+  "dataset": {
+    "name": "Synthetic canonical temporal-reference adversaries and frozen repository conformance artifacts",
+    "revision": "PR-56-be1f9219ce5d9a424f5e44e42faa0f5ea6935ff8",
+    "split": "adaptive development cases plus unchanged fixed canonical and Track X artifacts",
+    "license": "repository MIT",
+    "raw_data_committed": true
+  },
+  "method_arms": [
+    "shared_temporal_reference_validator",
+    "GoldSemantics_constructor",
+    "GenericLedger_constructor",
+    "TypedLedger_constructor",
+    "manual_adversarial_review"
+  ],
+  "models": [
+    {
+      "role": "manual adversarial reviewer",
+      "model": "gpt-daybreak-blue-latest",
+      "reasoning_effort": "high",
+      "claim_boundary": "model-assisted independent tool execution, not human peer review"
+    }
+  ],
+  "controls": {
+    "base_revision": "069c5f4b16b2f594aec48924161ae8944f39652e",
+    "intervention_revisions": [
+      "f77849cf2dec9783616321d9c8b2924e6cca5ed1",
+      "8a3b7aa222db5d3f73d3850c99f9f2a347a3c424",
+      "6a713881ed235ac9cf39cf0bf4047a7a6f8b12e0",
+      "be1f9219ce5d9a424f5e44e42faa0f5ea6935ff8"
+    ],
+    "manual_review_rounds": 4,
+    "manual_review_tool_boundary": "ordinary repository and test tools only; no Codex Security workflow",
+    "shared_validator_implementations": 1,
+    "constructor_wiring_points": 3,
+    "answer_evaluators": 3,
+    "local_python": "3.11",
+    "ci_python_versions": ["3.11", "3.12", "3.13", "3.14"],
+    "exact_head_ci_run": 33091512280,
+    "track_x_analysis_revision": "track-x-v0.1-post-hoc-temporal-ri-1",
+    "outcome_access": "Each review round informed the next patch; no held-out confirmation claim is permitted."
+  },
+  "sample": {
+    "initial_future_reference_sequences": 2,
+    "round_1_additional_reference_counterexamples": 11,
+    "final_invalid_snapshot_shape_values": 3,
+    "final_invalid_snapshot_shape_fields": 3,
+    "final_validation_entry_points": 4,
+    "final_invalid_snapshot_checks": 36,
+    "temporal_reference_tests": 49,
+    "full_pytest_tests": 141,
+    "canonical_expected_answers_per_evaluator": 75,
+    "track_x_v01_verifier_cases": 56,
+    "track_x_v01_raw_verifier_and_oracle_rows": 224,
+    "track_x_v01_structured_only_rows": 112,
+    "track_x_v03_development_rows": 420
+  },
+  "results": {
+    "status": "completed",
+    "primary_outcome": "No blocking counterexample remained at exact head after four adaptive manual review rounds.",
+    "correction_chain": [
+      {
+        "revision": "f77849cf2dec9783616321d9c8b2924e6cca5ed1",
+        "outcome": "rejected",
+        "findings": "11 omitted missing/future reference routes, claim/evidence namespace confusion, and an undisclosed Track X artifact change"
+      },
+      {
+        "revision": "8a3b7aa222db5d3f73d3850c99f9f2a347a3c424",
+        "outcome": "rejected",
+        "findings": "future same-ID claim ambiguity, claim-policy contamination of evidence, and inconsistent incomplete snapshot-member handling"
+      },
+      {
+        "revision": "6a713881ed235ac9cf39cf0bf4047a7a6f8b12e0",
+        "outcome": "minor-fix-required",
+        "findings": "empty snapshot/object identifiers were accepted by the shared validator, Gold, and Generic but rejected by Typed"
+      },
+      {
+        "revision": "be1f9219ce5d9a424f5e44e42faa0f5ea6935ff8",
+        "outcome": "accepted",
+        "findings": "none blocking within the enumerated finite-runtime contract"
+      }
+    ],
+    "final_invalid_snapshot_rejection": {"numerator": 36, "denominator": 36},
+    "temporal_reference_tests": {"passed": 49, "total": 49},
+    "full_pytest": {"passed": 141, "total": 141},
+    "canonical_expected_answers": {
+      "GoldSemantics": {"passed": 75, "total": 75},
+      "GenericLedger": {"passed": 75, "total": 75},
+      "TypedLedger": {"passed": 75, "total": 75}
+    },
+    "track_x_v01_artifact_byte_matches": {"matched": 8, "total": 8},
+    "track_x_v01_verifier_and_oracle_changed_rows": {"changed": 0, "total": 224},
+    "track_x_v01_structured_only_changed_rows": {"changed": 28, "total": 112},
+    "track_x_v03_development_rows": {"completed": 420, "total": 420},
+    "exact_head_ci": {"successful_jobs": 6, "total_jobs": 6},
+    "review_acceptance": true,
+    "pull_request_state": "open draft; not merged"
+  },
+  "cost": {
+    "provider_usd": 0.0,
+    "note": "Local deterministic execution and subscription-based Codex review; no DeepSeek or other metered model API call was made. Codex token usage was not exposed or dollar-attributed."
+  },
+  "artifacts": {
+    "pull_request": "https://github.com/kwd421/MindMap/pull/56",
+    "exact_head_ci": "https://github.com/kwd421/MindMap/actions/runs/33091512280",
+    "final_review_receipt": "https://github.com/kwd421/MindMap/pull/56#issuecomment-5441901681",
+    "manual_report_sha256": {
+      "round_1": "862f02d74f473752005409cee11b34c05650cdd1fccfc74b52dc9ffd1dfd1ca1",
+      "round_2": "12394c192e6ce125f4edc38f62b6e138a89f30d2a354f0f20c00a2d2a468bfdd",
+      "round_3": "f2a926b5ba20eefdacc49adc287e645ed7fcbc2301ada7c740f40f1d7ebaf13e",
+      "round_4": "634bd73e907cbf15ce99b6d2809a923caa7d7b42e977998a95a290c6c503da1f"
+    }
+  },
+  "artifact_retention": {
+    "status": "record_only",
+    "reason": "The four detailed manual reports remain in the local Codex visualization store and are hash-addressed here; durable repository evidence is the committed regression suite, deterministic artifacts, CI receipt, PR history, and this aggregate record."
+  },
+  "claim_boundary": "Adaptive development validation of the enumerated finite CommonEvent temporal-reference contract at PR 56 exact head. It is not a confirmatory result, an independent human review, a benchmark score, evidence of three independent validators, or proof of standalone Snapshot lifecycle, global identifier grammar, durable-store enforcement, or complete valid-time causality."
+}

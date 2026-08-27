@@ -188,3 +188,35 @@ Machine-readable records live in `records/`.
   and update tasks but weak on complete multi-session evidence coverage. The
   result measures retrieval only and cannot be compared to end-to-end QA scores.
 - **Artifacts:** `results/research/EXP-20260828-006/`.
+
+## EXP-20260828-007 — Adaptive temporal-reference adversarial validation
+
+- **Class:** adaptive development/adversarial audit; not preregistered or
+  confirmatory
+- **Source:** PR #56 exact accepted head
+  `be1f9219ce5d9a424f5e44e42faa0f5ea6935ff8`; base
+  `main@069c5f4b16b2f594aec48924161ae8944f39652e`
+- **Review boundary:** four model-assisted manual rounds using ordinary
+  git/gh/pytest/Python and direct code/document/artifact inspection. The
+  reviewer was `gpt-daybreak-blue-latest` at high effort, not a human or
+  blinded reviewer. Codex Security tooling and automated scan phases were
+  excluded after the user's instruction.
+- **Negative-result chain:** `f77849c` omitted 11 reference routes and confused
+  claim/evidence namespaces; `8a3b7aa` retained future same-ID, policy-kind,
+  and incomplete-snapshot failures; `6a71388` retained an empty-ID mismatch;
+  `be1f921` closed the last reported case.
+- **Final invalid-shape matrix:** `None`/empty/whitespace × snapshot ID/object
+  kind/object ID × shared validator/Gold/Generic/Typed = 36/36 rejected.
+- **Regression evidence:** temporal 49/49; full pytest 141/141; Gold, Generic,
+  and Typed each 75/75 expected; Track X v0.1 artifacts 8/8 byte-identical;
+  raw-verifier/oracle changes 0/224; exact-head CI 6/6 green.
+- **Causal boundary:** structured-only Track X rows changed 28/112 because the
+  downstream schema now rejects invalid candidates. This is not credited to
+  the frozen raw verifier.
+- **Status:** manual round 4 accepted the enumerated contract; PR remains an
+  open draft and is not merged.
+- **Interpretation:** the shared finite-runtime gate is now supported on its
+  enumerated references. There is one validator implementation wired into
+  three constructors, not three independent validators. Standalone Snapshot
+  lifecycle, global nonblank-ID grammar, durable-store enforcement, and
+  complete valid-time causality remain open.
