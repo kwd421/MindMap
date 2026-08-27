@@ -20,7 +20,7 @@ failure modes:
 
 ## Normative contract
 
-For every entity reference in a `CommonEvent`:
+For every reference enumerated in the finite runtime table below:
 
 ```text
 target.created_system_time <= referencing_event.system_time
@@ -31,16 +31,40 @@ not change validity. A missing target or a target created only at a later system
 time is invalid input and must fail closed before Gold, Generic, or Typed answer
 a query.
 
-The current amendment checks references involving:
+The runtime table is explicit so that a broad schema claim cannot be inferred
+from a few passing examples.
 
-- principals and mind instances;
-- world branches and parent branches;
-- mind placements;
-- evidence, world claims, and attitudes;
-- lineage source and destination minds;
-- exposure source/destination minds, evidence, and authorization;
-- evidence/attitude snapshot members;
-- authorization source and destination minds.
+| Referencing event | Reference fields and namespace |
+|---|---|
+| `mind_create` | actor principal -> principal |
+| `world_create` | parent attribute -> world branch |
+| `placement` | destination mind -> mind; about-world -> branch |
+| `lineage` | source/destination -> mind; snapshot -> snapshot; authorization -> authorization |
+| `evidence` | actor -> principal/mind; source/destination context -> placement; about-world -> branch |
+| `world_claim` | about-world -> branch; attitude context -> placement |
+| `attitude` | destination -> mind; about-world -> branch; attitude context -> placement |
+| `exposure` | source/destination -> mind and placement; object -> namespace selected by `object_kind`; authorization -> authorization |
+| `policy` | actor -> principal; destination -> mind; object -> namespace selected by `object_kind` |
+| `justification` | untyped derivation member -> exactly one of evidence/assertion/claim |
+| `snapshot_member` | snapshot -> snapshot; object -> namespace selected by `object_kind` |
+| `authorization` | actor -> principal; source/destination -> mind |
+
+Exposure objects support the schema's `evidence`, `assertion`, `claim`, and
+`snapshot` namespaces. Snapshot members additionally support `attitude` and
+`policy`. Existing sparse events that omit `object_kind` in exposure or policy
+records retain the v0.2 compatibility default of `evidence`; new producers
+should emit the kind explicitly.
+
+The finite `CommonEvent` projection does not yet contain the standalone
+`Snapshot` entity specified in `SCHEMA_V0_2.md`. In this runtime only, the first
+manifest entry is the snapshot identifier's creation event. A lineage reference
+before that first entry is invalid. This is a compatibility rule, not a claim
+that the full schema's snapshot lifecycle has been implemented.
+
+`derivation_members` is also still an untyped tuple. A member must resolve to
+exactly one evidence/assertion/claim namespace. Missing, future, and ambiguous
+cross-namespace identifiers fail closed until the runtime carries the schema's
+explicit `source_kind`.
 
 The validator is shared input-schema infrastructure. Gold, Generic, and Typed
 remain separate answer evaluators, but each constructor invokes the same input
@@ -48,10 +72,23 @@ validity gate so direct use cannot bypass it.
 
 ## Verification boundary
 
-The two known future-destination fixtures must be rejected by all three
-constructors. A separate reference matrix tests other entity classes, and an
-equal-system-time control must remain accepted. The pre-existing fixed suite
-must retain zero Gold/Generic/Typed disagreement.
+The two known future-destination fixtures must be rejected at all three
+constructor entry points. This is three wiring checks over **one shared schema
+validator**, not three independent semantic validators. Accepted valid logs are
+then answered by the separate Gold, Generic, and Typed evaluators.
+
+Isolated reference matrices test future and missing targets without relying on
+an aggregate fixture that can stop at the first error. Equal-system-time
+controls must remain accepted. Object-kind controls must prove that a real claim
+is not looked up in the evidence namespace. The pre-existing fixed suite must
+retain zero Gold/Generic/Typed disagreement.
+
+The shared gate intentionally changes the old Track X v0.1 structured-only
+treatment for malformed `wrong-world` and `wrong-mind` candidates: silent wrong
+use becomes schema rejection/abstention. That is a post-hoc intervention on the
+downstream system, not an improvement by the raw-evidence verifier. The result
+document and deterministic artifacts therefore report the before/after counts
+and preserve the causal boundary.
 
 This amendment does **not** prove:
 
@@ -59,7 +96,9 @@ This amendment does **not** prove:
 - cycle detection or uniqueness for every domain identifier;
 - distributed serializability or durable-store enforcement;
 - valid-time causality beyond the explicit bitemporal rules;
-- that every future `CommonEvent` field has already been assigned a reference
+- the complete standalone Snapshot lifecycle from `SCHEMA_V0_2.md`;
+- a typed `JustificationMember.source_kind` projection;
+- that unlisted future `CommonEvent` fields automatically receive a reference
   rule.
 
 Those remain separate schema and implementation obligations.

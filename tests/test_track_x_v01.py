@@ -123,6 +123,20 @@ def test_evaluation_preserves_safety_and_reports_fixed_boundary():
             assert ceiling["answer_accuracy"] == 1.0
             assert ceiling["abstention_rate"] == 0.0
 
+            structured = downstream[f"{split}:structured_only:{architecture}"]
+            expected_projection_errors = {
+                "development": 6 / 28,
+                "heldout": 8 / 28,
+            }[split]
+            expected_silent_wrong_use = {
+                "development": 15 / 28,
+                "heldout": 13 / 28,
+            }[split]
+            assert structured["answer_accuracy"] == 0.25
+            assert structured["projection_error_rate"] == expected_projection_errors
+            assert structured["abstention_rate"] == expected_projection_errors
+            assert structured["silent_wrong_use_rate"] == expected_silent_wrong_use
+
     non_structured_disagreements = {
         key: value
         for key, value in summary["generic_typed_disagreements"].items()

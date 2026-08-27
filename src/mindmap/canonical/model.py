@@ -201,8 +201,22 @@ def validate_temporal_references(events: Iterable[CommonEvent]) -> None:
     branches = creation_times("world_create")
     placements = creation_times("placement")
     evidence = creation_times("evidence")
+    assertions = creation_times("assertion")
+    claims = creation_times("world_claim", use_event_id=True)
     attitudes = creation_times("attitude", use_event_id=True)
+    policies = creation_times("policy", use_event_id=True)
     authorizations = creation_times("authorization")
+
+    # The finite CommonEvent runtime does not yet project the standalone
+    # Snapshot entity from SCHEMA_V0_2.md. Until it does, the first manifest
+    # entry is the explicit runtime creation point for a snapshot identifier.
+    snapshots: dict[str, int] = {}
+    for event in ordered:
+        if event.event_type != "snapshot_member" or event.snapshot_id is None:
+            continue
+        snapshots[event.snapshot_id] = min(
+            snapshots.get(event.snapshot_id, event.system_time), event.system_time
+        )
 
     def require(
         event: CommonEvent,
@@ -221,6 +235,55 @@ def validate_temporal_references(events: Iterable[CommonEvent]) -> None:
             raise ValueError(
                 f"{event.event_id}.{field} references future entity {target_id}: "
                 f"created at {created_at}, referenced at {event.system_time}"
+            )
+
+    def require_typed_object(
+        event: CommonEvent,
+        field: str,
+        target_id: Optional[str],
+        object_kind: Optional[str],
+        *,
+        default_kind: Optional[str],
+        allowed_kinds: frozenset[str],
+    ) -> None:
+        if target_id is None:
+            return
+        kind = object_kind or default_kind
+        if kind is None or kind not in allowed_kinds:
+            raise ValueError(
+                f"{event.event_id}.{field} has unsupported object_kind: {kind}"
+            )
+        targets_by_kind = {
+            "evidence": evidence,
+            "assertion": assertions,
+            "claim": claims,
+            "snapshot": snapshots,
+            "attitude": attitudes,
+            "policy": policies,
+        }
+        require(event, field, target_id, targets_by_kind[kind])
+
+    def require_derivation_member(event: CommonEvent, member_id: str) -> None:
+        matches = [
+            targets[member_id]
+            for targets in (evidence, assertions, claims)
+            if member_id in targets
+        ]
+        if not matches:
+            raise ValueError(
+                f"{event.event_id}.derivation_members references missing entity: "
+                f"{member_id}"
+            )
+        if len(matches) > 1:
+            raise ValueError(
+                f"{event.event_id}.derivation_members has ambiguous untyped entity: "
+                f"{member_id}"
+            )
+        if matches[0] > event.system_time:
+            raise ValueError(
+                f"{event.event_id}.derivation_members references future entity "
+                f"{member_id}: created at {matches[0]}, "
+                f"referenced at {event.system_time}"
             )
 
     for event in ordered:
@@ -255,6 +318,13 @@ def validate_temporal_references(events: Iterable[CommonEvent]) -> None:
                 event.destination_mind_instance_id,
                 minds,
             )
+            require(event, "snapshot_id", event.snapshot_id, snapshots)
+            require(
+                event,
+                "authorization_id",
+                event.authorization_id,
+                authorizations,
+            )
         elif event.event_type == "evidence":
             require(event, "actor_principal_id", event.actor_principal_id, principals)
             require(
@@ -288,6 +358,12 @@ def validate_temporal_references(events: Iterable[CommonEvent]) -> None:
                 event.about_world_branch_id,
                 branches,
             )
+            require(
+                event,
+                "destination_placement_id",
+                event.destination_placement_id,
+                placements,
+            )
         elif event.event_type == "attitude":
             require(
                 event,
@@ -300,6 +376,12 @@ def validate_temporal_references(events: Iterable[CommonEvent]) -> None:
                 "about_world_branch_id",
                 event.about_world_branch_id,
                 branches,
+            )
+            require(
+                event,
+                "destination_placement_id",
+                event.destination_placement_id,
+                placements,
             )
         elif event.event_type == "exposure":
             require(
@@ -314,7 +396,28 @@ def validate_temporal_references(events: Iterable[CommonEvent]) -> None:
                 event.destination_mind_instance_id,
                 minds,
             )
-            require(event, "object_id", event.object_id, evidence)
+            require(
+                event,
+                "source_placement_id",
+                event.source_placement_id,
+                placements,
+            )
+            require(
+                event,
+                "destination_placement_id",
+                event.destination_placement_id,
+                placements,
+            )
+            require_typed_object(
+                event,
+                "object_id",
+                event.object_id,
+                event.object_kind,
+                default_kind="evidence",
+                allowed_kinds=frozenset(
+                    {"evidence", "assertion", "claim", "snapshot"}
+                ),
+            )
             require(
                 event,
                 "authorization_id",
@@ -322,11 +425,19 @@ def validate_temporal_references(events: Iterable[CommonEvent]) -> None:
                 authorizations,
             )
         elif event.event_type == "snapshot_member":
-            if event.object_kind == "evidence":
-                require(event, "object_id", event.object_id, evidence)
-            elif event.object_kind == "attitude":
-                require(event, "object_id", event.object_id, attitudes)
+            require(event, "snapshot_id", event.snapshot_id, snapshots)
+            require_typed_object(
+                event,
+                "object_id",
+                event.object_id,
+                event.object_kind,
+                default_kind=None,
+                allowed_kinds=frozenset(
+                    {"evidence", "assertion", "claim", "attitude", "policy"}
+                ),
+            )
         elif event.event_type == "authorization":
+            require(event, "actor_principal_id", event.actor_principal_id, principals)
             require(
                 event,
                 "source_mind_instance_id",
@@ -339,6 +450,27 @@ def validate_temporal_references(events: Iterable[CommonEvent]) -> None:
                 event.destination_mind_instance_id,
                 minds,
             )
+        elif event.event_type == "policy":
+            require(event, "actor_principal_id", event.actor_principal_id, principals)
+            require(
+                event,
+                "destination_mind_instance_id",
+                event.destination_mind_instance_id,
+                minds,
+            )
+            require_typed_object(
+                event,
+                "object_id",
+                event.object_id,
+                event.object_kind,
+                default_kind="evidence",
+                allowed_kinds=frozenset(
+                    {"evidence", "assertion", "claim", "snapshot", "attitude"}
+                ),
+            )
+        elif event.event_type == "justification":
+            for member_id in event.derivation_members:
+                require_derivation_member(event, member_id)
 
 
 def normalize_answer(value: Answer) -> Answer:

@@ -1,4 +1,6 @@
 {
+  "analysis_kind": "post_hoc_intervention_reanalysis",
+  "analysis_revision": "track-x-v0.1-post-hoc-temporal-ri-1",
   "deterministic_outputs": [
     "verification_rows.csv",
     "downstream_development_oracle_raw_ceiling.csv",
@@ -10,19 +12,20 @@
     "summary.json"
   ],
   "interpretation": "fixed deterministic parser/information-firewall audit; no inferential statistics or unrestricted natural-language claim",
+  "intervention": "shared canonical temporal referential-integrity input gate; verifier decisions and frozen manifest unchanged",
   "manifest_version": "track-x-v0.1-manifest-2",
   "output_sha256": {
     "downstream_development_oracle_raw_ceiling.csv": "4e08fec891948321210ae2ff812d2e78dc2f7dfe4f829049eb0f9f09a35f520f",
     "downstream_development_raw_verifier.csv": "8b6a1d23dbf32759c45e700c9f508073adfddc44b93f5569c8d498708f8f65ff",
-    "downstream_development_structured_only.csv": "864e8306ac52837799fdae67fedbddc253907879ffeb246104259ffa25cdab9f",
+    "downstream_development_structured_only.csv": "1100ecbf6f3456cf12fd486e0588e65e0fa7b8cfe91cc1419062abbedee22802",
     "downstream_heldout_oracle_raw_ceiling.csv": "a863e9005ad776f4c7ea30c8bebf54c13312d5d0ea46b53ff13d91f379b8683e",
     "downstream_heldout_raw_verifier.csv": "41e17f5a35c5292e480ab2f32cb8abb73bc2a19e612c3529e4614813bb3166cd",
-    "downstream_heldout_structured_only.csv": "6fc19bcf9754042b8dcc40984924ae7534fd855024563b6445c0b6e138aee3a6",
-    "summary.json": "999a0ea7cc07c3823f930cbda0cbf163c78dfd3d62b7cac9aeb91d28cbf01cca",
+    "downstream_heldout_structured_only.csv": "5b82c55e4728ccc05edc06bf67902542c706b350bf08026a616746fdcf115254",
+    "summary.json": "50c6327d97a4981ad92c369e7c82adac2873493a952ce50a4cb36169992b78cc",
     "verification_rows.csv": "b6ead8dc6cf73e307fe149db8a8cef886238ed3120d64fa5076ebb0eb6143438"
   },
-  "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
-  "python": "3.11.15 (main, Jun 16 2026, 21:41:52) [GCC 13.3.0]",
-  "script_sha256": "80b904a4e83265e9815ab2e4db09ecceaad7fb97cc2be52ecddc072b93e5fc04",
+  "platform": "macOS-27.0-arm64-arm-64bit",
+  "python": "3.11.15 (main, Apr 14 2026, 14:45:51) [Clang 22.1.3 ]",
+  "script_sha256": "6c9425029ef6f49efbec8c86b753dd300a32c3938b7327f32d3880364da3d49a",
   "study": "MindMap Track X v0.1 leakage-free raw verifier P0"
 }

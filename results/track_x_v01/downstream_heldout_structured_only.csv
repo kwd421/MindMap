@@ -9,12 +9,12 @@ X08-F08-raw-unavailable,heldout,restore_manifest_gap,conversational,raw_unavaila
 X08-F08-raw-unavailable,heldout,restore_manifest_gap,conversational,raw_unavailable,structured_only,T_typed,0,abstain,0,0,False,True,0,1,0,0
 X09-F09-clean,heldout,cross_world_reference_context,elliptical,clean,structured_only,G_generic,1,accept,0,0,True,True,1,0,0,0
 X09-F09-clean,heldout,cross_world_reference_context,elliptical,clean,structured_only,T_typed,1,accept,0,0,True,True,1,0,0,0
-X09-F09-field,heldout,cross_world_reference_context,elliptical,field_corruption,structured_only,G_generic,0,correct,0,0,False,True,0,1,0,0
-X09-F09-field,heldout,cross_world_reference_context,elliptical,field_corruption,structured_only,T_typed,0,correct,0,0,False,True,0,1,0,0
+X09-F09-field,heldout,cross_world_reference_context,elliptical,field_corruption,structured_only,G_generic,0,correct,1,1,'ERROR:ValueError:F09.xb.destination_mind_instance_id references missing entity: wrong-mind',True,0,0,0,0
+X09-F09-field,heldout,cross_world_reference_context,elliptical,field_corruption,structured_only,T_typed,0,correct,1,1,'ERROR:ValueError:F09.xb.destination_mind_instance_id references missing entity: wrong-mind',True,0,0,0,0
 X09-F09-omitted,heldout,cross_world_reference_context,elliptical,candidate_omitted,structured_only,G_generic,0,correct,0,0,False,True,0,1,0,0
 X09-F09-omitted,heldout,cross_world_reference_context,elliptical,candidate_omitted,structured_only,T_typed,0,correct,0,0,False,True,0,1,0,0
-X09-F09-raw-unavailable,heldout,cross_world_reference_context,elliptical,raw_unavailable,structured_only,G_generic,0,abstain,0,0,False,True,0,1,0,0
-X09-F09-raw-unavailable,heldout,cross_world_reference_context,elliptical,raw_unavailable,structured_only,T_typed,0,abstain,0,0,False,True,0,1,0,0
+X09-F09-raw-unavailable,heldout,cross_world_reference_context,elliptical,raw_unavailable,structured_only,G_generic,0,abstain,1,1,'ERROR:ValueError:F09.xb.destination_mind_instance_id references missing entity: wrong-mind',True,0,0,0,0
+X09-F09-raw-unavailable,heldout,cross_world_reference_context,elliptical,raw_unavailable,structured_only,T_typed,0,abstain,1,1,'ERROR:ValueError:F09.xb.destination_mind_instance_id references missing entity: wrong-mind',True,0,0,0,0
 X10-F10-clean,heldout,protected_only_revocation,explicit,clean,structured_only,G_generic,1,accept,0,0,False,False,1,0,0,0
 X10-F10-clean,heldout,protected_only_revocation,explicit,clean,structured_only,T_typed,1,accept,0,0,False,False,1,0,0,0
 X10-F10-field,heldout,protected_only_revocation,explicit,field_corruption,structured_only,G_generic,0,correct,0,0,True,False,0,1,1,0
@@ -25,28 +25,28 @@ X10-F10-raw-unavailable,heldout,protected_only_revocation,explicit,raw_unavailab
 X10-F10-raw-unavailable,heldout,protected_only_revocation,explicit,raw_unavailable,structured_only,T_typed,0,abstain,0,0,True,False,0,1,1,0
 X11-F11-clean,heldout,independent_public_survives,conversational,clean,structured_only,G_generic,1,accept,0,0,"('J.pub',)","('J.pub',)",1,0,0,0
 X11-F11-clean,heldout,independent_public_survives,conversational,clean,structured_only,T_typed,1,accept,0,0,"('J.pub',)","('J.pub',)",1,0,0,0
-X11-F11-field,heldout,independent_public_survives,conversational,field_corruption,structured_only,G_generic,0,correct,0,0,"('J.pub', 'J.sec')","('J.pub',)",0,1,0,0
-X11-F11-field,heldout,independent_public_survives,conversational,field_corruption,structured_only,T_typed,0,correct,0,0,"('J.pub', 'J.sec')","('J.pub',)",0,1,0,0
+X11-F11-field,heldout,independent_public_survives,conversational,field_corruption,structured_only,G_generic,0,correct,1,1,'ERROR:ValueError:F11.rs.object_id references missing entity: E.sec.wrong',"('J.pub',)",0,0,0,0
+X11-F11-field,heldout,independent_public_survives,conversational,field_corruption,structured_only,T_typed,0,correct,1,1,'ERROR:ValueError:F11.rs.object_id references missing entity: E.sec.wrong',"('J.pub',)",0,0,0,0
 X11-F11-omitted,heldout,independent_public_survives,conversational,candidate_omitted,structured_only,G_generic,0,correct,0,0,"('J.pub', 'J.sec')","('J.pub',)",0,1,0,0
 X11-F11-omitted,heldout,independent_public_survives,conversational,candidate_omitted,structured_only,T_typed,0,correct,0,0,"('J.pub', 'J.sec')","('J.pub',)",0,1,0,0
-X11-F11-raw-unavailable,heldout,independent_public_survives,conversational,raw_unavailable,structured_only,G_generic,0,abstain,0,0,"('J.pub', 'J.sec')","('J.pub',)",0,1,0,0
-X11-F11-raw-unavailable,heldout,independent_public_survives,conversational,raw_unavailable,structured_only,T_typed,0,abstain,0,0,"('J.pub', 'J.sec')","('J.pub',)",0,1,0,0
+X11-F11-raw-unavailable,heldout,independent_public_survives,conversational,raw_unavailable,structured_only,G_generic,0,abstain,1,1,'ERROR:ValueError:F11.rs.object_id references missing entity: E.sec.wrong',"('J.pub',)",0,0,0,0
+X11-F11-raw-unavailable,heldout,independent_public_survives,conversational,raw_unavailable,structured_only,T_typed,0,abstain,1,1,'ERROR:ValueError:F11.rs.object_id references missing entity: E.sec.wrong',"('J.pub',)",0,0,0,0
 X12-F12-clean,heldout,same_origin_dedup,elliptical,clean,structured_only,G_generic,1,accept,0,0,(),(),1,0,0,0
 X12-F12-clean,heldout,same_origin_dedup,elliptical,clean,structured_only,T_typed,1,accept,0,0,(),(),1,0,0,0
-X12-F12-field,heldout,same_origin_dedup,elliptical,field_corruption,structured_only,G_generic,0,correct,0,0,"('J.ok',)",(),0,1,0,0
-X12-F12-field,heldout,same_origin_dedup,elliptical,field_corruption,structured_only,T_typed,0,correct,0,0,"('J.ok',)",(),0,1,0,0
+X12-F12-field,heldout,same_origin_dedup,elliptical,field_corruption,structured_only,G_generic,0,correct,1,1,'ERROR:ValueError:F12.del.object_id references missing entity: E.two.wrong',(),0,0,0,0
+X12-F12-field,heldout,same_origin_dedup,elliptical,field_corruption,structured_only,T_typed,0,correct,1,1,'ERROR:ValueError:F12.del.object_id references missing entity: E.two.wrong',(),0,0,0,0
 X12-F12-omitted,heldout,same_origin_dedup,elliptical,candidate_omitted,structured_only,G_generic,0,correct,0,0,"('J.ok',)",(),0,1,0,0
 X12-F12-omitted,heldout,same_origin_dedup,elliptical,candidate_omitted,structured_only,T_typed,0,correct,0,0,"('J.ok',)",(),0,1,0,0
-X12-F12-raw-unavailable,heldout,same_origin_dedup,elliptical,raw_unavailable,structured_only,G_generic,0,abstain,0,0,"('J.ok',)",(),0,1,0,0
-X12-F12-raw-unavailable,heldout,same_origin_dedup,elliptical,raw_unavailable,structured_only,T_typed,0,abstain,0,0,"('J.ok',)",(),0,1,0,0
+X12-F12-raw-unavailable,heldout,same_origin_dedup,elliptical,raw_unavailable,structured_only,G_generic,0,abstain,1,1,'ERROR:ValueError:F12.del.object_id references missing entity: E.two.wrong',(),0,0,0,0
+X12-F12-raw-unavailable,heldout,same_origin_dedup,elliptical,raw_unavailable,structured_only,T_typed,0,abstain,1,1,'ERROR:ValueError:F12.del.object_id references missing entity: E.two.wrong',(),0,0,0,0
 X13-F13-clean,heldout,authorized_replication,explicit,clean,structured_only,G_generic,1,accept,0,0,True,True,1,0,0,0
 X13-F13-clean,heldout,authorized_replication,explicit,clean,structured_only,T_typed,1,accept,0,0,True,True,1,0,0,0
-X13-F13-field,heldout,authorized_replication,explicit,field_corruption,structured_only,G_generic,0,correct,0,0,False,True,0,1,0,0
-X13-F13-field,heldout,authorized_replication,explicit,field_corruption,structured_only,T_typed,0,correct,0,0,False,True,0,1,0,0
+X13-F13-field,heldout,authorized_replication,explicit,field_corruption,structured_only,G_generic,0,correct,1,1,'ERROR:ValueError:F13.rep.authorization_id references missing entity: AUTH.WRONG',True,0,0,0,0
+X13-F13-field,heldout,authorized_replication,explicit,field_corruption,structured_only,T_typed,0,correct,1,1,'ERROR:ValueError:F13.rep.authorization_id references missing entity: AUTH.WRONG',True,0,0,0,0
 X13-F13-omitted,heldout,authorized_replication,explicit,candidate_omitted,structured_only,G_generic,0,correct,0,0,False,True,0,1,0,0
 X13-F13-omitted,heldout,authorized_replication,explicit,candidate_omitted,structured_only,T_typed,0,correct,0,0,False,True,0,1,0,0
-X13-F13-raw-unavailable,heldout,authorized_replication,explicit,raw_unavailable,structured_only,G_generic,0,abstain,0,0,False,True,0,1,0,0
-X13-F13-raw-unavailable,heldout,authorized_replication,explicit,raw_unavailable,structured_only,T_typed,0,abstain,0,0,False,True,0,1,0,0
+X13-F13-raw-unavailable,heldout,authorized_replication,explicit,raw_unavailable,structured_only,G_generic,0,abstain,1,1,'ERROR:ValueError:F13.rep.authorization_id references missing entity: AUTH.WRONG',True,0,0,0,0
+X13-F13-raw-unavailable,heldout,authorized_replication,explicit,raw_unavailable,structured_only,T_typed,0,abstain,1,1,'ERROR:ValueError:F13.rep.authorization_id references missing entity: AUTH.WRONG',True,0,0,0,0
 X14-F14-clean,heldout,temporal_negative_controls,conversational,clean,structured_only,G_generic,1,accept,0,0,'new','new',1,0,0,0
 X14-F14-clean,heldout,temporal_negative_controls,conversational,clean,structured_only,T_typed,1,accept,0,0,'new','new',1,0,0,0
 X14-F14-field,heldout,temporal_negative_controls,conversational,field_corruption,structured_only,G_generic,0,correct,0,0,'wrong-value','new',0,1,0,0
