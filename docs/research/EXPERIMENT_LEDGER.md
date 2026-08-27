@@ -129,3 +129,23 @@ Machine-readable records live in `records/`.
   general temporal equivalence outside the authored fixed suite. The schema
   must reject reference-before-creation or every resolver must enforce temporal
   referential integrity before a broader canonical-conformance claim.
+
+## EXP-20260828-006 — LongMemEval full-set flat-BM25 reproduction
+
+- **Class:** preregistered source-aligned reproduction
+- **Status:** planned; no retrieval outcome inspected at freeze
+- **Official source:** LongMemEval
+  `9e0b455f4ef0e2ab8f2e582289761153549043fc`; runner SHA-256
+  `efd7fc59...346`; metric SHA-256 `c98b8d10...349`
+- **Data:** official cleaned LongMemEval-S, 500 released questions,
+  277,383,467 bytes, SHA-256 `d6f21ea9...442`
+- **Method:** session-level `flat-bm25`, `rank-bm25==0.2.2`, exact public
+  user-only corpus construction, `str.split(" ")` tokenization,
+  `numpy.argsort(scores)[::-1]`, official target and exclusion definitions
+- **Primary outcome:** `recall_all@5` count and eligible denominator
+- **Secondary outcomes:** recall-any, recall-all, and mean NDCG at
+  `k={1,3,5,10,30,50}`, plus compact per-question rows
+- **Stopping rule:** finish all eligible released questions or fail without
+  changing data, algorithm, or exclusions
+- **Claim boundary:** source-aligned local reproduction only. It is neither an
+  official leaderboard submission nor an end-to-end QA or MindMap result.
