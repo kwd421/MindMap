@@ -171,6 +171,176 @@ def sorted_events(events: Iterable[CommonEvent], *, through_system_time: Optiona
     return tuple(sorted(selected, key=lambda event: (event.system_time, event.event_id)))
 
 
+def validate_temporal_references(events: Iterable[CommonEvent]) -> None:
+    """Reject references to entities that do not yet exist at event time.
+
+    System time is the append-only observation axis. A reference is valid when
+    its target was created at or before the referencing event's system time;
+    a target that appears only in a later event must not retroactively make an
+    earlier lineage, exposure, placement, or claim valid.
+    """
+
+    ordered = sorted_events(events)
+
+    def creation_times(
+        event_type: str, *, use_event_id: bool = False
+    ) -> dict[str, int]:
+        result: dict[str, int] = {}
+        for event in ordered:
+            if event.event_type != event_type:
+                continue
+            object_id = event.event_id if use_event_id else event.object_id
+            if object_id is not None:
+                result[object_id] = min(
+                    result.get(object_id, event.system_time), event.system_time
+                )
+        return result
+
+    principals = creation_times("principal_create")
+    minds = creation_times("mind_create")
+    branches = creation_times("world_create")
+    placements = creation_times("placement")
+    evidence = creation_times("evidence")
+    attitudes = creation_times("attitude", use_event_id=True)
+    authorizations = creation_times("authorization")
+
+    def require(
+        event: CommonEvent,
+        field: str,
+        target_id: Optional[str],
+        targets: dict[str, int],
+    ) -> None:
+        if target_id is None:
+            return
+        created_at = targets.get(target_id)
+        if created_at is None:
+            raise ValueError(
+                f"{event.event_id}.{field} references missing entity: {target_id}"
+            )
+        if created_at > event.system_time:
+            raise ValueError(
+                f"{event.event_id}.{field} references future entity {target_id}: "
+                f"created at {created_at}, referenced at {event.system_time}"
+            )
+
+    for event in ordered:
+        attrs = attrs_dict(event)
+        if event.event_type == "mind_create":
+            require(event, "actor_principal_id", event.actor_principal_id, principals)
+        elif event.event_type == "world_create":
+            require(event, "parent", attrs.get("parent") or None, branches)
+        elif event.event_type == "placement":
+            require(
+                event,
+                "destination_mind_instance_id",
+                event.destination_mind_instance_id,
+                minds,
+            )
+            require(
+                event,
+                "about_world_branch_id",
+                event.about_world_branch_id,
+                branches,
+            )
+        elif event.event_type == "lineage":
+            require(
+                event,
+                "source_mind_instance_id",
+                event.source_mind_instance_id,
+                minds,
+            )
+            require(
+                event,
+                "destination_mind_instance_id",
+                event.destination_mind_instance_id,
+                minds,
+            )
+        elif event.event_type == "evidence":
+            require(event, "actor_principal_id", event.actor_principal_id, principals)
+            require(
+                event,
+                "actor_mind_instance_id",
+                event.actor_mind_instance_id,
+                minds,
+            )
+            require(
+                event,
+                "source_placement_id",
+                event.source_placement_id,
+                placements,
+            )
+            require(
+                event,
+                "destination_placement_id",
+                event.destination_placement_id,
+                placements,
+            )
+            require(
+                event,
+                "about_world_branch_id",
+                event.about_world_branch_id,
+                branches,
+            )
+        elif event.event_type == "world_claim":
+            require(
+                event,
+                "about_world_branch_id",
+                event.about_world_branch_id,
+                branches,
+            )
+        elif event.event_type == "attitude":
+            require(
+                event,
+                "destination_mind_instance_id",
+                event.destination_mind_instance_id,
+                minds,
+            )
+            require(
+                event,
+                "about_world_branch_id",
+                event.about_world_branch_id,
+                branches,
+            )
+        elif event.event_type == "exposure":
+            require(
+                event,
+                "source_mind_instance_id",
+                event.source_mind_instance_id,
+                minds,
+            )
+            require(
+                event,
+                "destination_mind_instance_id",
+                event.destination_mind_instance_id,
+                minds,
+            )
+            require(event, "object_id", event.object_id, evidence)
+            require(
+                event,
+                "authorization_id",
+                event.authorization_id,
+                authorizations,
+            )
+        elif event.event_type == "snapshot_member":
+            if event.object_kind == "evidence":
+                require(event, "object_id", event.object_id, evidence)
+            elif event.object_kind == "attitude":
+                require(event, "object_id", event.object_id, attitudes)
+        elif event.event_type == "authorization":
+            require(
+                event,
+                "source_mind_instance_id",
+                event.source_mind_instance_id,
+                minds,
+            )
+            require(
+                event,
+                "destination_mind_instance_id",
+                event.destination_mind_instance_id,
+                minds,
+            )
+
+
 def normalize_answer(value: Answer) -> Answer:
     if isinstance(value, tuple):
         return tuple(sorted(value))

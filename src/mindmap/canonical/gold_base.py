@@ -2,14 +2,16 @@ from __future__ import annotations
 
 from typing import Iterable
 
-from .model import CommonEvent
+from .model import CommonEvent, validate_temporal_references
 
 
 class GoldBase:
     implementation_name = "Gold_declarative_reference"
 
     def __init__(self, events: Iterable[CommonEvent]):
-        self.log = tuple(sorted(events, key=lambda e: (e.system_time, e.event_id)))
+        input_events = tuple(events)
+        validate_temporal_references(input_events)
+        self.log = tuple(sorted(input_events, key=lambda e: (e.system_time, e.event_id)))
         ids = [event.event_id for event in self.log]
         if len(ids) != len(set(ids)):
             raise ValueError("duplicate event id in gold fixture")
