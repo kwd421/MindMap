@@ -1,0 +1,75 @@
+{
+  "allowed_inputs": {
+    "GovernanceCandidate": [
+      "turn_id",
+      "speaker_principal_id",
+      "speaker_role",
+      "timestamp",
+      "turn_kind",
+      "text",
+      "ingest_index",
+      "rank",
+      "lexical_score",
+      "recency_score",
+      "final_score"
+    ],
+    "GovernanceQuery": [
+      "asker_principal_id",
+      "asker_role",
+      "query_text"
+    ],
+    "GovernanceSignal": [
+      "signal_id",
+      "operation",
+      "restriction_scope",
+      "actor_principal_id",
+      "actor_role",
+      "observed_index",
+      "source_public_turn_id",
+      "target_principal_ids",
+      "target_roles",
+      "anchor_tokens",
+      "source_text_sha256",
+      "source_kind"
+    ],
+    "GovernanceSurface": [
+      "principals",
+      "query",
+      "candidates",
+      "signals",
+      "observed_turn_count"
+    ],
+    "PublicPrincipal": [
+      "principal_id",
+      "role",
+      "display_name"
+    ]
+  },
+  "candidate_backfill_after_block": false,
+  "chronology": "incremental ingest order only; no future turns or source as-of ID",
+  "default_unknown_disposition": "admit",
+  "external_policy_signals": "disabled in primary B2",
+  "forbidden_fields": [
+    "as_of_turn_id",
+    "expected_action",
+    "future_turns",
+    "gold_record_ids",
+    "gold_records",
+    "judge_spec",
+    "label",
+    "labels",
+    "leak_targets",
+    "memory_ops",
+    "query_type",
+    "record_refs",
+    "records",
+    "relationships",
+    "source_checkpoint_id",
+    "source_episode_id",
+    "source_turn_id"
+  ],
+  "primary_condition": "public-turn-text-derived-governance",
+  "reader": "same frozen B1b reader and token/call budget",
+  "same_b1a_candidates": true,
+  "schema_version": "track-x-gatemem-b2-information-surface-v0.1"
+}
