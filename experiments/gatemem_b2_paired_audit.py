@@ -75,7 +75,9 @@ def _regex_present(pattern: str, text: str) -> bool:
 
 def _pattern_counts(patterns: Iterable[str], text: str) -> tuple[int, int]:
     materialized = tuple(str(pattern) for pattern in patterns)
-    return len(materialized), sum(_regex_present(pattern, text) for pattern in materialized)
+    return len(materialized), sum(
+        _regex_present(pattern, text) for pattern in materialized
+    )
 
 
 def _audit_text(row: Mapping[str, Any]) -> str:
@@ -121,7 +123,9 @@ def _method_summary(root: Path) -> dict[str, Any]:
     metadata = _load_json(root / "run_metadata.json")
     scores = _load_jsonl(root / "official_score" / "scores.jsonl")
     return {
-        "official_summary": _load_json(root / "official_score" / "summary.json"),
+        "official_summary": _load_json(
+            root / "official_score" / "summary.json"
+        ),
         "supplemental_selective": audit_gate_mem_scores(scores).to_json(),
         "method_config": metadata["method"]["config"],
         "artifact_sha256": metadata["artifact_sha256"],
@@ -138,7 +142,7 @@ def _expected_opaque_queries(
     secret: bytes,
 ) -> dict[str, Mapping[str, Any]]:
     opaque = GateMemOpaqueIds.from_secret(secret)
-    output = {}
+    output: dict[str, Mapping[str, Any]] = {}
     for checkpoint in checkpoints:
         method_id = opaque.query(
             str(checkpoint["episode_id"]),
@@ -157,7 +161,9 @@ def build_publishable(
     b1b_root: Path,
     b2_root: Path,
 ) -> dict[str, Any]:
-    checkpoints_path = checkout / "bench" / "data" / domain / "checkpoints.jsonl"
+    checkpoints_path = (
+        checkout / "bench" / "data" / domain / "checkpoints.jsonl"
+    )
     checkpoints = _load_jsonl(checkpoints_path)
     hidden_by_opaque = _expected_opaque_queries(checkpoints, secret)
     predictions = {
@@ -204,7 +210,7 @@ def build_publishable(
     candidate_count = 0
     admitted_count = 0
     blocked_count = 0
-    policy_signal_checkpoint_count = 0
+    b2_matched_signal_checkpoint_count = 0
     reason_counts: Counter[str] = Counter()
 
     for checkpoint_id, hidden in hidden_by_opaque.items():
@@ -234,9 +240,9 @@ def build_publishable(
         candidate_count += int(governance["candidate_count"])
         admitted_count += int(governance["admitted_count"])
         blocked_count += int(governance["blocked_count"])
-        if int(governance["admitted_count"]) + int(governance["blocked_count"]) != int(
-            governance["candidate_count"]
-        ):
+        if int(governance["admitted_count"]) + int(
+            governance["blocked_count"]
+        ) != int(governance["candidate_count"]):
             governance_count_violations += 1
 
         matched_signal = False
@@ -246,7 +252,7 @@ def build_publishable(
             if item["matched_signal_ids"]:
                 matched_signal = True
         if matched_signal:
-            policy_signal_checkpoint_count += 1
+            b2_matched_signal_checkpoint_count += 1
 
         query_type = str(hidden["query_type"])
         if query_type == "utility":
@@ -263,7 +269,7 @@ def build_publishable(
                 b2_full_required_recall += 1
             if total > 0 and b1a_present == total and b2_present < total:
                 false_blocking_checkpoints += 1
-        elif query_type in {"privacy", "deletion"}:
+        elif query_type in {"privacy", "safety", "deletion"}:
             patterns = hidden.get("leak_targets", [])
             total, b1a_present = _pattern_counts(patterns, b1a_text)
             _, b2_present = _pattern_counts(patterns, b2_text)
@@ -295,7 +301,10 @@ def build_publishable(
     b1b_metadata = _load_json(b1b_root / "run_metadata.json")
     b2_metadata = _load_json(b2_root / "run_metadata.json")
     checkout_identity = b1a_metadata["checkout"]
-    if checkout_identity != b1b_metadata["checkout"] or checkout_identity != b2_metadata["checkout"]:
+    if (
+        checkout_identity != b1b_metadata["checkout"]
+        or checkout_identity != b2_metadata["checkout"]
+    ):
         raise ValueError("paired methods used different GateMem checkout identities")
 
     publishable = {
@@ -323,7 +332,9 @@ def build_publishable(
                 "required_pattern_count": utility_required_patterns,
                 "B1a_required_patterns_present": b1a_required_patterns_present,
                 "B2_required_patterns_present": b2_required_patterns_present,
-                "B1a_full_required_recall_checkpoints": b1a_full_required_recall,
+                "B1a_full_required_recall_checkpoints": (
+                    b1a_full_required_recall
+                ),
                 "B2_full_required_recall_checkpoints": b2_full_required_recall,
                 "false_blocking_checkpoints": false_blocking_checkpoints,
             },
@@ -332,22 +343,32 @@ def build_publishable(
                 "leak_pattern_count": privacy_leak_patterns,
                 "B1a_prompt_exposed_patterns": b1a_privacy_prompt_exposure,
                 "B2_prompt_exposed_patterns": b2_privacy_prompt_exposure,
-                "B1a_prompt_exposed_checkpoints": b1a_privacy_exposed_checkpoints,
-                "B2_prompt_exposed_checkpoints": b2_privacy_exposed_checkpoints,
+                "B1a_prompt_exposed_checkpoints": (
+                    b1a_privacy_exposed_checkpoints
+                ),
+                "B2_prompt_exposed_checkpoints": (
+                    b2_privacy_exposed_checkpoints
+                ),
             },
             "deletion": {
                 "checkpoint_count": deletion_checkpoints,
                 "leak_pattern_count": deletion_leak_patterns,
                 "B1a_prompt_exposed_patterns": b1a_deletion_prompt_exposure,
                 "B2_prompt_exposed_patterns": b2_deletion_prompt_exposure,
-                "B1a_prompt_exposed_checkpoints": b1a_deletion_exposed_checkpoints,
-                "B2_prompt_exposed_checkpoints": b2_deletion_exposed_checkpoints,
+                "B1a_prompt_exposed_checkpoints": (
+                    b1a_deletion_exposed_checkpoints
+                ),
+                "B2_prompt_exposed_checkpoints": (
+                    b2_deletion_exposed_checkpoints
+                ),
             },
             "governance": {
                 "candidate_count": candidate_count,
                 "admitted_count": admitted_count,
                 "blocked_count": blocked_count,
-                "public_signal_present_checkpoint_count": policy_signal_checkpoint_count,
+                "B2_matched_signal_checkpoint_count": (
+                    b2_matched_signal_checkpoint_count
+                ),
                 "reason_counts": dict(sorted(reason_counts.items())),
             },
         },
@@ -363,24 +384,30 @@ def build_publishable(
             },
         },
         "metric_namespaces": {
-            "official_summary": "Unmodified pinned GateMem deterministic scorer.",
+            "official_summary": (
+                "Unmodified pinned GateMem deterministic scorer."
+            ),
             "supplemental_selective": (
                 "MindMap answered-denominator audit; does not replace official metrics."
             ),
             "stage_metrics": (
-                "Evaluator-side aggregate join using hidden labels after method execution; "
-                "hidden inputs never cross the method boundary."
+                "Evaluator-side aggregate join using hidden labels after method "
+                "execution; hidden inputs never cross the method boundary."
             ),
         },
         "interpretation_boundary": (
-            "B2 uses a retrospective same-speaker public-text heuristic with unknown-admit, "
-            "no relationships or authenticated policy capability, no candidate backfill, "
-            "and whole-turn directive exclusion."
+            "B2 uses a retrospective same-speaker public-text heuristic with "
+            "unknown-admit, no relationships or authenticated policy capability, "
+            "no candidate backfill, and whole-turn directive exclusion. "
+            "B2_matched_signal_checkpoint_count is method-dependent coverage, "
+            "not a method-independent identifiability estimand."
         ),
     }
     leaked = set(_walk_keys(publishable)) & FORBIDDEN_PUBLISHABLE_KEYS
     if leaked:
-        raise ValueError(f"publishable B2 aggregate contains forbidden keys: {sorted(leaked)}")
+        raise ValueError(
+            f"publishable B2 aggregate contains forbidden keys: {sorted(leaked)}"
+        )
     return publishable
 
 
