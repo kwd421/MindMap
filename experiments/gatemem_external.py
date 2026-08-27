@@ -15,6 +15,11 @@ from mindmap.track_x.gatemem_baselines import (
     RawLexicalConfig,
     RawLexicalGateMemAgent,
 )
+from mindmap.track_x.gatemem_governance import (
+    GovernanceConfig,
+    governance_surface_manifest,
+)
+from mindmap.track_x.gatemem_governance_safe import FrozenB2GateMemAgent
 from mindmap.track_x.gatemem_official import (
     PINNED_GATEMEM_COMMIT,
     git_revision,
@@ -48,6 +53,7 @@ def parse_args() -> argparse.Namespace:
         choices=(
             "raw_lexical",
             "raw_lexical_reader",
+            "raw_lexical_governed_reader",
             "always_no_memory",
         ),
         required=True,
@@ -71,6 +77,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skip-official-scorer", action="store_true")
     parser.add_argument("--gate-by-action", action="store_true")
     parser.add_argument("--scorer-python", default=sys.executable)
+    parser.add_argument(
+        "--opaque-id-secret-file",
+        type=Path,
+        default=None,
+        help=(
+            "Evaluator-owned binary key file reused only to pair protected runs. "
+            "The key and mapping are never written to outputs; only commitments are."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -84,11 +99,34 @@ def _lexical_config(args: argparse.Namespace) -> RawLexicalConfig:
     )
 
 
+def _load_opaque_secret(path: Path | None) -> bytes | None:
+    if path is None:
+        return None
+    resolved = path.resolve()
+    if not resolved.is_file():
+        raise ValueError(f"opaque-ID secret file is missing: {resolved}")
+    secret = resolved.read_bytes()
+    if len(secret) < 16:
+        raise ValueError("opaque-ID secret file must contain at least 128 bits")
+    return secret
+
+
 def _package_version(name: str) -> str | None:
     try:
         return importlib.metadata.version(name)
     except importlib.metadata.PackageNotFoundError:
         return None
+
+
+def _canonical_json_sha256(value: Any) -> str:
+    payload = json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    return sha256(payload).hexdigest()
 
 
 def _write_reader_runtime(
@@ -124,7 +162,11 @@ def main() -> int:
     shared_reader: TransformersExtractiveReader | None = None
     reader_config: ExtractiveReaderConfig | None = None
 
-    if args.method in {"raw_lexical", "raw_lexical_reader"}:
+    if args.method in {
+        "raw_lexical",
+        "raw_lexical_reader",
+        "raw_lexical_governed_reader",
+    }:
         lexical_config = _lexical_config(args)
         method_config = {
             "top_k": lexical_config.top_k,
@@ -146,10 +188,26 @@ def main() -> int:
             )
             shared_reader = TransformersExtractiveReader(reader_config)
             method_config["reader"] = asdict(reader_config)
-            factory = lambda: RawLexicalSharedReaderGateMemAgent(
-                lexical_config,
-                shared_reader,
-            )
+            if args.method == "raw_lexical_reader":
+                factory = lambda: RawLexicalSharedReaderGateMemAgent(
+                    lexical_config,
+                    shared_reader,
+                )
+            else:
+                governance_config = GovernanceConfig()
+                surface_manifest = governance_surface_manifest()
+                method_config["governance"] = {
+                    "config": asdict(governance_config),
+                    "surface_manifest": surface_manifest,
+                    "surface_manifest_sha256": _canonical_json_sha256(
+                        surface_manifest
+                    ),
+                }
+                factory = lambda: FrozenB2GateMemAgent(
+                    lexical_config,
+                    shared_reader,
+                    governance_config,
+                )
     else:
         method_config = {}
         factory = AlwaysNoMemoryGateMemAgent
@@ -173,6 +231,7 @@ def main() -> int:
         scorer_python=args.scorer_python,
         gate_by_action=args.gate_by_action,
         repository_revision=repository_revision,
+        opaque_id_secret=_load_opaque_secret(args.opaque_id_secret_file),
     )
 
     reader_runtime_sha256: str | None = None

@@ -1,0 +1,34 @@
+{
+  "artifact": {
+    "downloaded_zip_sha256": "84d7837683ba0f31b9baa3b2c71f61dc00447f378a3ad4fcb05e100c18fabace",
+    "github_api_digest": "sha256:84d7837683ba0f31b9baa3b2c71f61dc00447f378a3ad4fcb05e100c18fabace",
+    "id": 9651281204,
+    "name": "gatemem-b2-surface-audit-f93808424d9bdb21b91c0ea8e0445c81e5087e60"
+  },
+  "classification": "fixed synthetic pre-outcome information-surface audit; no public GateMem performance or MindMap effectiveness result",
+  "merge_candidate": "f93808424d9bdb21b91c0ea8e0445c81e5087e60",
+  "producing_head": "ae4d4c2fe2ca1f52ff79864ac06b899433a4b6db",
+  "schema_version": "track-x-gatemem-b2-surface-audit-provenance-v0.2",
+  "session_b_g3_amendment": {
+    "review_id": 5042017788,
+    "status": "addressed before public B2 outcome",
+    "tests": [
+      "explicit information-record deletion emits DELETE",
+      "remove stitches is not Active Forgetting",
+      "wipe table is not Active Forgetting",
+      "ordinary remove action preserves prior fact"
+    ]
+  },
+  "summary_json_sha256": "2aac5845e88385476001ecfbd491fa006c56a759bf50cc2ef731089cbff6aecc",
+  "surface_manifest_sha256": "687e64fc7f67a846adbdcb9afb519826b6d511dcc904955cf3311bfb452720f6",
+  "tests": {
+    "contract_reader_secret_and_speech_act_tests_passed": 23,
+    "surface_audit_cases_passed": 9,
+    "surface_audit_cases_failed": 0
+  },
+  "workflow": {
+    "job_id": 98558334619,
+    "run_id": 33083941890,
+    "status": "success"
+  }
+}
