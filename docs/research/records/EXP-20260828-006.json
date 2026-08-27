@@ -92,6 +92,11 @@
     "retrieval_rows_sha256": "3420e593f66348a66b05b8b2d3229ba881f52221a0ae83a8d63971132c2ff3a9",
     "summary_sha256": "aa62a550bd186f394dc87050501be70776f5fd534c2de6eb7816708fa3c596e4"
   },
+  "artifact_files": [
+    {"path": "experiments/longmemeval_official_bm25_reproduction.py", "sha256": "cec87380461147b024320a928fb24b4529a46326b13e96cb3e0e49dcd4fff216"},
+    {"path": "results/research/EXP-20260828-006/retrieval_rows.csv", "sha256": "3420e593f66348a66b05b8b2d3229ba881f52221a0ae83a8d63971132c2ff3a9"},
+    {"path": "results/research/EXP-20260828-006/summary.json", "sha256": "aa62a550bd186f394dc87050501be70776f5fd534c2de6eb7816708fa3c596e4"}
+  ],
   "result_addendum": [
     "A first detached execution and the final artifact execution produced the same retrieval_rows SHA-256.",
     "The source-aligned runner's three unit tests passed in the pinned temporary environment.",

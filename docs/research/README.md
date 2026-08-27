@@ -48,3 +48,30 @@ Research-practice sources:
 Benchmark claims should cite the official repository and paper. Community
 reviews are useful audit leads, but they are not treated as result evidence
 until the underlying code or artifact is checked directly.
+
+## What the checker actually guarantees
+
+`python tools/check_research_records.py` now applies the Draft 2020-12 schema
+and project semantic checks. A green result means:
+
+- every record passes the committed schema and has no undeclared top-level
+  fields;
+- numerator/denominator pairs are integral, positive-denominator, and bounded;
+- declared artifact files exist inside the repository and match SHA-256;
+- source and checkout revisions resolve as local commits;
+- dirty runs declare either a verifiable patch artifact or explicit
+  unreconstructability;
+- exact timestamps are ordered, while unknown timestamps are explicitly
+  marked rather than replaced by midnight placeholders;
+- a declared preregistration commit contains the record, descends from the
+  source revision, predates the run, and preserves method arms, models,
+  controls, sample, primary outcome, and stopping rule;
+- the cost ledger has exactly one reconciled row per experiment;
+- experiment-ledger headings and claim-ledger references resolve to manifests.
+
+It does **not** prove that an external dataset or model matches its claimed
+identity when the bytes are unavailable, that an LLM judgment is correct, that
+the recorded command was actually executed, or that a study design is valid.
+Those require retained artifacts, independent review, and reproduction. The
+schema and checker are versioned research infrastructure, not an institutional
+registry or tamper-proof timestamp service.

@@ -55,5 +55,9 @@
     "provider_usd": 0.0,
     "note": "Local deterministic audit; no hosted-model API charge."
   },
+  "artifact_retention": {
+    "status": "record_only",
+    "reason": "The exact adversarial event sequence and three Boolean outputs are embedded in this manifest and the human ledger."
+  },
   "claim_boundary": "One development counterexample to broad temporal conformance; the scoped authorization fix itself passed and the divergence predates PR 55."
 }

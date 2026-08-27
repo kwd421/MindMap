@@ -3,7 +3,7 @@
   "$id": "https://github.com/kwd421/MindMap/docs/research/record.schema.json",
   "title": "MindMap experiment record",
   "type": "object",
-  "additionalProperties": true,
+  "additionalProperties": false,
   "required": [
     "schema_version",
     "experiment_id",
@@ -25,20 +25,134 @@
     "claim_boundary"
   ],
   "properties": {
-    "experiment_id": {"type": "string", "pattern": "^EXP-[0-9]{8}-[0-9]{3}$"},
-    "status": {"enum": ["planned", "running", "completed", "failed", "superseded"]},
-    "study_class": {"enum": ["smoke", "development", "pilot", "confirmatory", "reproduction", "replication"]},
+    "schema_version": {"const": "0.1.0"},
+    "experiment_id": {
+      "type": "string",
+      "pattern": "^EXP-[0-9]{8}-[0-9]{3}$"
+    },
+    "title": {"type": "string", "minLength": 1},
+    "status": {
+      "enum": ["planned", "running", "completed", "failed", "superseded"]
+    },
+    "study_class": {
+      "enum": ["smoke", "development", "pilot", "confirmatory", "reproduction", "replication"]
+    },
+    "research_question_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^RQ[0-9]+$"}
+    },
+    "hypothesis_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^H[0-9]+$"}
+    },
+    "started_at": {
+      "anyOf": [{"type": "string", "format": "date-time"}, {"type": "null"}]
+    },
+    "ended_at": {
+      "anyOf": [{"type": "string", "format": "date-time"}, {"type": "null"}]
+    },
+    "timing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["precision", "note"],
+      "properties": {
+        "precision": {"enum": ["exact", "day", "unknown"]},
+        "note": {"type": "string", "minLength": 1}
+      }
+    },
+    "preregistration_commit": {
+      "anyOf": [
+        {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        {"type": "null"}
+      ]
+    },
     "source": {
       "type": "object",
-      "required": ["repository", "source_revision", "checkout_revision", "dirty", "deviations"]
+      "required": ["repository", "source_revision", "checkout_revision", "dirty", "deviations"],
+      "properties": {
+        "repository": {"type": "string", "minLength": 1},
+        "source_revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "checkout_revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "main_reproduction_revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "dirty": {"type": "boolean"},
+        "deviations": {"type": "array", "items": {"type": "string"}},
+        "reconstructability": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "reason"],
+          "properties": {
+            "status": {"enum": ["reconstructable", "unreconstructable"]},
+            "reason": {"type": "string", "minLength": 1},
+            "patch_path": {"type": "string", "minLength": 1},
+            "patch_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          }
+        }
+      },
+      "additionalProperties": false
     },
     "dataset": {
       "type": "object",
-      "required": ["name", "revision", "split", "license", "raw_data_committed"]
+      "required": ["name", "revision", "split", "license", "raw_data_committed"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "revision": {"type": "string", "minLength": 1},
+        "split": {"type": "string", "minLength": 1},
+        "license": {"type": "string", "minLength": 1},
+        "raw_data_committed": {"type": "boolean"}
+      },
+      "additionalProperties": true
     },
+    "method_arms": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "models": {"type": "array", "items": {"type": "object"}},
+    "controls": {"type": "object"},
+    "sample": {"type": "object"},
+    "results": {"type": "object"},
     "cost": {
       "type": "object",
-      "required": ["provider_usd", "note"]
-    }
-  }
+      "additionalProperties": true,
+      "required": ["provider_usd", "note"],
+      "properties": {
+        "provider_usd": {"type": "number", "minimum": 0},
+        "note": {"type": "string", "minLength": 1}
+      }
+    },
+    "artifact_files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "artifact_retention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reason"],
+      "properties": {
+        "status": {"enum": ["record_only", "protected_not_committed", "not_retained"]},
+        "reason": {"type": "string", "minLength": 1}
+      }
+    },
+    "artifacts": {"type": "object"},
+    "deviation_addendum": {"type": "array", "items": {"type": "string"}},
+    "result_addendum": {"type": "array", "items": {"type": "string"}},
+    "claim_boundary": {"type": "string", "minLength": 1}
+  },
+  "oneOf": [
+    {"required": ["artifact_files"]},
+    {"required": ["artifact_retention"]}
+  ]
 }

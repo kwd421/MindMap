@@ -123,9 +123,16 @@
     "sample_sha256": "036e443ab4cd17068256d193c0d4e0eeae5876c9f37dc4d9a49542c212362380",
     "summary_sha256": "bfabecaefc5644ab1e40cf4b6b250b1c4e7aa518830fa406c524fb909d2c33fe"
   },
+  "artifact_files": [
+    {"path": "results/research/EXP-20260827-003/predictions.jsonl", "sha256": "c2f38012cda240ce4dcb9214a00c46feaebd6f02bc42d6f85c00713c9c9c6462"},
+    {"path": "results/research/EXP-20260827-003/sample.json", "sha256": "036e443ab4cd17068256d193c0d4e0eeae5876c9f37dc4d9a49542c212362380"},
+    {"path": "results/research/EXP-20260827-003/summary.json", "sha256": "bfabecaefc5644ab1e40cf4b6b250b1c4e7aa518830fa406c524fb909d2c33fe"}
+  ],
   "deviation_addendum": [
     "The runner did not serialize explicit start/end timestamps or provider response IDs. Filesystem timestamps were used in the audit; the runner will be amended before another study.",
-    "The balance endpoint returned the same two-decimal value before and immediately after the estimated USD 0.027 run, so billed cost is unknown."
+    "The balance endpoint returned the same two-decimal value before and immediately after the estimated USD 0.027 run, so billed cost is unknown.",
+    "The hosted-model pilot was executed once even though MM-RP-001 calls for two repetitions when a pilot is stochastic. Temperature 0 does not make the mutable hosted alias deterministic; the result remains single-run feasibility evidence.",
+    "The runner checked current accumulated estimated cost before each next pair, not a conservative projection of the next answer-plus-judge pair. The run ended far below the USD 0.25 ceiling, so the mismatch did not affect stopping, but the guard is weaker than the frozen wording."
   ],
   "claim_boundary": "Eight-question cost and feasibility pilot with one event-attribution failure; not an official LongMemEval score, confirmatory result, MindMap comparison, or leaderboard submission."
 }

@@ -57,5 +57,9 @@
     "provider_usd": 0.0,
     "note": "Local deterministic audit; no hosted-model API charge."
   },
+  "artifact_retention": {
+    "status": "record_only",
+    "reason": "The seven development probes and their aggregate outcomes are recorded in this manifest and ledger; no separate outcome artifact was promoted."
+  },
   "claim_boundary": "Development language-coverage counterexample at one frozen PR head; not an official GateMem score, recall estimate, or held-out confirmation."
 }

@@ -5,7 +5,8 @@ Machine-readable records live in `records/`.
 
 ## EXP-20260827-001 — GateMem B1a/B1b independent local reproduction
 
-- **Class:** reproduction of the aggregate result, not the same artifact
+- **Class:** independent aggregate corroboration / changed-environment
+  replication, not the same artifact
 - **Question:** Does adding a fixed extractive reader after raw BM25 retrieval
   remove prompt-context leakage while preserving utility?
 - **Source:** local detached MindMap revision
@@ -27,9 +28,12 @@ Machine-readable records live in `records/`.
   leakage 646/763 to 96/763; deletion context exposure remained 645/763.
 - **Interpretation:** H2 is supported in this pinned setting. The reader is a
   negative control, not a MindMap architecture or leaderboard result.
-- **Artifact note:** protected raw outputs remain in a temporary local directory;
-  they are not committed. PR #50 has matching aggregates but different artifact
-  hashes/revisions and must be described as corroboration, not identity.
+- **Artifact note:** protected raw outputs and the exact dirty patch were not
+  retained durably. PR #50 has matching aggregates but different artifact
+  hashes/revisions. This is unreconstructable aggregate corroboration, not a
+  byte-reproducible execution or artifact identity.
+- **Timing note:** exact execution timestamps were not recorded; former
+  midnight placeholders were removed from the machine record.
 
 ## EXP-20260827-002 — GateMem B2 deployable-surface local audit
 
@@ -84,6 +88,19 @@ Machine-readable records live in `records/`.
 - **Interpretation:** retrieval success did not guarantee event attribution or
   abstention. This is a pilot failure mode, not a performance estimate.
 - **Artifacts:** `results/research/EXP-20260827-003/`
+
+### 2026-08-28 protocol-deviation addendum
+
+- The mutable hosted alias was executed once, although MM-RP-001 asks for two
+  repetitions for a stochastic pilot. Temperature 0 is not an immutability
+  guarantee; no second paid run is being retroactively added.
+- The cost guard checked accumulated cost before each next pair rather than a
+  conservative projection of that pair. The observed `$0.0272` remained far
+  below the `$0.25` ceiling, so stopping was unaffected, but the implementation
+  was weaker than the frozen wording.
+- The strengthened record checker now verifies the committed artifact hashes,
+  preregistration ancestry/time, frozen fields, cost reconciliation, and claim
+  references. These checks do not make the pilot official or confirmatory.
 
 ## EXP-20260827-004 — GateMem B2 deletion-speech coverage audit
 

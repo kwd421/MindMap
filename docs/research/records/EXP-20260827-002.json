@@ -6,8 +6,12 @@
   "study_class": "development",
   "research_question_ids": ["RQ3"],
   "hypothesis_ids": ["H3"],
-  "started_at": "2026-08-27T00:00:00+09:00",
-  "ended_at": "2026-08-27T00:00:00+09:00",
+  "started_at": null,
+  "ended_at": null,
+  "timing": {
+    "precision": "unknown",
+    "note": "The original audit did not record exact start or end timestamps; the former midnight values were placeholders and have been removed."
+  },
   "source": {
     "repository": "https://github.com/kwd421/MindMap",
     "source_revision": "f1d7b80b67021c1782d847b67d1d89979a6ea032",
@@ -39,6 +43,10 @@
   "cost": {
     "provider_usd": 0.0,
     "note": "Local deterministic execution only."
+  },
+  "artifact_retention": {
+    "status": "record_only",
+    "reason": "The deterministic counts are embedded in this manifest; no separate durable result file was created for this early interface audit."
   },
   "claim_boundary": "Interface audit only; no utility, leakage-reduction, or public benchmark claim."
 }

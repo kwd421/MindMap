@@ -1,13 +1,17 @@
 {
   "schema_version": "0.1.0",
   "experiment_id": "EXP-20260827-001",
-  "title": "GateMem B1a/B1b independent local reproduction",
+  "title": "GateMem B1a/B1b independent aggregate corroboration",
   "status": "completed",
-  "study_class": "reproduction",
+  "study_class": "replication",
   "research_question_ids": ["RQ3", "RQ5"],
   "hypothesis_ids": ["H2"],
-  "started_at": "2026-08-27T00:00:00+09:00",
-  "ended_at": "2026-08-27T00:00:00+09:00",
+  "started_at": null,
+  "ended_at": null,
+  "timing": {
+    "precision": "unknown",
+    "note": "The original run did not record exact start or end timestamps; the former midnight values were placeholders and have been removed."
+  },
   "source": {
     "repository": "https://github.com/kwd421/MindMap",
     "source_revision": "7a12a70bcc6f093070f4c36d1e961e554d36baa6",
@@ -16,7 +20,11 @@
     "deviations": [
       "Used safetensors 0.8.0 to satisfy transformers 5.15.0.",
       "Wrapped result.output_dir with pathlib.Path for reader metadata output."
-    ]
+    ],
+    "reconstructability": {
+      "status": "unreconstructable",
+      "reason": "The exact dirty patch/source bundle was not retained. Aggregate agreement with PR #50 is durable, but the local checkout cannot be reconstructed byte-for-byte."
+    }
   },
   "dataset": {
     "name": "GateMem",
@@ -63,5 +71,9 @@
     "provider_usd": 0.0,
     "note": "Local model execution only."
   },
-  "claim_boundary": "Pinned negative control only; not a MindMap architecture result or leaderboard submission."
+  "artifact_retention": {
+    "status": "protected_not_committed",
+    "reason": "Protected raw GateMem outputs were kept only in a temporary local directory and the exact dirty source patch was not retained."
+  },
+  "claim_boundary": "Independent aggregate corroboration from an unreconstructable dirty local checkout; pinned negative control only, not a byte-reproducible artifact, MindMap architecture result, or leaderboard submission."
 }

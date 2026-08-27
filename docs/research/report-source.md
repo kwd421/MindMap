@@ -108,6 +108,15 @@ complete generic, and typed implementations. The result supports correctness on
 the authored finite suite, not population accuracy or representational
 superiority.
 
+The evidence infrastructure itself was independently challenged before merge.
+The first checker enforced only a small hand-written subset while the prose
+implied a broader “machine-checked ledger.” The amended checker now executes
+the Draft 2020-12 schema and verifies committed artifact hashes, fraction
+bounds, git revisions, dirty-run reconstructability declarations, timestamp
+ordering, preregistration ancestry/time and frozen fields, cost reconciliation,
+and ledger references. `README.md` lists both those guarantees and what remains
+a human or independent-reproduction judgment.
+
 ### 4.2 Reader-only GateMem negative control
 
 EXP-20260827-001 paired 2,218 GateMem checkpoints so that B1a raw retrieval and
@@ -246,7 +255,12 @@ preregistration, peer review, an ACM badge, or degree-awarding supervision.
   positives; the current precision fix also misses direct deletion requests
   that omit an explicit memory/data noun.
 - Hosted-model aliases and LLM judges introduce time and prompt sensitivity.
+- The DeepSeek feasibility pilot has one hosted execution rather than the two
+  repetitions requested for stochastic pilots; its cost guard checked current
+  accumulated cost rather than projected next-pair cost.
 - Some GateMem raw artifacts are protected and cannot be committed.
+- EXP-20260827-001's dirty local patch and exact execution time were not
+  retained; only aggregate corroboration, not byte reproduction, is possible.
 - The fictional-source chapter still needs first-party citation upgrades.
 - The current semantic fixtures are authored and finite.
 - Typed historical resolution can currently accept a future-created mind in a
