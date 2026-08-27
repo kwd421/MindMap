@@ -12,14 +12,16 @@ from mindmap.track_x.gatemem_baselines import (
 from mindmap.track_x.gatemem_governance import (
     FORBIDDEN_CAPABILITY_FIELDS,
     GovernanceConfig,
-    PublicTurnPolicyParser,
     RestrictionScope,
     SignalOperation,
     UnknownDisposition,
     assert_no_forbidden_capabilities,
     governance_surface_manifest,
 )
-from mindmap.track_x.gatemem_governance_safe import FrozenB2GateMemAgent
+from mindmap.track_x.gatemem_governance_safe import (
+    FrozenB2GateMemAgent,
+    FrozenPublicTurnPolicyParser,
+)
 from mindmap.track_x.gatemem_public import (
     PublicCheckpoint,
     PublicEpisode,
@@ -161,7 +163,7 @@ def test_external_policy_signal_configuration_is_not_available_in_primary_b2():
 
 
 def test_policy_parser_distinguishes_deny_allowlist_and_actor_only_scopes():
-    parser = PublicTurnPolicyParser(_episode())
+    parser = FrozenPublicTurnPolicyParser(_episode())
     cases = (
         (
             "Do not share the migraine diagnosis with nurses.",
@@ -180,7 +182,10 @@ def test_policy_parser_distinguishes_deny_allowlist_and_actor_only_scopes():
         ),
     )
     for index, (text, scope, target_roles) in enumerate(cases):
-        signals = parser.parse(_turn(f"t{index + 1}", text=text), observed_index=index)
+        signals = parser.parse(
+            _turn(f"t{index + 1}", text=text),
+            observed_index=index,
+        )
         assert len(signals) == 1
         assert signals[0].operation is SignalOperation.RESTRICT
         assert signals[0].restriction_scope is scope
@@ -243,7 +248,8 @@ def test_same_speaker_delete_blocks_fact_and_policy_directive_before_reader():
     assert "Friday" in context
     assert reader.calls == [(_checkpoint().query_text, context)]
     decisions = {
-        item["turn_id"]: item for item in prediction["memory_audit"]["governance_items"]
+        item["turn_id"]: item
+        for item in prediction["memory_audit"]["governance_items"]
     }
     assert decisions["t1"]["disposition"] == "block"
     assert "public_same_speaker_delete" in decisions["t1"]["reason_codes"]
@@ -353,7 +359,8 @@ def test_gate_never_backfills_beyond_exact_b1a_top_k_after_blocking():
     )
     prediction, _reader, _agent = _prediction(turns, top_k=2, answer="value")
     retrieval_ids = [
-        item["turn_id"] for item in prediction["memory_audit"]["retrieval_items"]
+        item["turn_id"]
+        for item in prediction["memory_audit"]["retrieval_items"]
     ]
     prompt_ids = prediction["answer_structured"]["prompt_turn_ids"]
 
