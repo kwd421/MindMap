@@ -1,0 +1,46 @@
+name: session-b-b2-g3-fix-prototype
+
+on:
+  push:
+    branches:
+      - research/session-b-b2-g3-fix-prototype
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: session-b-b2-g3-fix-prototype-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install deterministic surface
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+          python -m pip check
+      - name: Existing frozen governance tests
+        run: python -m pytest -q tests/test_track_x_gatemem_governance.py
+      - name: G3 adversarial speech-act tests
+        run: python -m pytest -q tests/test_track_x_gatemem_governance_g3_prototype.py
+      - name: Regenerate nine-case frozen surface audit
+        run: |
+          rm -rf /tmp/gatemem-b2-g3
+          python experiments/gatemem_b2_surface_audit.py --output-dir /tmp/gatemem-b2-g3
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('/tmp/gatemem-b2-g3/summary.json').read_text())
+          assert data['case_count'] == 9
+          assert data['passed_count'] == 9
+          assert data['failed_count'] == 0
+          PY
