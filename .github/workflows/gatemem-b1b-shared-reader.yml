@@ -1,0 +1,324 @@
+name: gatemem-b1b-shared-reader
+
+on:
+  push:
+    branches:
+      - research/track-x-v0.8-gatemem-shared-reader-b1b
+  pull_request:
+    paths:
+      - .github/workflows/gatemem-b1b-shared-reader.yml
+      - experiments/gatemem_external.py
+      - src/mindmap/track_x/gatemem_baselines.py
+      - src/mindmap/track_x/gatemem_reader.py
+      - src/mindmap/track_x/gatemem_official.py
+      - src/mindmap/track_x/gatemem_opaque.py
+      - src/mindmap/track_x/gatemem_public.py
+      - src/mindmap/track_x/gatemem_runner.py
+      - tests/test_track_x_gatemem_reader.py
+      - pyproject.toml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gatemem-b1b-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  HF_HOME: /tmp/huggingface
+  HF_HUB_DISABLE_XET: '1'
+  TOKENIZERS_PARALLELISM: 'false'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONHASHSEED: '0'
+
+jobs:
+  paired-domain:
+    name: ${{ matrix.domain }} / B1a+B1b
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        domain: [medical, office, education, household]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install CPU reader and official scorer runtime
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install \
+            --index-url https://download.pytorch.org/whl/cpu \
+            torch==2.13.0
+          python -m pip install -e '.[dev,reader]'
+          python -m pip install \
+            numpy \
+            tqdm \
+            PyYAML \
+            requests \
+            scikit-learn
+          python -m pip check
+
+      - name: Verify unit-level prompt-surface equality contract
+        run: python -m pytest -q tests/test_track_x_gatemem_reader.py
+
+      - name: Load exact reader revision and run public smoke question
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          from mindmap.track_x.gatemem_reader import (
+              ExtractiveReaderConfig,
+              TransformersExtractiveReader,
+          )
+
+          reader = TransformersExtractiveReader(ExtractiveReaderConfig())
+          result = reader.answer(
+              question='Which medicine was prescribed?',
+              context='The clinician prescribed amoxicillin for the infection.',
+          )
+          if 'amoxicillin' not in result.answer.casefold():
+              raise SystemExit(f'unexpected frozen-reader smoke answer: {result.answer!r}')
+          payload = {
+              'answer_matches_expected_public_smoke_span': True,
+              'model_id': reader.model_id,
+              'revision': reader.revision,
+              'window_count': result.window_count,
+              'input_token_count': result.input_token_count,
+              'forward_calls': result.forward_calls,
+          }
+          Path('/tmp/reader-smoke.json').write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          PY
+
+      - name: Checkout pinned GateMem
+        run: |
+          git clone --filter=blob:none https://github.com/rzhub/GateMem.git /tmp/GateMem
+          git -C /tmp/GateMem checkout --detach 603f9f4b4ba4b77f043c20f85687fa016fd720b0
+          test "$(git -C /tmp/GateMem rev-parse HEAD)" = "603f9f4b4ba4b77f043c20f85687fa016fd720b0"
+          test -z "$(git -C /tmp/GateMem status --porcelain --untracked-files=no)"
+
+      - name: Run paired protected B1a and B1b endpoints
+        env:
+          DOMAIN: ${{ matrix.domain }}
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+        run: |
+          set -euo pipefail
+          python experiments/gatemem_external.py \
+            --gatemem-checkout /tmp/GateMem \
+            --domain "$DOMAIN" \
+            --method raw_lexical \
+            --output-dir "/tmp/gatemem/$DOMAIN/raw_lexical"
+          python experiments/gatemem_external.py \
+            --gatemem-checkout /tmp/GateMem \
+            --domain "$DOMAIN" \
+            --method raw_lexical_reader \
+            --output-dir "/tmp/gatemem/$DOMAIN/raw_lexical_reader"
+
+      - name: Verify exact B1a/B1b prompt-context equality
+        env:
+          DOMAIN: ${{ matrix.domain }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path('/tmp/gatemem') / os.environ['DOMAIN']
+
+          def prompt_rows(method: str):
+              path = root / method / 'predictions.jsonl'
+              rows = {}
+              for line in path.read_text(encoding='utf-8').splitlines():
+                  if not line.strip():
+                      continue
+                  row = json.loads(line)
+                  checkpoint_id = row['checkpoint_id']
+                  context = row['output']['memory_audit']['prompt_context']
+                  rows[checkpoint_id] = (
+                      context['sha256'],
+                      context['character_count'],
+                  )
+              return rows
+
+          b1a = prompt_rows('raw_lexical')
+          b1b = prompt_rows('raw_lexical_reader')
+          if b1a.keys() != b1b.keys():
+              raise SystemExit('B1a/B1b checkpoint sets differ')
+          mismatches = [key for key in b1a if b1a[key] != b1b[key]]
+          if mismatches:
+              raise SystemExit(
+                  f'B1a/B1b prompt contexts differ at {len(mismatches)} checkpoints'
+              )
+          payload = {
+              'schema_version': 'track-x-gatemem-b1b-prompt-equality-v0.1',
+              'checkpoint_count': len(b1a),
+              'prompt_hash_mismatch_count': 0,
+              'prompt_character_count_mismatch_count': 0,
+              'equal': True,
+          }
+          (root / 'prompt_equality.json').write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          PY
+
+      - name: Compute supplemental answered-denominator audits
+        env:
+          DOMAIN: ${{ matrix.domain }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          from mindmap.track_x.gatemem_selective import audit_gate_mem_scores
+
+          root = Path('/tmp/gatemem') / os.environ['DOMAIN']
+          for method in ('raw_lexical', 'raw_lexical_reader'):
+              method_root = root / method
+              scores = [
+                  json.loads(line)
+                  for line in (
+                      method_root / 'official_score' / 'scores.jsonl'
+                  ).read_text(encoding='utf-8').splitlines()
+                  if line.strip()
+              ]
+              (method_root / 'supplemental_selective.json').write_text(
+                  json.dumps(
+                      audit_gate_mem_scores(scores).to_json(),
+                      indent=2,
+                      sort_keys=True,
+                  ) + '\n',
+                  encoding='utf-8',
+              )
+          PY
+
+      - name: Build publishable aggregate-only paired result
+        env:
+          DOMAIN: ${{ matrix.domain }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path('/tmp/gatemem') / os.environ['DOMAIN']
+
+          def load(method: str):
+              method_root = root / method
+              metadata = json.loads(
+                  (method_root / 'run_metadata.json').read_text(encoding='utf-8')
+              )
+              return {
+                  'official_summary': json.loads(
+                      (method_root / 'official_score' / 'summary.json').read_text(
+                          encoding='utf-8'
+                      )
+                  ),
+                  'supplemental_selective': json.loads(
+                      (method_root / 'supplemental_selective.json').read_text(
+                          encoding='utf-8'
+                      )
+                  ),
+                  'method_config': metadata['method']['config'],
+                  'artifact_sha256': metadata['artifact_sha256'],
+                  'counts': metadata['counts'],
+              }, metadata
+
+          b1a, b1a_metadata = load('raw_lexical')
+          b1b, b1b_metadata = load('raw_lexical_reader')
+          prompt_equality = json.loads(
+              (root / 'prompt_equality.json').read_text(encoding='utf-8')
+          )
+          reader_runtime = json.loads(
+              (root / 'raw_lexical_reader' / 'reader_runtime.json').read_text(
+                  encoding='utf-8'
+              )
+          )
+          smoke = json.loads(Path('/tmp/reader-smoke.json').read_text(encoding='utf-8'))
+
+          if b1a_metadata['checkout'] != b1b_metadata['checkout']:
+              raise SystemExit('paired methods used different GateMem checkout identities')
+          if not prompt_equality['equal']:
+              raise SystemExit('paired prompt equality did not pass')
+
+          publishable = {
+              'schema_version': 'track-x-gatemem-b1b-paired-result-v0.1',
+              'classification': (
+                  'official deterministic reader/use comparison; not a MindMap '
+                  'or governance-filter result'
+              ),
+              'domain': os.environ['DOMAIN'],
+              'gatemem_revision': b1a_metadata['checkout']['observed_commit'],
+              'scorer_sha256': b1a_metadata['checkout']['scorer_sha256'],
+              'episodes_sha256': b1a_metadata['checkout']['episodes_sha256'],
+              'checkpoints_sha256': b1a_metadata['checkout']['checkpoints_sha256'],
+              'mindmap_revision': b1b_metadata['repository_revision'],
+              'opaque_identity_firewall': b1b_metadata['opaque_identity_firewall'],
+              'boundary': b1b_metadata['boundary'],
+              'prompt_equality': prompt_equality,
+              'reader_smoke': smoke,
+              'reader_runtime': reader_runtime,
+              'methods': {
+                  'B1a_raw_lexical_context_echo': b1a,
+                  'B1b_raw_lexical_shared_reader': b1b,
+              },
+              'metric_namespaces': {
+                  'official_summary': 'Unmodified pinned GateMem deterministic scorer.',
+                  'supplemental_selective': (
+                      'MindMap answered-denominator audit; does not replace official metrics.'
+                  ),
+              },
+              'interpretation': (
+                  'B1a and B1b received identical BM25 prompt contexts. B1b changes '
+                  'only answer use through the frozen extractive reader. Reader-only '
+                  'changes cannot remove private or deleted text already exposed in '
+                  'the prompt context. The null margin is not GateMem-calibrated.'
+              ),
+          }
+
+          # `answer` may be an aggregate action-class label in the official
+          # summary. Per-query answer payloads are never added to `publishable`.
+          forbidden_keys = {
+              'checkpoint_id', 'episode_id', 'turn_id', 'principal_id',
+              'query_text', 'prompt_context', 'record_refs',
+              'memory_ops', 'relationships',
+          }
+
+          def walk(value):
+              if isinstance(value, dict):
+                  for key, child in value.items():
+                      if key in forbidden_keys:
+                          raise SystemExit(f'publishable aggregate contains forbidden key: {key}')
+                      walk(child)
+              elif isinstance(value, list):
+                  for child in value:
+                      walk(child)
+
+          walk(publishable)
+          out = root / 'publishable_b1b_summary.json'
+          out.write_text(
+              json.dumps(publishable, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          PY
+
+      - name: Upload aggregate result only
+        uses: actions/upload-artifact@v4
+        with:
+          name: gatemem-b1b-${{ matrix.domain }}-aggregate
+          path: /tmp/gatemem/${{ matrix.domain }}/publishable_b1b_summary.json
+          if-no-files-found: error
+          retention-days: 30
