@@ -173,7 +173,7 @@ def run(input_path: Path, output_dir: Path) -> dict[str, Any]:
         "official_commit": OFFICIAL_COMMIT,
         "official_runner_sha256": OFFICIAL_RUNNER_SHA256,
         "official_eval_sha256": OFFICIAL_EVAL_SHA256,
-        "input_path": str(input_path),
+        "input_path": input_path.name,
         "input_sha256": sha256_file(input_path),
         "input_rows": len(entries),
         "eligible_rows": len(rows),
@@ -192,14 +192,14 @@ def run(input_path: Path, output_dir: Path) -> dict[str, Any]:
         "python_version": sys.version,
         "platform": platform.platform(),
         "metrics": metrics,
-        "rows_path": str(row_path),
+        "rows_path": row_path.name,
     }
     summary_path = output_dir / "summary.json"
     summary_path.write_text(
         json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
     summary["rows_sha256"] = sha256_file(row_path)
-    summary["summary_path"] = str(summary_path)
+    summary["summary_path"] = summary_path.name
     summary_path.write_text(
         json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )

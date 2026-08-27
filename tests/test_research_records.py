@@ -108,3 +108,23 @@ def test_reproduction_without_preregistration_anchor_is_rejected() -> None:
     record["preregistration_commit"] = None
     null_errors = list(Draft202012Validator(schema).iter_errors(record))
     assert any("None is not of type 'string'" in error.message for error in null_errors)
+
+
+def test_invalid_execution_timestamp_is_a_structured_error() -> None:
+    record = json.loads(
+        (
+            ROOT
+            / "docs"
+            / "research"
+            / "records"
+            / "EXP-20260827-001.json"
+        ).read_text(encoding="utf-8")
+    )
+    record["started_at"] = "not-a-date"
+    record["ended_at"] = "2026-08-28T00:00:00Z"
+    errors = CHECKER.check_timing(
+        record,
+        ROOT,
+        Path("docs/research/records/EXP-20260827-001.json"),
+    )
+    assert "started_at is not a valid date-time" in errors

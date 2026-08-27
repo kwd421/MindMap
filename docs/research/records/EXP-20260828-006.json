@@ -88,19 +88,20 @@
     "note": "Local deterministic lexical retrieval; no hosted-model calls."
   },
   "artifacts": {
-    "runner_sha256": "cec87380461147b024320a928fb24b4529a46326b13e96cb3e0e49dcd4fff216",
+    "runner_sha256": "e211fb107ba0d74ff55dc1539d3b844fb70f37b9822c00edc1c54703aa1dc653",
     "retrieval_rows_sha256": "3420e593f66348a66b05b8b2d3229ba881f52221a0ae83a8d63971132c2ff3a9",
-    "summary_sha256": "aa62a550bd186f394dc87050501be70776f5fd534c2de6eb7816708fa3c596e4"
+    "summary_sha256": "a9a6bbed3501eeafb2a7b860b57899c1c04509b13f7b82e64fd65db8164e4047"
   },
   "artifact_files": [
-    {"path": "experiments/longmemeval_official_bm25_reproduction.py", "sha256": "cec87380461147b024320a928fb24b4529a46326b13e96cb3e0e49dcd4fff216"},
+    {"path": "experiments/longmemeval_official_bm25_reproduction.py", "sha256": "e211fb107ba0d74ff55dc1539d3b844fb70f37b9822c00edc1c54703aa1dc653"},
     {"path": "results/research/EXP-20260828-006/retrieval_rows.csv", "sha256": "3420e593f66348a66b05b8b2d3229ba881f52221a0ae83a8d63971132c2ff3a9"},
-    {"path": "results/research/EXP-20260828-006/summary.json", "sha256": "aa62a550bd186f394dc87050501be70776f5fd534c2de6eb7816708fa3c596e4"}
+    {"path": "results/research/EXP-20260828-006/summary.json", "sha256": "a9a6bbed3501eeafb2a7b860b57899c1c04509b13f7b82e64fd65db8164e4047"}
   ],
   "result_addendum": [
     "A first detached execution and the final artifact execution produced the same retrieval_rows SHA-256.",
     "The source-aligned runner's three unit tests passed in the pinned temporary environment.",
-    "The official all-dependency runner was not executed because it imports dense/CUDA dependencies for the lexical arm; this limits the claim to source alignment rather than byte-identical harness execution."
+    "The official all-dependency runner was not executed because it imports dense/CUDA dependencies for the lexical arm; this limits the claim to source alignment rather than byte-identical harness execution.",
+    "A post-run research-infrastructure amendment replaced three absolute local path strings with logical basenames. Retrieval rows and metrics were unchanged; current runner and summary hashes were updated."
   ],
   "claim_boundary": "Full-set source-aligned reproduction of the official LongMemEval flat-BM25 session retrieval definition. The primary result is recall_all@5 = 311/419 eligible questions. This is not an official leaderboard submission, not end-to-end QA, and not a MindMap result."
 }

@@ -6,7 +6,7 @@
   "official_commit": "9e0b455f4ef0e2ab8f2e582289761153549043fc",
   "official_runner_sha256": "efd7fc5969a904717741fadca3c7dc73611ddbb2aaf3ef33117ebb6943b3e346",
   "official_eval_sha256": "c98b8d1096877a15aa755c9de44fe33c195298466a2eb6f3c0f9f6bde8c72349",
-  "input_path": "/tmp/longmemeval-official.amTtI8/data/longmemeval_s_cleaned.json",
+  "input_path": "longmemeval_s_cleaned.json",
   "input_sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
   "input_rows": 500,
   "eligible_rows": 419,
@@ -161,7 +161,7 @@
       "ndcg_any_mean": 0.8248899191219347
     }
   },
-  "rows_path": "/Users/seinel/Projects/MindMap/results/research/EXP-20260828-006/retrieval_rows.csv",
+  "rows_path": "retrieval_rows.csv",
   "rows_sha256": "3420e593f66348a66b05b8b2d3229ba881f52221a0ae83a8d63971132c2ff3a9",
-  "summary_path": "/Users/seinel/Projects/MindMap/results/research/EXP-20260828-006/summary.json"
+  "summary_path": "summary.json"
 }

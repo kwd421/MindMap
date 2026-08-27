@@ -120,14 +120,22 @@ def check_timing(record: dict[str, Any], root: Path, relative_path: Path) -> lis
     errors: list[str] = []
     started_at = record["started_at"]
     ended_at = record["ended_at"]
+    start: datetime | None = None
+    end: datetime | None = None
     if started_at is None or ended_at is None:
         timing = record.get("timing")
         if not timing or timing.get("precision") not in {"day", "unknown"}:
             errors.append("null execution timestamp requires timing.precision day/unknown")
     else:
-        start = parse_datetime(started_at)
-        end = parse_datetime(ended_at)
-        if end < start:
+        try:
+            start = parse_datetime(started_at)
+        except (TypeError, ValueError):
+            errors.append("started_at is not a valid date-time")
+        try:
+            end = parse_datetime(ended_at)
+        except (TypeError, ValueError):
+            errors.append("ended_at is not a valid date-time")
+        if start is not None and end is not None and end < start:
             errors.append("ended_at precedes started_at")
 
     prereg = record.get("preregistration_commit")
@@ -174,12 +182,16 @@ def check_timing(record: dict[str, Any], root: Path, relative_path: Path) -> lis
                 if current != original:
                     errors.append(f"preregistered field changed after freeze: {label}")
 
-    if started_at is not None:
+    if start is not None:
         commit_time_result = git(root, "show", "-s", "--format=%cI", prereg)
         if commit_time_result.returncode == 0:
-            commit_time = parse_datetime(commit_time_result.stdout.strip())
-            if commit_time > parse_datetime(started_at):
-                errors.append("preregistration commit time is after run start")
+            try:
+                commit_time = parse_datetime(commit_time_result.stdout.strip())
+            except ValueError:
+                errors.append("preregistration commit has an invalid commit timestamp")
+            else:
+                if commit_time > start:
+                    errors.append("preregistration commit time is after run start")
     return errors
 
 

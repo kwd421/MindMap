@@ -1,4 +1,5 @@
 import importlib.util
+import json
 from pathlib import Path
 
 import pytest
@@ -44,3 +45,38 @@ def test_target_detection_uses_user_turns_only():
         ]
     }
     assert MODULE.has_target_user_turn(entry) is False
+
+
+def test_summary_records_logical_names_not_local_absolute_paths(tmp_path):
+    input_path = tmp_path / "input.json"
+    input_path.write_text(
+        json.dumps(
+            [
+                {
+                    "question_id": "example",
+                    "question_type": "single-session-user",
+                    "question": "answer",
+                    "haystack_session_ids": ["answer_example"],
+                    "haystack_sessions": [
+                        [
+                            {
+                                "role": "user",
+                                "content": "answer",
+                                "has_answer": True,
+                            }
+                        ]
+                    ],
+                }
+            ]
+        ),
+        encoding="utf-8",
+    )
+    summary = MODULE.run(input_path, tmp_path / "results")
+    persisted = json.loads(
+        (tmp_path / "results" / "summary.json").read_text(encoding="utf-8")
+    )
+
+    assert summary["input_path"] == "input.json"
+    assert summary["rows_path"] == "retrieval_rows.csv"
+    assert summary["summary_path"] == "summary.json"
+    assert persisted == summary
