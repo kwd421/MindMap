@@ -18,13 +18,14 @@ Implemented and executable here:
 - independent declarative gold semantics for the canonical fixture suite;
 - complete generic and normalized typed reference ledgers;
 - branch, mind-copy, attribution, policy, availability, bitemporal, and alternative-support fixtures;
-- deterministic semantic-conformance and fault-oriented tests;
+- deterministic semantic-conformance and Track X mechanism tests;
 - synthetic raw-evidence/verifier experiments with explicit information firewalls;
 - a development-only candidate → context gate → prompt → answer audit;
-- committed compact result artifacts and GitHub Actions drift checks.
+- committed compact result artifacts and GitHub Actions verification.
 
-Not yet established here:
+Not integrated or not yet established here:
 
+- Track E observer/physical-fault packages from draft PRs #36/#37;
 - a production database, server, or multi-user deployment;
 - an unrestricted LLM extraction and answer pipeline;
 - a held-out natural-language generalization result for Track X v0.2;
@@ -32,7 +33,7 @@ Not yet established here:
 - a public GateMem/LoCoMo/LongMemEval architecture result;
 - a universal benefit from always-on graph retrieval.
 
-Public GateMem endpoint work is intentionally kept in separate reviewed PRs. Those endpoint controls do **not** constitute a MindMap effectiveness result.
+Public GateMem endpoint work remains in separate reviewed PRs #46/#47. Those endpoint controls do **not** constitute a MindMap effectiveness result. Pending Track E heads are preserved in `docs/LOST_WORK_REGISTER.md` rather than silently absorbed into this release.
 
 ## Quick start
 
@@ -62,7 +63,7 @@ python tools/check_repository_contract.py
 python -m pytest -q
 ```
 
-The repository contract check fails if the README advertises a missing package, test, experiment, committed result, or license path.
+`release_contract_v0_2.json` is the machine-readable **enumerated v0.2 release contract**. The checker validates every path, command, status statement, stale-claim guard, result entry, Python declaration, package metadata field, and license rule listed in that manifest. It does not claim to infer arbitrary future prose references that have not been added to the manifest.
 
 ## Reproduce the stable deterministic core
 
@@ -74,6 +75,8 @@ python experiments/s_track_conformance.py
 
 This checks that the independent gold interpreter, complete generic ledger, and normalized typed ledger agree on the fixed canonical semantics. Equality is the expected result under equal information.
 
+Reproducibility contract: **semantic regeneration / zero disagreement**. The Track S summary can include Python/platform identity, so this is not a cross-environment byte-identity claim.
+
 ### 2. Track X v0.1 raw-verifier mechanism audit
 
 ```bash
@@ -81,6 +84,8 @@ python experiments/track_x_v01.py --output-dir /tmp/track_x_v01
 ```
 
 This is a deterministic information-firewall and mechanism audit. Its templates and controlled faults are not unrestricted natural language and must not be reported as production accuracy.
+
+Reproducibility contract: **committed artifact drift comparison** for the declared v0.1 CSV/JSON outputs.
 
 ### 3. Track X v0.3 development context-gate audit
 
@@ -98,6 +103,8 @@ A  downstream answer/use
 ```
 
 It reads Session-B development passages only. It is not a Session-A-held-out or public-benchmark result.
+
+Reproducibility contract: **same-environment deterministic double-run plus held-out boundary**. The dedicated workflow requires `heldout_read=false` and checks its frozen row/topology invariants.
 
 ## What the deterministic results mean
 
@@ -117,17 +124,18 @@ Only levels actually completed may be claimed.
 ## Actual repository layout
 
 ```text
-.github/workflows/              CI and deterministic drift checks
+.github/workflows/              CI and declared reproduction checks
 archive/                        superseded research drafts
 data/                           synthetic development/freeze metadata
-docs/                           protocols, audits, and result boundaries
+docs/                           protocols, status, audits, lost-work register
 experiments/                    executable controlled studies
 results/                        compact committed deterministic artifacts
 src/mindmap/                    installable reference implementation
-tests/                          semantic, isolation, and experiment invariants
-tools/                          repository/README contract checks
+tests/                          semantic and experiment invariants
+tools/                          release/distribution contract checks
 LICENSE                         MIT license text
-pyproject.toml                  package and test configuration
+pyproject.toml                  package and distribution metadata
+release_contract_v0_2.json      enumerated runnable-release contract
 PREREG_V0_2.md                  current preregistration candidate
 SCHEMA_V0_2.md                  current canonical schema candidate
 ```
@@ -144,9 +152,9 @@ Expected result: equality. A typed oracle advantage would indicate unequal infor
 
 ### Track E — lifecycle and fault behavior
 
-Question: which faults are observable, preventable, localizable, repairable, or non-identifiable under declared witnesses?
+The canonical Track E P0/P1 implementations are **not integrated in PR #49**. They remain review-gated in draft PRs #36/#37 at the exact heads recorded in `docs/LOST_WORK_REGISTER.md`.
 
-Comparative claims belong to enforcement, repair blast radius, residue, concurrency, auditability, or cost—not abstract schema expressiveness.
+Their research question is which faults are observable, preventable, localizable, repairable, or non-identifiable under declared witnesses. Comparative claims belong to enforcement, repair blast radius, residue, concurrency, auditability, or cost—not abstract schema expressiveness.
 
 ### Track X — raw evidence and external validity
 
@@ -169,4 +177,4 @@ Synthetic Track X tests fine-grained mechanisms. Public Track X tests external r
 
 The executable research core is released under the MIT License. See `LICENSE`.
 
-See `docs/IMPLEMENTATION_STATUS.md` for the exact implemented/proven boundary and `PREREG_V0_2.md` for the current experimental hypotheses and stopping rules.
+See `docs/IMPLEMENTATION_STATUS.md` for the exact implemented/proven boundary, `docs/LOST_WORK_REGISTER.md` for intentionally excluded pending research, and `PREREG_V0_2.md` for the current experimental hypotheses and stopping rules.
