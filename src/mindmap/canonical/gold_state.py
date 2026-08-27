@@ -104,6 +104,8 @@ class GoldStateMixin:
         for event in self._events_through(system_time):
             if event.event_type != "exposure":
                 continue
+            if (event.object_kind or "evidence") != "evidence":
+                continue
             if event.destination_mind_instance_id != mind_id or event.object_id != evidence_id:
                 continue
             operation = event.transfer_kind or ""
@@ -169,6 +171,8 @@ class GoldStateMixin:
         self_access = True
         for event in self._events_through(system_time):
             if event.event_type != "policy" or event.object_id != object_id:
+                continue
+            if (event.object_kind or "evidence") != "evidence":
                 continue
             operation = event.policy_operation or ""
             if operation == "self_seal" and event.destination_mind_instance_id in {None, mind_id}:

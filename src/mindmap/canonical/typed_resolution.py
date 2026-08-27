@@ -142,6 +142,8 @@ class TypedResolutionMixin:
     def _acquisition_rows(self, mind_id: str, evidence_id: str, system_time: int) -> list[AcquiredRow]:
         rows: list[AcquiredRow] = []
         for exposure in self.exposures:
+            if exposure.object_kind != "evidence":
+                continue
             if exposure.destination_mind_instance_id != mind_id or exposure.object_id != evidence_id:
                 continue
             if exposure.recorded_system_time > system_time:
@@ -166,7 +168,13 @@ class TypedResolutionMixin:
         self_access = True
         active = evidence is not None and evidence.recorded_system_time <= system_time
         for row in sorted(
-            [p for p in self.policies if p.object_id == evidence_id and p.recorded_system_time <= system_time],
+            [
+                p
+                for p in self.policies
+                if p.object_kind == "evidence"
+                and p.object_id == evidence_id
+                and p.recorded_system_time <= system_time
+            ],
             key=lambda p: (p.recorded_system_time, p.policy_event_id),
         ):
             if row.operation == "self_seal" and row.destination_mind_instance_id in {None, mind_id}:

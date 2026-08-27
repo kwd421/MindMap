@@ -72,6 +72,8 @@ class GenericStateMixin:
         for event in self.events:
             if event.system_time > system_time or event.event_type != "exposure":
                 continue
+            if (event.object_kind or "evidence") != "evidence":
+                continue
             if event.destination_mind_instance_id != mind_id or event.object_id != evidence_id:
                 continue
             operation = event.transfer_kind or ""
@@ -158,6 +160,7 @@ class GenericStateMixin:
             for event in self.events
             if event.event_type == "policy"
             and event.object_id == object_id
+            and (event.object_kind or "evidence") == "evidence"
             and event.system_time <= system_time
         ]
         for event in sorted(events, key=lambda item: (item.system_time, item.event_id)):

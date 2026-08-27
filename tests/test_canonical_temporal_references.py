@@ -6,6 +6,8 @@ from mindmap.canonical.generic import GenericLedger
 from mindmap.canonical.gold import GoldSemantics
 from mindmap.canonical.model import (
     CommonEvent,
+    TargetQuery,
+    TargetSpace,
     freeze_attrs,
     validate_temporal_references,
 )
@@ -619,7 +621,146 @@ def test_claim_exposure_uses_claim_namespace(implementation):
         ),
     )
 
-    implementation(events)
+    ledger = implementation(events)
+    assert (
+        ledger.answer(
+            TargetQuery(
+                "evidence-query",
+                TargetSpace.EVER_EXPOSED,
+                system_time=2,
+                evidence_id="claim",
+                mind_instance_id="M",
+            )
+        )
+        is False
+    )
+
+
+@pytest.mark.parametrize("implementation", IMPLEMENTATIONS)
+def test_claim_policy_does_not_affect_same_id_evidence(implementation):
+    events = (
+        event("principal", "principal_create", 0, object_id="P"),
+        event(
+            "mind",
+            "mind_create",
+            0,
+            object_id="M",
+            actor_principal_id="P",
+        ),
+        event("world", "world_create", 0, object_id="main"),
+        event(
+            "evidence",
+            "evidence",
+            0,
+            object_id="X",
+            proposition_id="evidence-fact",
+            actor_principal_id="P",
+            actor_mind_instance_id="M",
+            about_world_branch_id="main",
+        ),
+        event(
+            "X",
+            "world_claim",
+            0,
+            proposition_id="claim-fact",
+            about_world_branch_id="main",
+        ),
+        event(
+            "evidence-exposure",
+            "exposure",
+            1,
+            destination_mind_instance_id="M",
+            object_kind="evidence",
+            object_id="X",
+            transfer_kind="observe",
+        ),
+        event(
+            "claim-policy",
+            "policy",
+            2,
+            destination_mind_instance_id="M",
+            object_kind="claim",
+            object_id="X",
+            policy_operation="self_seal",
+        ),
+    )
+
+    ledger = implementation(events)
+    assert ledger.answer(
+        TargetQuery(
+            "available-evidence",
+            TargetSpace.AVAILABLE,
+            system_time=3,
+            evidence_id="X",
+            mind_instance_id="M",
+        )
+    ) is True
+
+
+@pytest.mark.parametrize("implementation", IMPLEMENTATIONS)
+def test_future_same_id_claim_does_not_retroactively_ambiguate_justification(
+    implementation,
+):
+    events = (
+        event("world", "world_create", 0, object_id="main"),
+        event(
+            "evidence",
+            "evidence",
+            0,
+            object_id="X",
+            proposition_id="fact",
+        ),
+        event(
+            "justification",
+            "justification",
+            1,
+            object_id="J",
+            proposition_id="fact",
+            derivation_members=("X",),
+        ),
+        event(
+            "X",
+            "world_claim",
+            2,
+            proposition_id="claim-fact",
+            about_world_branch_id="main",
+        ),
+    )
+
+    ledger = implementation(events)
+    assert ledger.answer(
+        TargetQuery(
+            "justification-query",
+            TargetSpace.JUSTIFICATION,
+            system_time=3,
+            proposition_id="fact",
+            requester_id="admin",
+        )
+    ) == ("J",)
+
+
+def test_untyped_non_evidence_justification_member_is_explicitly_unsupported():
+    events = (
+        event("world", "world_create", 0, object_id="main"),
+        event(
+            "claim",
+            "world_claim",
+            0,
+            proposition_id="fact",
+            about_world_branch_id="main",
+        ),
+        event(
+            "justification",
+            "justification",
+            1,
+            object_id="J",
+            proposition_id="fact",
+            derivation_members=("claim",),
+        ),
+    )
+
+    with pytest.raises(ValueError, match=r"unsupported untyped claim"):
+        validate_temporal_references(events)
 
 
 def test_snapshot_member_defines_runtime_snapshot_creation_time():
@@ -646,4 +787,37 @@ def test_snapshot_member_defines_runtime_snapshot_creation_time():
     )
 
     with pytest.raises(ValueError, match=r"snapshot_id.*future entity S"):
+        validate_temporal_references(events)
+
+
+@pytest.mark.parametrize(
+    "member",
+    [
+        event(
+            "missing-snapshot",
+            "snapshot_member",
+            1,
+            object_kind="evidence",
+            object_id="E",
+        ),
+        event(
+            "missing-kind",
+            "snapshot_member",
+            1,
+            snapshot_id="S",
+            object_id="E",
+        ),
+        event(
+            "missing-object",
+            "snapshot_member",
+            1,
+            snapshot_id="S",
+            object_kind="evidence",
+        ),
+    ],
+)
+def test_runtime_snapshot_creation_requires_complete_manifest_member(member):
+    events = (event("evidence", "evidence", 0, object_id="E"), member)
+
+    with pytest.raises(ValueError, match=r"snapshot_member requires"):
         validate_temporal_references(events)

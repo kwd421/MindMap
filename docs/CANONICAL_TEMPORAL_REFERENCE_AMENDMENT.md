@@ -45,7 +45,7 @@ from a few passing examples.
 | `attitude` | destination -> mind; about-world -> branch; attitude context -> placement |
 | `exposure` | source/destination -> mind and placement; object -> namespace selected by `object_kind`; authorization -> authorization |
 | `policy` | actor -> principal; destination -> mind; object -> namespace selected by `object_kind` |
-| `justification` | untyped derivation member -> exactly one of evidence/assertion/claim |
+| `justification` | untyped derivation member -> evidence (finite-runtime compatibility subset) |
 | `snapshot_member` | snapshot -> snapshot; object -> namespace selected by `object_kind` |
 | `authorization` | actor -> principal; source/destination -> mind |
 
@@ -55,16 +55,25 @@ Exposure objects support the schema's `evidence`, `assertion`, `claim`, and
 records retain the v0.2 compatibility default of `evidence`; new producers
 should emit the kind explicitly.
 
+The current query surface is evidence-centric. Exposure and policy rows of
+another kind may be ingested without colliding with a same-string evidence ID,
+but they do not satisfy or modify `EVER_EXPOSED`, `AVAILABLE`, `ATTRIBUTION`, or
+evidence-policy answers. A future kind-specific query implementation needs its
+own conformance cases before it can claim claim/assertion/snapshot lifecycle
+support.
+
 The finite `CommonEvent` projection does not yet contain the standalone
 `Snapshot` entity specified in `SCHEMA_V0_2.md`. In this runtime only, the first
-manifest entry is the snapshot identifier's creation event. A lineage reference
-before that first entry is invalid. This is a compatibility rule, not a claim
+complete manifest entry is the snapshot identifier's creation event; a member
+missing its snapshot ID, object kind, or object ID cannot create one. A lineage
+reference before that first entry is invalid. This is a compatibility rule, not a claim
 that the full schema's snapshot lifecycle has been implemented.
 
-`derivation_members` is also still an untyped tuple. A member must resolve to
-exactly one evidence/assertion/claim namespace. Missing, future, and ambiguous
-cross-namespace identifiers fail closed until the runtime carries the schema's
-explicit `source_kind`.
+`derivation_members` is also still an untyped tuple. The finite runtime accepts
+only evidence members; assertion/claim members fail with an explicit unsupported
+kind error until the runtime carries the schema's `source_kind`. Missing and
+future evidence members fail closed. A later claim reusing the same string ID
+does not retroactively invalidate an earlier evidence justification.
 
 The validator is shared input-schema infrastructure. Gold, Generic, and Typed
 remain separate answer evaluators, but each constructor invokes the same input

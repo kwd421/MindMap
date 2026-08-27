@@ -208,12 +208,21 @@ def validate_temporal_references(events: Iterable[CommonEvent]) -> None:
     authorizations = creation_times("authorization")
 
     # The finite CommonEvent runtime does not yet project the standalone
-    # Snapshot entity from SCHEMA_V0_2.md. Until it does, the first manifest
-    # entry is the explicit runtime creation point for a snapshot identifier.
+    # Snapshot entity from SCHEMA_V0_2.md. Until it does, the first complete
+    # manifest entry is the explicit runtime creation point for an identifier.
     snapshots: dict[str, int] = {}
     for event in ordered:
-        if event.event_type != "snapshot_member" or event.snapshot_id is None:
+        if event.event_type != "snapshot_member":
             continue
+        if (
+            event.snapshot_id is None
+            or event.object_kind is None
+            or event.object_id is None
+        ):
+            raise ValueError(
+                f"{event.event_id} snapshot_member requires snapshot_id, "
+                "object_kind, and object_id"
+            )
         snapshots[event.snapshot_id] = min(
             snapshots.get(event.snapshot_id, event.system_time), event.system_time
         )
@@ -264,25 +273,32 @@ def validate_temporal_references(events: Iterable[CommonEvent]) -> None:
         require(event, field, target_id, targets_by_kind[kind])
 
     def require_derivation_member(event: CommonEvent, member_id: str) -> None:
-        matches = [
-            targets[member_id]
-            for targets in (evidence, assertions, claims)
-            if member_id in targets
-        ]
-        if not matches:
+        created_at = evidence.get(member_id)
+        if created_at is None:
+            unsupported_kind = next(
+                (
+                    kind
+                    for kind, targets in (
+                        ("assertion", assertions),
+                        ("claim", claims),
+                    )
+                    if member_id in targets
+                ),
+                None,
+            )
+            if unsupported_kind is not None:
+                raise ValueError(
+                    f"{event.event_id}.derivation_members references unsupported "
+                    f"untyped {unsupported_kind}: {member_id}"
+                )
             raise ValueError(
                 f"{event.event_id}.derivation_members references missing entity: "
                 f"{member_id}"
             )
-        if len(matches) > 1:
-            raise ValueError(
-                f"{event.event_id}.derivation_members has ambiguous untyped entity: "
-                f"{member_id}"
-            )
-        if matches[0] > event.system_time:
+        if created_at > event.system_time:
             raise ValueError(
                 f"{event.event_id}.derivation_members references future entity "
-                f"{member_id}: created at {matches[0]}, "
+                f"{member_id}: created at {created_at}, "
                 f"referenced at {event.system_time}"
             )
 

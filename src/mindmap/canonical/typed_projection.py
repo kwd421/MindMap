@@ -171,6 +171,7 @@ class TypedProjectionMixin:
                     ExposureRow(
                         event.event_id,
                         event.destination_mind_instance_id,
+                        event.object_kind or "evidence",
                         event.object_id,
                         event.transfer_kind,
                         event.source_mind_instance_id,
@@ -185,6 +186,7 @@ class TypedProjectionMixin:
                 self.policies.append(
                     PolicyRow(
                         event.event_id,
+                        event.object_kind or "evidence",
                         event.object_id,
                         event.policy_operation,
                         event.destination_mind_instance_id,
