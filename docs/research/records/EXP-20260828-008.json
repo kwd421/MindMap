@@ -20,9 +20,10 @@
     "dirty": false,
     "deviations": [
       "EXP-20260827-004 and exploratory inspection in the current research loop already exposed individual GateMem deletion examples and parser misses. This study is therefore development evidence even though its deterministic extraction rule is frozen before the exhaustive run.",
-      "The high-precision extraction rule labels only sentence-initial delete/remove/erase/forget imperatives and explicitly labelled deletion requests. It is not a semantic gold label for every deletion speech act.",
+      "The frozen lexical rule labels delete/remove/erase/forget imperatives only at the trimmed turn start or after [.!?] plus whitespace, together with a sentence-initial Deletion request label. Newline-, quote-, colon-, and semicolon-only boundaries are not general sentence boundaries in this rule. It is not a semantic gold label for every deletion speech act.",
       "The tested parser is the frozen PR 52 capability-boundary implementation, not the main branch and not an end-to-end memory agent.",
-      "After the aggregate artifact was written, the 57 referent-absent rows were inspected as development error analysis. That inspection did not alter the frozen extractor, parser, denominator, or artifacts."
+      "After the aggregate artifact was written, the 57 referent-absent rows were inspected as development error analysis. That inspection did not alter the frozen extractor, parser, denominator, or artifacts.",
+      "The original run recorded source.dirty=false from operator observation, but the v1 runner checked only exact HEAD revisions and did not itself fail closed on tracked or untracked checkout changes. A later model-assisted manual review reproduced all three artifacts byte-for-byte from clean exact-revision checkouts; that supports result reproducibility but does not retroactively attest the original checkout state."
     ]
   },
   "dataset": {
@@ -46,7 +47,7 @@
       "hosted_model_calls": 0,
       "official_scorer_calls": 0
     },
-    "inclusion": "A public turn contains delete/remove/erase/forget as a sentence-initial imperative, optionally prefixed by please, or as the imperative following a sentence-initial Deletion request label.",
+    "inclusion": "A public turn contains delete/remove/erase/forget at the trimmed turn start or immediately after [.!?] plus whitespace, optionally prefixed by please, or as the imperative following the frozen sentence-initial Deletion request label. Other punctuation, newline-only, and quote-only boundaries are outside this lexical v1 rule.",
     "exclusion": "Past-tense descriptions, indirect requests, morphological lookalikes, reminder-only statements, checkpoints, scorer labels, and all non-episode data.",
     "independent_variable": "presence versus absence of one of the parser manifest's explicit information referents",
     "dependent_variables": [
@@ -106,6 +107,15 @@
     "provider_usd": 0.0,
     "note": "One deterministic local Python pass; no hosted-model API, official GateMem scorer, or LLM judge call."
   },
+  "artifacts": {
+    "pull_request": "https://github.com/kwd421/MindMap/pull/54",
+    "exact_head_ci": "https://github.com/kwd421/MindMap/actions/runs/33099176986",
+    "model_assisted_manual_review_sha256": "2023c79222b138f83b4131d127e7795f0016abf643f1f0e0fc2f3d3b8fc5a76b",
+    "manual_review_boundary": "Ordinary git/gh/Python/pytest and direct artifact review without Codex Security workflows; subscription-based model-assisted review, not independent human peer review."
+  },
+  "deviation_addendum": [
+    "The post-result manual review found no blocking discrepancy and reproduced the three committed artifacts 3/3 byte-identically from clean exact revisions. It also found the original runner did not enforce or artifact-record checkout cleanliness, the Markdown ledger retained a stale planned label, and the prose description of sentence boundaries was broader than the frozen regex. The last two documentation defects were corrected without changing the frozen runner or result artifacts; cleanliness enforcement is reserved for a versioned future runner so EXP-008 remains historically reproducible."
+  ],
   "artifact_files": [
     {
       "path": "results/research/EXP-20260828-008/artifact_manifest.json",

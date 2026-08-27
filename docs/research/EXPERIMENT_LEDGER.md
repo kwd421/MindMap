@@ -224,14 +224,18 @@ Machine-readable records live in `records/`.
 ## EXP-20260828-008 — Official GateMem deletion-imperative surface audit
 
 - **Class:** development; prior example-level outcome access disclosed
-- **Status:** planned; deterministic rule frozen before exhaustive execution
+- **Status:** completed; deterministic rule frozen at
+  `b22276c9eb89594910dcd5a8fdda11c249e2b0e4` before exhaustive execution
 - **Sources:** MindMap PR #52
   `4ac92909d3f00612d025ac9328ee81ed37def40b`; official GateMem
   `603f9f4b4ba4b77f043c20f85687fa016fd720b0`
 - **Selection:** all four released `episodes.jsonl` files; only
-  sentence-initial `delete`/`remove`/`erase`/`forget` imperatives, optionally
-  polite or following an explicit `Deletion request:` label. Descriptive and
-  indirect language is excluded rather than silently labelled negative.
+  `delete`/`remove`/`erase`/`forget` imperatives at the trimmed turn start or
+  immediately after `[.!?]` plus whitespace, optionally polite, together with
+  imperatives following the frozen sentence-initial `Deletion request:` label.
+  Newline-, quote-, colon-, and semicolon-only boundaries are outside this
+  lexical rule. Descriptive and indirect language is excluded rather than
+  silently labelled negative.
 - **Primary outcome:** official rule-qualified turns that emit any PR #52
   `DELETE` signal / all rule-qualified turns. Referent presence, domain counts,
   and unique text hashes are secondary diagnostics.
