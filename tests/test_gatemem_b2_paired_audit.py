@@ -41,6 +41,14 @@ def _write_jsonl(path: Path, values: list[dict[str, Any]]) -> None:
     )
 
 
+def _load_jsonl(path: Path) -> list[dict[str, Any]]:
+    return [
+        json.loads(line)
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+
+
 def _checkpoint_rows() -> list[dict[str, Any]]:
     return [
         {
@@ -83,8 +91,6 @@ def _checkpoint_rows() -> list[dict[str, Any]]:
 
 
 def _score_rows(*, governed: bool) -> list[dict[str, Any]]:
-    privacy_answered = not governed
-    deletion_answered = not governed
     return [
         {
             "query_type": "utility",
@@ -207,14 +213,24 @@ def _prepare_method_root(
         },
     )
     _write_json(root / "official_score" / "summary.json", {"rows": 3})
-    _write_jsonl(root / "official_score" / "scores.jsonl", _score_rows(governed=governed))
+    _write_jsonl(
+        root / "official_score" / "scores.jsonl",
+        _score_rows(governed=governed),
+    )
     if reader:
         _write_json(
             root / "reader_runtime.json",
             {
-                "config": {"model_id": "fake/reader", "revision": "r" * 40},
+                "config": {
+                    "model_id": "fake/reader",
+                    "revision": "r" * 40,
+                },
                 "stats": {"calls": 3 if not governed else 1},
-                "packages": {"torch": "0", "transformers": "0", "safetensors": "0"},
+                "packages": {
+                    "torch": "0",
+                    "transformers": "0",
+                    "safetensors": "0",
+                },
             },
         )
 
@@ -228,7 +244,10 @@ def _prepare_tree(tmp_path: Path):
     secret = bytes(range(32))
     opaque = GateMemOpaqueIds.from_secret(secret)
     ids = {
-        row["checkpoint_id"]: opaque.query(row["episode_id"], row["checkpoint_id"])
+        row["checkpoint_id"]: opaque.query(
+            row["episode_id"],
+            row["checkpoint_id"],
+        )
         for row in checkpoints
     }
 
@@ -236,12 +255,28 @@ def _prepare_tree(tmp_path: Path):
     b1b = tmp_path / "b1b"
     b2 = tmp_path / "b2"
     b1_predictions = [
-        _prediction(ids["source-utility"], prompt="allowed fact", governed=False),
-        _prediction(ids["source-privacy"], prompt="private secret", governed=False),
-        _prediction(ids["source-deletion"], prompt="deleted detail", governed=False),
+        _prediction(
+            ids["source-utility"],
+            prompt="allowed fact",
+            governed=False,
+        ),
+        _prediction(
+            ids["source-privacy"],
+            prompt="private secret",
+            governed=False,
+        ),
+        _prediction(
+            ids["source-deletion"],
+            prompt="deleted detail",
+            governed=False,
+        ),
     ]
     b2_predictions = [
-        _prediction(ids["source-utility"], prompt="allowed fact", governed=True),
+        _prediction(
+            ids["source-utility"],
+            prompt="allowed fact",
+            governed=True,
+        ),
         _prediction(
             ids["source-privacy"],
             prompt="",
@@ -304,6 +339,7 @@ def test_paired_audit_keeps_hidden_join_evaluator_side_and_publishes_aggregates(
     deletion = result["stage_metrics"]["deletion"]
     assert privacy["B1a_prompt_exposed_patterns"] == 1
     assert privacy["B2_prompt_exposed_patterns"] == 0
+    assert deletion["checkpoint_count"] == 1
     assert deletion["B1a_prompt_exposed_patterns"] == 1
     assert deletion["B2_prompt_exposed_patterns"] == 0
 
@@ -311,18 +347,27 @@ def test_paired_audit_keeps_hidden_join_evaluator_side_and_publishes_aggregates(
     assert governance["candidate_count"] == 3
     assert governance["admitted_count"] == 1
     assert governance["blocked_count"] == 2
-    assert governance["public_signal_present_checkpoint_count"] == 3
-    assert not (set(module._walk_keys(result)) & module.FORBIDDEN_PUBLISHABLE_KEYS)
+    assert governance["B2_matched_signal_checkpoint_count"] == 3
+    assert not (
+        set(module._walk_keys(result)) & module.FORBIDDEN_PUBLISHABLE_KEYS
+    )
 
 
-def test_paired_audit_fails_closed_on_retrieval_candidate_drift(tmp_path: Path):
+def test_paired_audit_fails_closed_on_retrieval_candidate_drift(
+    tmp_path: Path,
+):
     module = _module()
     checkout, secret, b1a, b1b, b2 = _prepare_tree(tmp_path)
     rows = _load_jsonl(b2 / "predictions.jsonl")
-    rows[0]["output"]["memory_audit"]["retrieval_items"][0]["final_score"] = 99.0
+    rows[0]["output"]["memory_audit"]["retrieval_items"][0][
+        "final_score"
+    ] = 99.0
     _write_jsonl(b2 / "predictions.jsonl", rows)
 
-    with pytest.raises(ValueError, match="retrieval candidates are not identical"):
+    with pytest.raises(
+        ValueError,
+        match="retrieval candidates are not identical",
+    ):
         module.build_publishable(
             checkout=checkout,
             domain="medical",
