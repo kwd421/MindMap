@@ -1,0 +1,98 @@
+{
+  "schema_version": "0.1.0",
+  "experiment_id": "EXP-20260828-010",
+  "title": "Factorial base-head reproduction of late destination creation",
+  "status": "planned",
+  "study_class": "development",
+  "research_question_ids": ["RQ1", "RQ2"],
+  "hypothesis_ids": ["H1"],
+  "started_at": null,
+  "ended_at": null,
+  "timing": {
+    "precision": "unknown",
+    "note": "Execution has not started; exact UTC timestamps will be recorded around the frozen run."
+  },
+  "preregistration_commit": null,
+  "source": {
+    "repository": "https://github.com/kwd421/MindMap",
+    "source_revision": "069c5f4b16b2f594aec48924161ae8944f39652e",
+    "checkout_revision": "069c5f4b16b2f594aec48924161ae8944f39652e",
+    "dirty": false,
+    "deviations": [
+      "GPT Pro Session B reported the three creation-time outcomes before this local design freeze.",
+      "A local inline smoke run reproduced the reported pattern on both exact revisions before this machine record was written. The frozen runner is therefore reproducibility hardening under complete outcome access, not an independent or confirmatory replication.",
+      "The current PR 55 documentation head is 2bda2ff38ea79dd0901f6329490d2f9940690261; its executable canonical code is unchanged from f26e148602099d7be01c2759be394c6ee4ff6204."
+    ]
+  },
+  "dataset": {
+    "name": "Synthetic late-destination temporal factorial",
+    "revision": "EXP-20260828-010-plan-v1",
+    "split": "all 2 source revisions x 3 destination creation times x 3 implementations",
+    "license": "repository MIT",
+    "raw_data_committed": true
+  },
+  "method_arms": [
+    "main_069c5f4_Gold_Generic_Typed",
+    "pr55_2bda2ff_Gold_Generic_Typed"
+  ],
+  "models": [],
+  "controls": {
+    "comparison_revision": "2bda2ff38ea79dd0901f6329490d2f9940690261",
+    "executable_pr55_revision": "f26e148602099d7be01c2759be394c6ee4ff6204",
+    "python": "3.11",
+    "independent_variables": [
+      "source revision: main versus PR 55",
+      "destination mind creation system time: 5, 6, or 7"
+    ],
+    "dependent_variables": [
+      "Gold, Generic, and Typed Boolean AVAILABLE answer in every cell",
+      "paired base/head answer differences over nine implementation-by-time cells"
+    ],
+    "fixed_event_times": {
+      "principal_source_world_create": 0,
+      "lineage": 1,
+      "evidence_and_source_observation": 2,
+      "authorization_grant": 3,
+      "state_replication": 6,
+      "query": 10
+    },
+    "destination_creation_times": [5, 6, 7],
+    "destination_strata": [
+      "before_replication",
+      "equal_to_replication",
+      "after_replication"
+    ],
+    "nuisance_variables": [
+      "complete prior outcome access",
+      "synthetic single event family",
+      "same repository implementation ancestry",
+      "Git checkout and import-path contamination"
+    ],
+    "stopping_rule": "After the runner is committed, execute it once from clean exact main and PR 55 checkouts; emit exactly 18 Boolean outputs and nine paired revision comparisons; do not alter the event sequence or add cells after observing output.",
+    "cost_ceiling_usd": 0.0
+  },
+  "sample": {
+    "source_revisions": 2,
+    "destination_time_strata": 3,
+    "implementations": 3,
+    "boolean_output_cells": 18,
+    "paired_revision_cells": 9
+  },
+  "results": {
+    "status": "planned",
+    "primary_outcome": "paired base/head Boolean difference count over 9 matched implementation-by-time cells",
+    "secondary_outcomes": [
+      "18 raw Boolean outputs",
+      "within-revision Gold/Generic/Typed agreement by creation-time stratum"
+    ]
+  },
+  "cost": {
+    "provider_usd": 0.0,
+    "note": "Planned local deterministic run only; no hosted model or official scorer call."
+  },
+  "artifact_retention": {
+    "status": "not_retained",
+    "reason": "Runner and result artifacts are not yet frozen or executed."
+  },
+  "claim_boundary": "Prior-access development reproduction of one synthetic temporal event family. It can distinguish whether PR 55 changes these nine matched outputs and characterize this exact reference-before-creation mechanism; it cannot estimate natural prevalence, establish confirmatory causality, or replace the PR 56 invalid-input contract."
+}

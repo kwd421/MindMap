@@ -307,3 +307,23 @@ Machine-readable records live in `records/`.
   text-hash-mismatched, and each of four unknown-enum mutations, 8/8. The
   runner intentionally does not claim cross-field semantic correctness or a
   frozen note-code vocabulary.
+
+## EXP-20260828-010 — Late-destination base/head factorial
+
+- **Class:** development reproduction with complete prior outcome access
+- **Status:** planned; no independent-confirmation claim is possible because
+  GPT Pro Session B and a local inline smoke already exposed the outcomes
+- **Sources:** exact main `069c5f4b16b2f594aec48924161ae8944f39652e`
+  and current PR #55 head `2bda2ff38ea79dd0901f6329490d2f9940690261`
+- **Independent variables:** source revision and destination-mind creation at
+  system time 5, 6, or 7 around replication at time 6
+- **Dependent variables:** 18 raw Gold/Generic/Typed `AVAILABLE` Booleans and
+  nine paired main/PR answer differences
+- **Controls:** identical event sequence except destination creation time;
+  lineage t1, evidence/source observation t2, grant t3, replication t6, query
+  t10; clean exact checkouts; Python 3.11; no hosted judge
+- **Stopping rule:** commit the runner, execute exactly once, emit 18 outputs
+  and nine paired comparisons, and do not tune or add cells after output
+- **Claim boundary:** deterministic reproducibility hardening of one already
+  known synthetic family, not independent confirmation, prevalence, or an
+  official benchmark score
