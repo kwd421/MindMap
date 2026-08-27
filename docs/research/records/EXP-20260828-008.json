@@ -1,0 +1,84 @@
+{
+  "schema_version": "0.1.0",
+  "experiment_id": "EXP-20260828-008",
+  "title": "Official GateMem deletion-imperative surface coverage audit",
+  "status": "planned",
+  "study_class": "development",
+  "research_question_ids": ["RQ3", "RQ4"],
+  "hypothesis_ids": ["H3", "H5"],
+  "started_at": null,
+  "ended_at": null,
+  "timing": {
+    "precision": "unknown",
+    "note": "The deterministic extraction rule and stopping rule are frozen before the exhaustive runner is executed; prior development outcome access is disclosed under source.deviations."
+  },
+  "preregistration_commit": null,
+  "source": {
+    "repository": "https://github.com/kwd421/MindMap",
+    "source_revision": "4ac92909d3f00612d025ac9328ee81ed37def40b",
+    "checkout_revision": "4ac92909d3f00612d025ac9328ee81ed37def40b",
+    "dirty": false,
+    "deviations": [
+      "EXP-20260827-004 and exploratory inspection in the current research loop already exposed individual GateMem deletion examples and parser misses. This study is therefore development evidence even though its deterministic extraction rule is frozen before the exhaustive run.",
+      "The high-precision extraction rule labels only sentence-initial delete/remove/erase/forget imperatives and explicitly labelled deletion requests. It is not a semantic gold label for every deletion speech act.",
+      "The tested parser is the frozen PR 52 capability-boundary implementation, not the main branch and not an end-to-end memory agent."
+    ]
+  },
+  "dataset": {
+    "name": "GateMem official public episodes, all four released domains",
+    "revision": "603f9f4b4ba4b77f043c20f85687fa016fd720b0",
+    "split": "exhaustive strict-sentence-imperative-v1 selection over bench/data/*/episodes.jsonl",
+    "license": "MIT",
+    "raw_data_committed": false
+  },
+  "method_arms": [
+    "pr52_frozen_public_turn_policy_parser"
+  ],
+  "models": [],
+  "controls": {
+    "extraction_rule_version": "strict-sentence-imperative-v1",
+    "inclusion": "A public turn contains delete/remove/erase/forget as a sentence-initial imperative, optionally prefixed by please, or as the imperative following a sentence-initial Deletion request label.",
+    "exclusion": "Past-tense descriptions, indirect requests, morphological lookalikes, reminder-only statements, checkpoints, scorer labels, and all non-episode data.",
+    "independent_variable": "presence versus absence of one of the parser manifest's explicit information referents",
+    "dependent_variables": [
+      "any DELETE signal per selected official turn",
+      "DELETE signal count by domain and referent stratum"
+    ],
+    "evaluator_only_variables": [
+      "GateMem checkpoint query_type",
+      "leak_targets",
+      "judge_spec",
+      "official answer or leakage outcome"
+    ],
+    "nuisance_variables": [
+      "repeated templated wording across episodes",
+      "strict extractor undercoverage",
+      "episode-specific principal aliases"
+    ]
+  },
+  "sample": {
+    "unit": "official public episode turn",
+    "domains": ["education", "household", "medical", "office"],
+    "sampling": "exhaustive after applying the frozen deterministic inclusion rule",
+    "deduplication": "none; unique text hashes are reported as a secondary diagnostic"
+  },
+  "results": {
+    "status": "planned",
+    "primary_outcome": "DELETE-signal numerator and strict-directive denominator",
+    "secondary_outcomes": [
+      "information-referent-present numerator/denominator",
+      "DELETE signal among referent-absent strict directives",
+      "domain counts and unique text hash count"
+    ],
+    "stopping_rule": "Verify both exact git revisions, visit all four official episodes.jsonl files exactly once, evaluate every rule-qualified turn exactly once, and stop with failure on revision, schema, import, or write error without changing the rule."
+  },
+  "cost": {
+    "provider_usd": 0.0,
+    "note": "Planned deterministic local execution only; no hosted-model or official judge call."
+  },
+  "artifact_retention": {
+    "status": "record_only",
+    "reason": "Planned record; outcome artifacts do not exist yet. Official raw text will remain in the upstream MIT repository rather than be duplicated in this repository."
+  },
+  "claim_boundary": "Development surface diagnostic over a deterministic subset of official public turns. It is not an official GateMem score, a semantic recall estimate over all deletion speech acts, target grounding, state mutation, answer suppression, restart persistence, physical erasure, or a confirmatory result."
+}
