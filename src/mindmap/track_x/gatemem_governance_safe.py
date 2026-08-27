@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import re
 
+from . import gatemem_governance as _base_governance
 from .gatemem_baselines import RawLexicalConfig
 from .gatemem_governance import (
     CandidateDecision,
@@ -13,6 +15,27 @@ from .gatemem_governance import (
     RawLexicalGovernedReaderGateMemAgent,
 )
 from .gatemem_reader import ExtractiveReader
+
+
+# The base parser resolves these module-level patterns at call time. The frozen
+# agent widens only phrase shape (not labels, thresholds, or target semantics)
+# so ordinary public prose may place the protected topic between the policy
+# verb and its target/scope.
+_base_governance._ALLOW_ONLY_RE = re.compile(
+    r"\bonly\s+share\b.{0,200}?\bwith\b",
+    flags=re.IGNORECASE,
+)
+_base_governance._ACTOR_ONLY_RE = re.compile(
+    r"(?:\bkeep\b.{0,200}?\b(?:private|confidential)\b|"
+    r"\bthis\b.{0,200}?\bis\s+(?:private|confidential)\b)",
+    flags=re.IGNORECASE,
+)
+_base_governance._GRANT_RE = re.compile(
+    r"(?:\b(?:may|can)\s+share\b.{0,200}?\bwith\b|"
+    r"\ballow\w*\s+.+?\s+to\s+(?:access|see|read)\b|"
+    r"\bauthori[sz]e\w*\s+.+?\s+to\s+(?:access|see|read)\b)",
+    flags=re.IGNORECASE,
+)
 
 
 class PolicySourceBlockingGovernanceGate(PublicTextGovernanceGate):
