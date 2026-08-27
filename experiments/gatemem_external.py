@@ -15,6 +15,11 @@ from mindmap.track_x.gatemem_baselines import (
     RawLexicalConfig,
     RawLexicalGateMemAgent,
 )
+from mindmap.track_x.gatemem_governance import (
+    GovernanceConfig,
+    governance_surface_manifest,
+)
+from mindmap.track_x.gatemem_governance_safe import FrozenB2GateMemAgent
 from mindmap.track_x.gatemem_official import (
     PINNED_GATEMEM_COMMIT,
     git_revision,
@@ -48,6 +53,7 @@ def parse_args() -> argparse.Namespace:
         choices=(
             "raw_lexical",
             "raw_lexical_reader",
+            "raw_lexical_governed_reader",
             "always_no_memory",
         ),
         required=True,
@@ -91,6 +97,17 @@ def _package_version(name: str) -> str | None:
         return None
 
 
+def _canonical_json_sha256(value: Any) -> str:
+    payload = json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    return sha256(payload).hexdigest()
+
+
 def _write_reader_runtime(
     output_dir: Path,
     *,
@@ -124,7 +141,11 @@ def main() -> int:
     shared_reader: TransformersExtractiveReader | None = None
     reader_config: ExtractiveReaderConfig | None = None
 
-    if args.method in {"raw_lexical", "raw_lexical_reader"}:
+    if args.method in {
+        "raw_lexical",
+        "raw_lexical_reader",
+        "raw_lexical_governed_reader",
+    }:
         lexical_config = _lexical_config(args)
         method_config = {
             "top_k": lexical_config.top_k,
@@ -146,10 +167,26 @@ def main() -> int:
             )
             shared_reader = TransformersExtractiveReader(reader_config)
             method_config["reader"] = asdict(reader_config)
-            factory = lambda: RawLexicalSharedReaderGateMemAgent(
-                lexical_config,
-                shared_reader,
-            )
+            if args.method == "raw_lexical_reader":
+                factory = lambda: RawLexicalSharedReaderGateMemAgent(
+                    lexical_config,
+                    shared_reader,
+                )
+            else:
+                governance_config = GovernanceConfig()
+                surface_manifest = governance_surface_manifest()
+                method_config["governance"] = {
+                    "config": asdict(governance_config),
+                    "surface_manifest": surface_manifest,
+                    "surface_manifest_sha256": _canonical_json_sha256(
+                        surface_manifest
+                    ),
+                }
+                factory = lambda: FrozenB2GateMemAgent(
+                    lexical_config,
+                    shared_reader,
+                    governance_config,
+                )
     else:
         method_config = {}
         factory = AlwaysNoMemoryGateMemAgent
