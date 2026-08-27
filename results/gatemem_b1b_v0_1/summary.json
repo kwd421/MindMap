@@ -1,0 +1,277 @@
+{
+  "classification": "official deterministic reader/use comparison; not a MindMap, governance-filter, calibrated-selective, or SOTA result",
+  "domains": {
+    "education": {
+      "artifact": {
+        "artifact_id": 9647129082,
+        "zip_sha256": "c53350ddb3e8febe4310799862a34d677c1d70b5ad98d8d557c9b6b86af26b38"
+      },
+      "checkpoints": 540,
+      "methods": {
+        "B1a": {
+          "action_accuracy": 0.3333333333333333,
+          "answer_count": 540,
+          "compliance_utility_e2e_score": 0.013662551440329225,
+          "compliance_utility_score": 0.013662551440329225,
+          "conditional_risk": 0.7203703703703703,
+          "coverage": 1.0,
+          "deletion_answer_leakage_rate": 0.8888888888888888,
+          "deletion_context_leakage_rate": 0.8888888888888888,
+          "deletion_e2e_leakage_rate": 0.8888888888888888,
+          "no_memory_count": 0,
+          "over_refusal_rate": 0.0,
+          "privacy_answer_leakage_rate": 0.5388888888888889,
+          "privacy_context_leakage_rate": 0.5388888888888889,
+          "privacy_e2e_leakage_rate": 0.5388888888888889,
+          "safe_coverage": 0.0,
+          "utility_accuracy": 0.26666666666666666
+        },
+        "B1b": {
+          "action_accuracy": 0.4074074074074074,
+          "answer_count": 175,
+          "compliance_utility_e2e_score": 0.0002846364883401922,
+          "compliance_utility_score": 0.00459104938271605,
+          "conditional_risk": 0.9657142857142857,
+          "coverage": 0.32407407407407407,
+          "deletion_answer_leakage_rate": 0.15,
+          "deletion_context_leakage_rate": 0.8888888888888888,
+          "deletion_e2e_leakage_rate": 0.8888888888888888,
+          "no_memory_count": 365,
+          "over_refusal_rate": 0.45,
+          "privacy_answer_leakage_rate": 0.027777777777777776,
+          "privacy_context_leakage_rate": 0.5388888888888889,
+          "privacy_e2e_leakage_rate": 0.5388888888888889,
+          "safe_coverage": 0.0,
+          "utility_accuracy": 0.005555555555555556
+        }
+      },
+      "reader_runtime": {
+        "calls": 540,
+        "elapsed_seconds": 62.03490429300018,
+        "forward_calls": 540,
+        "input_tokens": 109698,
+        "windows": 540
+      }
+    },
+    "household": {
+      "artifact": {
+        "artifact_id": 9647137923,
+        "zip_sha256": "a48af0d09b6ea112d065d238ba10313a3121c86d123b2bbaa0e81baab3252768"
+      },
+      "checkpoints": 552,
+      "methods": {
+        "B1a": {
+          "action_accuracy": 0.3333333333333333,
+          "answer_count": 552,
+          "compliance_utility_e2e_score": 0.01847209665488616,
+          "compliance_utility_score": 0.01847209665488616,
+          "conditional_risk": 0.7228260869565217,
+          "coverage": 1.0,
+          "deletion_answer_leakage_rate": 0.8315217391304348,
+          "deletion_context_leakage_rate": 0.8260869565217391,
+          "deletion_e2e_leakage_rate": 0.8315217391304348,
+          "no_memory_count": 0,
+          "over_refusal_rate": 0.0,
+          "privacy_answer_leakage_rate": 0.6847826086956522,
+          "privacy_context_leakage_rate": 0.6847826086956522,
+          "privacy_e2e_leakage_rate": 0.6847826086956522,
+          "safe_coverage": 0.0,
+          "utility_accuracy": 0.34782608695652173
+        },
+        "B1b": {
+          "action_accuracy": 0.3351449275362319,
+          "answer_count": 202,
+          "compliance_utility_e2e_score": 0.0,
+          "compliance_utility_score": 0.0,
+          "conditional_risk": 0.9158415841584159,
+          "coverage": 0.36594202898550726,
+          "deletion_answer_leakage_rate": 0.2391304347826087,
+          "deletion_context_leakage_rate": 0.8260869565217391,
+          "deletion_e2e_leakage_rate": 0.8260869565217391,
+          "no_memory_count": 350,
+          "over_refusal_rate": 0.532608695652174,
+          "privacy_answer_leakage_rate": 0.03804347826086957,
+          "privacy_context_leakage_rate": 0.6847826086956522,
+          "privacy_e2e_leakage_rate": 0.6847826086956522,
+          "safe_coverage": 0.0,
+          "utility_accuracy": 0.0
+        }
+      },
+      "reader_runtime": {
+        "calls": 552,
+        "elapsed_seconds": 68.57225258599985,
+        "forward_calls": 552,
+        "input_tokens": 110680,
+        "windows": 552
+      }
+    },
+    "medical": {
+      "artifact": {
+        "artifact_id": 9647126296,
+        "zip_sha256": "0425e411f60230cc227885a143c55d899c8d94932d3f05556da3137f0ae75b38"
+      },
+      "checkpoints": 579,
+      "methods": {
+        "B1a": {
+          "action_accuracy": 0.3626943005181347,
+          "answer_count": 579,
+          "compliance_utility_e2e_score": 0.05113554838131109,
+          "compliance_utility_score": 0.05113554838131109,
+          "conditional_risk": 0.6010362694300518,
+          "coverage": 1.0,
+          "deletion_answer_leakage_rate": 0.7062146892655368,
+          "deletion_context_leakage_rate": 0.7062146892655368,
+          "deletion_e2e_leakage_rate": 0.7062146892655368,
+          "no_memory_count": 0,
+          "over_refusal_rate": 0.0,
+          "privacy_answer_leakage_rate": 0.6979166666666666,
+          "privacy_context_leakage_rate": 0.6979166666666666,
+          "privacy_e2e_leakage_rate": 0.6979166666666666,
+          "safe_coverage": 0.0,
+          "utility_accuracy": 0.5761904761904761
+        },
+        "B1b": {
+          "action_accuracy": 0.46632124352331605,
+          "answer_count": 249,
+          "compliance_utility_e2e_score": 0.015636490000896782,
+          "compliance_utility_score": 0.14362136803874093,
+          "conditional_risk": 0.7309236947791165,
+          "coverage": 0.43005181347150256,
+          "deletion_answer_leakage_rate": 0.0847457627118644,
+          "deletion_context_leakage_rate": 0.7062146892655368,
+          "deletion_e2e_leakage_rate": 0.7062146892655368,
+          "no_memory_count": 330,
+          "over_refusal_rate": 0.32857142857142857,
+          "privacy_answer_leakage_rate": 0.109375,
+          "privacy_context_leakage_rate": 0.6979166666666666,
+          "privacy_e2e_leakage_rate": 0.6979166666666666,
+          "safe_coverage": 0.0,
+          "utility_accuracy": 0.1761904761904762
+        }
+      },
+      "reader_runtime": {
+        "calls": 579,
+        "elapsed_seconds": 54.89841465500004,
+        "forward_calls": 579,
+        "input_tokens": 77404,
+        "windows": 579
+      }
+    },
+    "office": {
+      "artifact": {
+        "artifact_id": 9647138038,
+        "zip_sha256": "5fd656dfb9eef9f5126d3d2c783e4330cc120df7fa522ce09aa873855e81d713"
+      },
+      "checkpoints": 547,
+      "methods": {
+        "B1a": {
+          "action_accuracy": 0.28153564899451555,
+          "answer_count": 547,
+          "compliance_utility_e2e_score": 0.004641004641004645,
+          "compliance_utility_score": 0.004641004641004645,
+          "conditional_risk": 0.753199268738574,
+          "coverage": 1.0,
+          "deletion_answer_leakage_rate": 0.9369369369369369,
+          "deletion_context_leakage_rate": 0.9369369369369369,
+          "deletion_e2e_leakage_rate": 0.9369369369369369,
+          "no_memory_count": 0,
+          "over_refusal_rate": 0.0,
+          "privacy_answer_leakage_rate": 0.8888888888888888,
+          "privacy_context_leakage_rate": 0.8888888888888888,
+          "privacy_e2e_leakage_rate": 0.8888888888888888,
+          "safe_coverage": 0.0,
+          "utility_accuracy": 0.6623376623376623
+        },
+        "B1b": {
+          "action_accuracy": 0.4936014625228519,
+          "answer_count": 198,
+          "compliance_utility_e2e_score": 0.0001365001365001366,
+          "compliance_utility_score": 0.017297543613333084,
+          "conditional_risk": 0.9646464646464646,
+          "coverage": 0.3619744058500914,
+          "deletion_answer_leakage_rate": 0.04504504504504504,
+          "deletion_context_leakage_rate": 0.9369369369369369,
+          "deletion_e2e_leakage_rate": 0.9369369369369369,
+          "no_memory_count": 349,
+          "over_refusal_rate": 0.2922077922077922,
+          "privacy_answer_leakage_rate": 0.07017543859649122,
+          "privacy_context_leakage_rate": 0.8888888888888888,
+          "privacy_e2e_leakage_rate": 0.8888888888888888,
+          "safe_coverage": 0.0,
+          "utility_accuracy": 0.01948051948051948
+        }
+      },
+      "reader_runtime": {
+        "calls": 547,
+        "elapsed_seconds": 80.89621009300032,
+        "forward_calls": 547,
+        "input_tokens": 130345,
+        "windows": 547
+      }
+    }
+  },
+  "interpretation": [
+    "B1a and B1b had identical prompt-context hashes and character counts at all 2218 checkpoints.",
+    "The reader reduced answer-level privacy/deletion leakage mostly by returning no_memory, but did not reduce privacy/deletion context exposure.",
+    "End-to-end leakage therefore remained at the context-exposure floor.",
+    "Utility correct answers fell from 335/728 to 41/728; B1b answered 824/2218 checkpoints and returned no_memory on 1394/2218.",
+    "All fixed operating points had safe_coverage=0 under the prespecified risk constraints.",
+    "The next causal condition is B2: the same raw candidates, a pre-reader governance filter, and the same frozen reader."
+  ],
+  "micro_exact_counts": {
+    "B1a": {
+      "answers": 2218,
+      "deletion_answer_leaks": 646,
+      "deletion_context_leaks": 645,
+      "deletion_e2e_leaks": 646,
+      "no_memory": 0,
+      "privacy_answer_leaks": 509,
+      "privacy_context_leaks": 509,
+      "privacy_e2e_leaks": 509,
+      "utility_correct": 335
+    },
+    "B1b": {
+      "answers": 824,
+      "deletion_answer_leaks": 96,
+      "deletion_context_leaks": 645,
+      "deletion_e2e_leaks": 645,
+      "no_memory": 1394,
+      "privacy_answer_leaks": 45,
+      "privacy_context_leaks": 509,
+      "privacy_e2e_leaks": 509,
+      "utility_correct": 41
+    },
+    "checkpoints": 2218,
+    "deletion_safety_checkpoints": 763,
+    "privacy_checkpoints": 727,
+    "utility_checkpoints": 728
+  },
+  "reader_cost": {
+    "calls": 2218,
+    "elapsed_seconds_sum_across_parallel_domain_jobs": 266.4017816270004,
+    "forward_calls": 2218,
+    "input_tokens": 428127,
+    "windows": 2218
+  },
+  "retrieval_equality": {
+    "checkpoints": 2218,
+    "prompt_character_count_mismatches": 0,
+    "prompt_hash_mismatches": 0
+  },
+  "schema_version": "track-x-gatemem-b1b-result-v0.1",
+  "source": {
+    "base_commit": "e6bef675c43e77ae0a922b8461aa3ac403a32dfd",
+    "gatemem_commit": "603f9f4b4ba4b77f043c20f85687fa016fd720b0",
+    "head_commit": "1389a87fac9355e06e67ec85f7a4bf9c0a1a3ff6",
+    "model_id": "deepset/minilm-uncased-squad2",
+    "model_revision": "934656cdda79824eabf503ed56e15c01ddbdbe3f",
+    "packages": {
+      "safetensors": "0.8.0",
+      "torch": "2.13.0+cpu",
+      "transformers": "5.15.0"
+    },
+    "pr": 50,
+    "scorer_sha256": "3d546a21778202959a9df12bac44c196a7f20a248cf5a2cb34f0d9b9c2623d8a",
+    "workflow_run": 33074043413
+  }
+}
