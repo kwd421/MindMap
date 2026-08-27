@@ -1,57 +1,163 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from hashlib import sha256
 import re
 
-from . import gatemem_governance as _base_governance
 from .gatemem_baselines import RawLexicalConfig
 from .gatemem_governance import (
     CandidateDecision,
     GateDisposition,
     GovernanceConfig,
     GovernanceEvaluation,
+    GovernanceSignal,
     GovernanceSurface,
     PublicTextGovernanceGate,
+    PublicTurnPolicyParser,
     RawLexicalGovernedReaderGateMemAgent,
+    RestrictionScope,
+    SignalOperation,
 )
+from .gatemem_public import PublicEpisode, PublicTurn
 from .gatemem_reader import ExtractiveReader
 
 
-# The base parser resolves these module-level patterns at call time. The frozen
-# agent narrows or widens phrase shape only before any public B2 outcome exists.
-#
-# Active Forgetting requires an explicit information/memory referent. Bare
-# domain actions such as "remove the stitches" or "wipe the table" are not
-# memory deletion requests.
+FROZEN_B2_DELETION_CAPABILITY_SCHEMA = (
+    "track-x-gatemem-b2-deletion-capability-v0.1"
+)
+
+# Capability-boundary route chosen before any public B2 result:
+# Active Forgetting requires an explicit information/memory referent. Natural
+# referent-less requests such as "forget the diagnosis" are outside v0.9
+# capability and must be reported as incomplete deletion-language recall.
 _INFORMATION_REFERENT = (
     r"(?:memory|memories|record|records|data|information|details|"
     r"conversation|conversations|message|messages|note|notes|history)"
 )
-_base_governance._DELETE_RE = re.compile(
+_FROZEN_DELETE_RE = re.compile(
     rf"(?:\b(?:delete|forget|erase|remove|purge|wipe)\b.{{0,200}}?"
     rf"\b{_INFORMATION_REFERENT}\b|"
     rf"\b{_INFORMATION_REFERENT}\b.{{0,200}}?"
     rf"\b(?:delete|forget|erase|remove|purge|wipe)\b)",
     flags=re.IGNORECASE,
 )
-
-# Ordinary public prose may place the protected topic between the policy verb
-# and its target/scope.
-_base_governance._ALLOW_ONLY_RE = re.compile(
+_FROZEN_DENY_TARGET_RE = re.compile(
+    r"\b(?:do\s+not\s+share|don't\s+share|must\s+not\s+share|"
+    r"do\s+not\s+disclose|don't\s+disclose)\b",
+    flags=re.IGNORECASE,
+)
+_FROZEN_ALLOW_ONLY_RE = re.compile(
     r"\bonly\s+share\b.{0,200}?\bwith\b",
     flags=re.IGNORECASE,
 )
-_base_governance._ACTOR_ONLY_RE = re.compile(
+_FROZEN_ACTOR_ONLY_RE = re.compile(
     r"(?:\bkeep\b.{0,200}?\b(?:private|confidential)\b|"
     r"\bthis\b.{0,200}?\bis\s+(?:private|confidential)\b)",
     flags=re.IGNORECASE,
 )
-_base_governance._GRANT_RE = re.compile(
+_FROZEN_GRANT_RE = re.compile(
     r"(?:\b(?:may|can)\s+share\b.{0,200}?\bwith\b|"
     r"\ballow\w*\s+.+?\s+to\s+(?:access|see|read)\b|"
     r"\bauthori[sz]e\w*\s+.+?\s+to\s+(?:access|see|read)\b)",
     flags=re.IGNORECASE,
 )
+
+
+def deletion_capability_manifest() -> dict[str, object]:
+    return {
+        "schema_version": FROZEN_B2_DELETION_CAPABILITY_SCHEMA,
+        "route": "capability-boundary",
+        "recognized": (
+            "deletion verb and explicit information/memory referent in the same "
+            "observed public turn"
+        ),
+        "information_referents": [
+            "memory",
+            "memories",
+            "record",
+            "records",
+            "data",
+            "information",
+            "details",
+            "conversation",
+            "conversations",
+            "message",
+            "messages",
+            "note",
+            "notes",
+            "history",
+        ],
+        "outside_capability": [
+            "referent-less forget <fact> requests",
+            "implicit or deictic deletion without an information referent",
+            "ordinary physical/domain remove or wipe actions",
+        ],
+        "expected_consequence": (
+            "Active-Forgetting recall is incomplete; public B2 must retain and "
+            "report this limitation without post-outcome grammar tuning"
+        ),
+    }
+
+
+class FrozenPublicTurnPolicyParser(PublicTurnPolicyParser):
+    """Instance-owned v0.9 grammar, independent of import order."""
+
+    def parse(
+        self,
+        turn: PublicTurn,
+        *,
+        observed_index: int,
+    ) -> tuple[GovernanceSignal, ...]:
+        text = turn.text
+        operations: list[tuple[SignalOperation, RestrictionScope]] = []
+        if _FROZEN_DELETE_RE.search(text):
+            operations.append((SignalOperation.DELETE, RestrictionScope.NONE))
+
+        if _FROZEN_ALLOW_ONLY_RE.search(text):
+            operations.append(
+                (SignalOperation.RESTRICT, RestrictionScope.ALLOW_ONLY)
+            )
+        elif _FROZEN_DENY_TARGET_RE.search(text):
+            operations.append(
+                (SignalOperation.RESTRICT, RestrictionScope.DENY_TARGETS)
+            )
+        elif _FROZEN_ACTOR_ONLY_RE.search(text):
+            operations.append(
+                (SignalOperation.RESTRICT, RestrictionScope.ACTOR_ONLY)
+            )
+
+        # "only share with" is an allow-list restriction, not an independent grant.
+        if _FROZEN_GRANT_RE.search(text) and not _FROZEN_ALLOW_ONLY_RE.search(text):
+            operations.append((SignalOperation.GRANT, RestrictionScope.NONE))
+        if not operations:
+            return ()
+
+        target_principal_ids, target_roles = self._targets(text)
+        anchors = self._anchor_tokens(text)
+        digest = sha256(text.encode("utf-8")).hexdigest()
+        signals: list[GovernanceSignal] = []
+        for ordinal, (operation, scope) in enumerate(operations):
+            signals.append(
+                GovernanceSignal(
+                    signal_id=self._signal_id(
+                        turn,
+                        operation,
+                        scope,
+                        ordinal,
+                    ),
+                    operation=operation,
+                    restriction_scope=scope,
+                    actor_principal_id=turn.speaker_principal_id,
+                    actor_role=turn.speaker_role,
+                    observed_index=observed_index,
+                    source_public_turn_id=turn.turn_id,
+                    target_principal_ids=target_principal_ids,
+                    target_roles=target_roles,
+                    anchor_tokens=anchors,
+                    source_text_sha256=digest,
+                )
+            )
+        return tuple(signals)
 
 
 class PolicySourceBlockingGovernanceGate(PublicTextGovernanceGate):
@@ -112,3 +218,7 @@ class FrozenB2GateMemAgent(RawLexicalGovernedReaderGateMemAgent):
         self._governance_gate = PolicySourceBlockingGovernanceGate(
             self.governance_config
         )
+
+    def reset(self, episode: PublicEpisode) -> None:
+        super().reset(episode)
+        self._policy_parser = FrozenPublicTurnPolicyParser(episode)
