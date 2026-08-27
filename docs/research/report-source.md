@@ -41,10 +41,13 @@ requirements generator for concrete engineering questions:
 | memory merge | What conflicts, duplicates, and provenance paths survive consolidation? |
 | unreliable neural logs | Can every answer expose its source and confidence boundary? |
 
-High-impact setting claims currently rely on community-maintained IOP Wiki
-summaries and must be upgraded to first-party game text, official sites, or
-published setting books before the literature/background chapter is treated as
-final. The source-quality distinction remains visible in the claim ledger.
+The source boundary is now explicit in `GFL_SOURCE_LEDGER.md`. Directly
+inspected Sunborn website assets support the existence and dates of Project
+Neural Cloud, Magrasea's partitioned storage/processing, the accident and
+three-year dormancy, delegated Professor authority, and hierarchical security
+agents. Backup gaps, body restoration, divergent-instance merge, and memory
+damage remain grade-B community syntheses with named official pointers until
+the underlying game or artbook passages are captured directly.
 
 ## 2. Formal problem
 
