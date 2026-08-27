@@ -301,9 +301,13 @@ The first benchmark ladder is intentionally multi-dimensional:
 2. [HaluMem](https://github.com/MemTensor/HaluMem) for extraction, update, and
    QA hallucination at the memory-operation level;
 3. MemoryAgentBench for retrieval, test-time learning, long-range
-   understanding, and conflict resolution. Earlier descriptions called the
-   fourth competency selective forgetting, so the exact paper/code revision
-   and task-to-metric mapping must be pinned;
+   understanding, and a revision-sensitive fourth competency. Official arXiv
+   v1 called it conflict resolution and v4 calls it selective forgetting, while
+   official code `fe1735de8cf8b9908e1e3d3b5612afc815698062` still labels
+   `fact_mh`/`fact_sh` Conflict Resolution and maps them to
+   `substring_exact_match`. Paper and code revisions must therefore be pinned
+   separately, and the label must not be treated as evidence of physical
+   erasure, reader suppression, or restart persistence;
 4. [LoCoMo](https://github.com/snap-research/locomo) as a long-conversation QA
    comparison, with evaluator and leakage audits before trusting a headline
    score.
