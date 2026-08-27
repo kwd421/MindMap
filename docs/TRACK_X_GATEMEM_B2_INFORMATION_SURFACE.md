@@ -94,11 +94,22 @@ replace this result.
 
 The frozen parser recognizes explicit public-turn assertions only:
 
-- deletion: `delete`, `forget`, `erase`, `remove`, `purge`, or `wipe`;
+- information deletion: a deletion verb (`delete`, `forget`, `erase`, `remove`,
+  `purge`, or `wipe`) must occur in the same turn as an information referent
+  (`memory`, `record`, `data`, `information`, `details`, `conversation`,
+  `message`, `note`, or `history`);
 - deny-target: `do not share/disclose with <principal or role>`;
 - allow-list: `only share with <principal or role>`;
 - actor-only: `keep this private/confidential`;
 - grant: `may/can share with` or explicit allow/authorize-to-access phrasing.
+
+Bare domain actions are not Active Forgetting. In particular:
+
+```text
+Please remove the stitches tomorrow.  -> no deletion signal
+Please wipe the table.                 -> no deletion signal
+Please delete the diagnosis record.    -> deletion signal
+```
 
 A signal records:
 
@@ -126,12 +137,12 @@ a claim that every real speaker may revoke all data they utter.
 ## 6. Frozen policy choices
 
 ```text
-unknown policy:               admit
+unknown policy:                 admit
 external authenticated policy: disabled
-same-speaker authority:       required
-deleted state:                terminal
-candidate backfill:           disabled
-policy-directive turn:        blocked from reader context
+same-speaker authority:         required
+deleted state:                  terminal
+candidate backfill:             disabled
+policy-directive turn:          blocked from reader context
 ```
 
 Unknown-admit prevents B2 from becoming an all-refuse baseline. It also means
@@ -192,7 +203,11 @@ Official GateMem metrics remain primary. Supplemental stage metrics must include
 - forbidden prompt exposure;
 - false blocking of required evidence;
 - privacy/deletion prompt-context exposure;
-- policy-signal coverage and reason-code counts.
+- B2 matched-signal checkpoint count and reason-code counts.
+
+`B2_matched_signal_checkpoint_count` is method-dependent diagnostic coverage. It
+must not be described as a method-independent public-signal identifiability
+estimand.
 
 ### Reader/answer stage
 
