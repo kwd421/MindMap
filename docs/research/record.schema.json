@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kwd421/MindMap/docs/research/record.schema.json",
+  "title": "MindMap experiment record",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "experiment_id",
+    "title",
+    "status",
+    "study_class",
+    "research_question_ids",
+    "hypothesis_ids",
+    "started_at",
+    "ended_at",
+    "source",
+    "dataset",
+    "method_arms",
+    "models",
+    "controls",
+    "sample",
+    "results",
+    "cost",
+    "claim_boundary"
+  ],
+  "properties": {
+    "experiment_id": {"type": "string", "pattern": "^EXP-[0-9]{8}-[0-9]{3}$"},
+    "status": {"enum": ["planned", "running", "completed", "failed", "superseded"]},
+    "study_class": {"enum": ["smoke", "development", "pilot", "confirmatory", "reproduction", "replication"]},
+    "source": {
+      "type": "object",
+      "required": ["repository", "source_revision", "checkout_revision", "dirty", "deviations"]
+    },
+    "dataset": {
+      "type": "object",
+      "required": ["name", "revision", "split", "license", "raw_data_committed"]
+    },
+    "cost": {
+      "type": "object",
+      "required": ["provider_usd", "note"]
+    }
+  }
+}

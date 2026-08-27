@@ -1,0 +1,3 @@
+timestamp_utc,experiment_id,provider,model,input_tokens,cached_input_tokens,output_tokens,reasoning_tokens,estimated_usd,billed_usd,balance_after_usd,notes
+2026-08-27T00:00:00Z,EXP-20260827-001,local,deepset/minilm-uncased-squad2,0,0,0,0,0.000000,0.000000,,Local CPU reproduction; no hosted-model API charge
+2026-08-27T00:00:00Z,EXP-20260827-002,local,deterministic-python,0,0,0,0,0.000000,0.000000,,Local deterministic surface audit; no hosted-model API charge
