@@ -39,7 +39,7 @@
     "protocol_id": "GM-PD-001",
     "protocol_version": "0.1.0",
     "planning_parent_revision": "93baef0acd022f1ae3e0251d1f1543fbedb1f3b4",
-    "planning_commit": "pending exact commit binding",
+    "planning_commit": "7bc0b86650f7c754a1d9a8ab6619d2e8aeb0bee4",
     "prior_population_exclusion": {
       "episode_turn_coordinates": 57,
       "exact_current_turn_hashes": 55,

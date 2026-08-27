@@ -370,8 +370,9 @@ Machine-readable records live in `records/`.
 ## EXP-20260828-011 — Prospective deletion-speech protocol freeze
 
 - **Class:** planned development design; no execution or outcomes
-- **Protocol:** `GM-PD-001-v0.1.0`; exact planning commit is bound by a later
-  metadata-only commit
+- **Protocol:** `GM-PD-001-v0.1.0`; exact planning freeze
+  `7bc0b86650f7c754a1d9a8ab6619d2e8aeb0bee4`, bound by a later metadata-only
+  commit
 - **Forbidden reuse:** all 57 prior episode-turn coordinates, all 55 exact
   current-turn hashes, and every containing template cluster
 - **Candidate floor:** seven speech-act families crossed with explicit/deictic

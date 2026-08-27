@@ -395,7 +395,8 @@ preregistration, peer review, an ACM badge, or degree-awarding supervision.
 
 ## 8. Next confirmatory path
 
-1. Use `GM-PD-001-v0.1.0` only as a candidate prospective design floor. Before
+1. Use planning freeze `7bc0b86650f7c754a1d9a8ab6619d2e8aeb0bee4`
+   (`GM-PD-001-v0.1.0`) only as a candidate prospective design floor. Before
    any parser amendment, exclude the prior 57 coordinates, 55 hashes, and
    template clusters; obtain two blinded human coders and a separate
    adjudicator; complete power/sensitivity and protected-retention plans; then
