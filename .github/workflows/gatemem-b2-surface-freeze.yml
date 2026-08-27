@@ -12,7 +12,9 @@ on:
       - tests/test_track_x_gatemem_governance.py
       - tests/test_track_x_gatemem_governance_speech_acts.py
       - tests/test_gatemem_external_secret_file.py
+      - tests/test_gatemem_b2_paired_audit.py
       - experiments/gatemem_b2_surface_audit.py
+      - experiments/gatemem_b2_paired_audit.py
       - experiments/gatemem_external.py
       - configs/track_x_gatemem_b2_information_surface_v0_1.json
       - docs/TRACK_X_GATEMEM_B2_INFORMATION_SURFACE.md
@@ -53,6 +55,7 @@ jobs:
           tests/test_track_x_gatemem_governance.py
           tests/test_track_x_gatemem_governance_speech_acts.py
           tests/test_gatemem_external_secret_file.py
+          tests/test_gatemem_b2_paired_audit.py
 
       - name: Run B2 surface audit twice and reject committed drift
         run: |
