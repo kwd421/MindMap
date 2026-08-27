@@ -178,6 +178,14 @@ four deictic rows become two forms over 55 hashes. Episode turns remain the
 declared row unit because their antecedent context can differ, but linguistic
 form independence and template-cluster generalization are unmeasured.
 
+The same GPT Pro verifier later closed two source checks that had remained
+explicitly incomplete. It reconstructed the exact 39,567-byte CRLF EXP-008 CSV,
+matching both its public Git blob ID and committed SHA-256, and independently
+parsed all 233 rows to recover 57 referent-absent unique coordinates, 0/57
+`DELETE` positives, and 55 exact text hashes. Both checks closed 1/1. This
+strengthens artifact identity and denominator provenance; it does not turn the
+lexical subset into semantic gold or an official GateMem score.
+
 A later Daybreak model-assisted manual review found a representation flaw: the
 original runner listed only four authorization and four deictic exceptions and
 defaulted every other row, so an omitted annotation was indistinguishable from
@@ -252,6 +260,12 @@ byte-compares all three artifacts. This is adaptive reproducibility hardening,
 not new outcome evidence. Exact run `33119118697` passed 6/6 jobs; its new
 step reported raw outputs 18/18, paired differences 0/9, and artifact byte
 matches 3/3, while Python 3.11 passed 121/121 tests.
+
+A follow-up Daybreak manual review at exact `93baef0` accepted both hardening
+closures with blocking 0 and non-blocking 0. It independently reran the exact
+18/18, 0/9, and 3/3 reproduction, rejected representative non-Boolean values
+28/28, and preserved genuine Booleans 2/2. This is model-assisted manual review,
+not human peer review or a second outcome-generating experiment.
 
 ### 4.6 Full-set LongMemEval lexical retrieval reproduction
 
@@ -381,8 +395,12 @@ preregistration, peer review, an ACM badge, or degree-awarding supervision.
 
 ## 8. Next confirmatory path
 
-1. Resolve the B2 deletion precision/recall contract without using the observed
-   development examples as a later confirmation set.
+1. Use `GM-PD-001-v0.1.0` only as a candidate prospective design floor. Before
+   any parser amendment, exclude the prior 57 coordinates, 55 hashes, and
+   template clusters; obtain two blinded human coders and a separate
+   adjudicator; complete power/sensitivity and protected-retention plans; then
+   freeze a typed target scorer. No such roles or outcomes exist at this
+   revision.
 2. Move beyond the accepted finite-runtime temporal gate by projecting the
    standalone Snapshot lifecycle and typed justification-member source kinds;
    freeze disjoint confirmation cases before inspecting their outcomes.

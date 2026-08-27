@@ -1,0 +1,127 @@
+{
+  "schema_version": "0.1.0",
+  "experiment_id": "EXP-20260828-011",
+  "title": "Prospective deletion-speech and target-grounding protocol freeze",
+  "status": "planned",
+  "study_class": "development",
+  "research_question_ids": ["RQ3", "RQ4"],
+  "hypothesis_ids": ["H3", "H5"],
+  "started_at": null,
+  "ended_at": null,
+  "timing": {
+    "precision": "unknown",
+    "note": "No item generation, human coding, parser amendment, or scoring has started."
+  },
+  "preregistration_commit": null,
+  "source": {
+    "repository": "https://github.com/kwd421/MindMap",
+    "source_revision": "93baef0acd022f1ae3e0251d1f1543fbedb1f3b4",
+    "checkout_revision": "93baef0acd022f1ae3e0251d1f1543fbedb1f3b4",
+    "dirty": false,
+    "deviations": [
+      "The proposed 14-cell, 420-row floor originated after complete access to EXP-008/009 and GPT Pro design suggestions. It is a prospective development protocol, not a power-derived or independently approved confirmatory registration.",
+      "The exact planning commit is bound in a later metadata-only commit because a git commit cannot contain its own object ID.",
+      "No human coders or adjudicator have been retained. Execution is blocked until those roles exist; model-only coding cannot substitute for them."
+    ]
+  },
+  "dataset": {
+    "name": "Prospective independently identified deletion-speech item set",
+    "revision": "not-created_GM-PD-001-v0.1.0",
+    "split": "planned 140 development and 280 sealed confirmation items, template-cluster disjoint",
+    "license": "to be fixed before item creation",
+    "raw_data_committed": false
+  },
+  "method_arms": [
+    "frozen_pr52_parser_or_versioned_amendment_after_development_gate"
+  ],
+  "models": [],
+  "controls": {
+    "protocol_id": "GM-PD-001",
+    "protocol_version": "0.1.0",
+    "planning_parent_revision": "93baef0acd022f1ae3e0251d1f1543fbedb1f3b4",
+    "planning_commit": "pending exact commit binding",
+    "prior_population_exclusion": {
+      "episode_turn_coordinates": 57,
+      "exact_current_turn_hashes": 55,
+      "template_clusters": "all clusters containing any prior coordinate or exact hash"
+    },
+    "independent_variables": [
+      "seven speech-act families",
+      "explicit-current-turn versus deictic-prior-context target grounding"
+    ],
+    "dependent_variables": [
+      "per-cell typed operation accuracy",
+      "per-cell exact memory-object target grounding",
+      "negative-cell abstention accuracy",
+      "pre-adjudication human-coder agreement"
+    ],
+    "evaluator_only_variables": [
+      "intended design-cell label",
+      "adjudicated operation",
+      "gold memory-object ID and target span",
+      "parser output",
+      "confirmation outcomes"
+    ],
+    "nuisance_variables": [
+      "template-family repetition",
+      "item-author fingerprints",
+      "coder dependence",
+      "adjudication leakage",
+      "deictic antecedent ambiguity",
+      "synthetic-to-official-domain shift"
+    ],
+    "human_review_gate": {
+      "independent_blinded_coders": 2,
+      "separate_adjudicator": 1,
+      "request_type_and_operation_kappa_minimum": 0.8,
+      "positive_target_exact_agreement_minimum": 0.9,
+      "full_manifest_structural_validity_required": true
+    },
+    "confirmation_cell_gates": {
+      "positive_operation_and_target": "at least 18/20 in each of four positive family-by-grounding cells",
+      "negative_abstention": "at least 19/20 in each of ten negative family-by-grounding cells",
+      "aggregate_override": false
+    },
+    "cost_ceiling_usd": 0.0
+  },
+  "sample": {
+    "unit": "frozen episode-context and current-request item",
+    "speech_act_families": 7,
+    "grounding_forms": 2,
+    "cells": 14,
+    "items_per_cell": 30,
+    "planned_total_rows": 420,
+    "development_rows": 140,
+    "confirmation_rows": 280,
+    "development_per_cell": 10,
+    "confirmation_per_cell": 20,
+    "split_unit": "template cluster",
+    "candidate_floor_not_power_calculation": true
+  },
+  "results": {
+    "status": "planned",
+    "primary_outcome": "all 14 prespecified confirmation-cell operation and target/abstention count gates",
+    "secondary_outcomes": [
+      "macro operation accuracy",
+      "positive target-grounding accuracy",
+      "negative false-operation rate",
+      "explicit/deictic paired differences",
+      "exact binomial 95% intervals"
+    ],
+    "stopping_rule": "Do not create items until human roles and retention are fixed; do not develop until two blinded coder manifests satisfy agreement gates; do not open confirmation until parser, typed schema, scorer, dependency lock, analysis code, and all hashes are frozen; run the 280 confirmation rows exactly once and fail closed on missing data, schema errors, hash mismatch, retry, or label exposure.",
+    "execution_blocker": "two independent human coders and one separate adjudicator are not yet available",
+    "power_status": "not calculated; 420 rows are a candidate balanced design floor only",
+    "official_benchmark_score": false
+  },
+  "cost": {
+    "provider_usd": 0.0,
+    "note": "Protocol authoring only; no dataset creation, human coding, hosted-model API, parser execution, or official scorer call."
+  },
+  "artifact_files": [
+    {
+      "path": "docs/research/GATEMEM_PROSPECTIVE_DELETION_PROTOCOL.md",
+      "sha256": "af5110131bfed4a14a2f82fa5dd030939e9297c3733576af607b854fb32c0eeb"
+    }
+  ],
+  "claim_boundary": "Planned development protocol only. It freezes a candidate disjoint sampling, human-coding, target-grounding, and per-cell scoring design but contains no item-level data or outcomes. It is not a confirmatory preregistration, power justification, official GateMem score, human review result, parser-amendment approval, or evidence of durable forgetting."
+}

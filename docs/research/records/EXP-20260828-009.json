@@ -81,6 +81,16 @@
     },
     "population_manifest": "results/research/EXP-20260828-008/turn_results.csv",
     "population_filter": "information_referent_present == false",
+    "independent_source_dependency_verification": {
+      "audited_head": "a82613a06bb39a2b6ffd4b2d3ead67d86b444117",
+      "unchanged_through_head": "93baef0acd022f1ae3e0251d1f1543fbedb1f3b4",
+      "source_sha256_match": {"numerator": 1, "denominator": 1},
+      "source_git_blob_sha1_match": {"numerator": 1, "denominator": 1},
+      "standalone_233_to_57_filter": {"numerator": 1, "denominator": 1},
+      "selected_coordinate_uniqueness": {"numerator": 57, "denominator": 57},
+      "selected_unique_text_hashes": 55,
+      "maximum_text_hash_multiplicity": 3
+    },
     "independent_variable": "post-hoc semantic request type within the frozen referent-absent stratum",
     "dependent_variables": [
       "request-type count over 57 rows",
@@ -158,7 +168,8 @@
     "codebook": "docs/research/GATEMEM_REFERENT_ABSENT_CODEBOOK.md",
     "manual_label_manifest": "docs/research/inputs/EXP-20260828-009/manual_labels.csv",
     "runner": "tools/run_gatemem_referent_absent_semantic_audit.py",
-    "clean_reproduction": "At original revision dd0f857, 3/3 generated files were byte-identical between the primary output and a detached clean clone. At hardening revision 7c77db9, annotations.csv remained byte-identical while summary and artifact-manifest hashes changed only to bind the complete 57-row manual-label manifest and v2 completeness contract."
+    "clean_reproduction": "At original revision dd0f857, 3/3 generated files were byte-identical between the primary output and a detached clean clone. At hardening revision 7c77db9, annotations.csv remained byte-identical while summary and artifact-manifest hashes changed only to bind the complete 57-row manual-label manifest and v2 completeness contract.",
+    "independent_gpt_pro_followup": "Previously incomplete direct-source SHA and standalone 233-to-57 filtering checks both closed 1/1 at a82613a; the audited source, labels, runner, tests, and result artifacts are byte-unchanged through 93baef0."
   },
   "artifact_files": [
     {

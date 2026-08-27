@@ -266,6 +266,13 @@ Machine-readable records live in `records/`.
 - **Post-outcome inspection:** the 57 missed rows were read only after artifact
   creation for development error analysis. The extractor, parser, denominator,
   and artifacts were not changed.
+- **Independent source closure:** a later GPT Pro verifier reconstructed the
+  exact 39,567-byte CRLF CSV and matched its Git blob SHA-1 and committed
+  SHA-256, 1/1. A standalone full-source parse enumerated 233/233 rows and
+  selected 57/233 referent-absent rows with 57/57 unique coordinates, 0/57
+  `DELETE` positives, and 55 exact text hashes, 1/1. The audited files are
+  unchanged through `93baef0`. This closes source identity and filtering
+  arithmetic, not semantic coverage or official scoring.
 
 ## EXP-20260828-009 — Referent-absent semantic audit
 
@@ -310,6 +317,11 @@ Machine-readable records live in `records/`.
   text-hash-mismatched, and each of four unknown-enum mutations, 8/8. The
   runner intentionally does not claim cross-field semantic correctness or a
   frozen note-code vocabulary.
+- **Independent follow-up:** the GPT Pro verifier closed both previously
+  incomplete EXP-008 dependency checks: direct source SHA/blob identity 1/1
+  and standalone 233-to-57 filtering 1/1. It retained the 55/57 exact-text
+  diagnostic and C-014/C-016 claim boundaries; it remains model-assisted
+  artifact verification, not a second human coder.
 
 ## EXP-20260828-010 — Late-destination base/head factorial
 
@@ -347,4 +359,33 @@ Machine-readable records live in `records/`.
   `c8a3f15` against exact main/PR #55 checkouts and byte-compares all three
   artifacts. Exact hardening run `33119118697` passed 6/6 checks, Python 3.11
   121/121, raw outputs 18/18, paired differences 0/9, and artifact matches 3/3.
-  It changes neither the frozen experiment nor its claim ceiling
+  It changes neither the frozen experiment nor its claim ceiling.
+- **Closure review:** a second Daybreak manual pass at exact `93baef0` found
+  blocking 0 and non-blocking 0. It reran 18/18 raw outputs, 0/9 paired
+  differences, and 3/3 artifact matches; a broader boundary harness rejected
+  representative non-Booleans 28/28 and preserved genuine Booleans 2/2. This
+  is model-assisted reproducibility review, not human peer review or new
+  outcome evidence.
+
+## EXP-20260828-011 — Prospective deletion-speech protocol freeze
+
+- **Class:** planned development design; no execution or outcomes
+- **Protocol:** `GM-PD-001-v0.1.0`; exact planning commit is bound by a later
+  metadata-only commit
+- **Forbidden reuse:** all 57 prior episode-turn coordinates, all 55 exact
+  current-turn hashes, and every containing template cluster
+- **Candidate floor:** seven speech-act families crossed with explicit/deictic
+  grounding, 14 cells × 30 items = 420; template-cluster split of 140
+  development and 280 sealed confirmation rows
+- **Human gate:** two independent blinded human coders on all rows, locked
+  manifests, preserved disagreements, and a separate adjudicator; model-only
+  labels cannot substitute
+- **Target contract:** typed `DELETE`/`RESTRICT`/`NONE`, gold memory-object ID,
+  frozen span or antecedent coordinate, and mandatory negative abstention
+- **Confirmation gate:** each positive cell must reach operation and exact
+  target 18/20; each negative cell must reach `NONE` 19/20; no aggregate may
+  override a failed cell
+- **Execution blockers:** no human roles, power/sensitivity analysis, protected
+  retention plan, item set, parser freeze, or scorer freeze exists yet
+- **Claim boundary:** protocol design only; not confirmatory registration,
+  parser approval, official GateMem performance, or durable forgetting evidence

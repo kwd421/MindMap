@@ -36,7 +36,14 @@
   "method_arms": [
     "pr52_frozen_public_turn_policy_parser"
   ],
-  "models": [],
+  "models": [
+    {
+      "role": "independent source-artifact verifier",
+      "model": "ChatGPT GPT Pro",
+      "reasoning_effort": "Pro UI; underlying model version and token usage not exposed",
+      "claim_boundary": "model-assisted exact-byte and deterministic-filter audit, not human peer review, semantic gold, or an official benchmark scorer"
+    }
+  ],
   "controls": {
     "planned_manifest_commit": "b22276c9eb89594910dcd5a8fdda11c249e2b0e4",
     "extraction_rule_version": "strict-sentence-imperative-v1",
@@ -105,16 +112,31 @@
   },
   "cost": {
     "provider_usd": 0.0,
-    "note": "One deterministic local Python pass; no hosted-model API, official GateMem scorer, or LLM judge call."
+    "note": "One deterministic local Python pass plus a later subscription GPT Pro source-artifact audit; no metered hosted-model API, official GateMem scorer, or LLM judge call."
   },
   "artifacts": {
     "pull_request": "https://github.com/kwd421/MindMap/pull/54",
     "exact_head_ci": "https://github.com/kwd421/MindMap/actions/runs/33099176986",
     "model_assisted_manual_review_sha256": "2023c79222b138f83b4131d127e7795f0016abf643f1f0e0fc2f3d3b8fc5a76b",
-    "manual_review_boundary": "Ordinary git/gh/Python/pytest and direct artifact review without Codex Security workflows; subscription-based model-assisted review, not independent human peer review."
+    "manual_review_boundary": "Ordinary git/gh/Python/pytest and direct artifact review without Codex Security workflows; subscription-based model-assisted review, not independent human peer review.",
+    "independent_gpt_pro_source_audit": {
+      "audited_head": "a82613a06bb39a2b6ffd4b2d3ead67d86b444117",
+      "unchanged_through_head": "93baef0acd022f1ae3e0251d1f1543fbedb1f3b4",
+      "direct_raw_byte_reconstruction": {"numerator": 1, "denominator": 1},
+      "byte_length": 39567,
+      "crlf_records_including_header": 234,
+      "git_blob_sha1": "7486c39634ada4ae1aafcaef941e68488e676c05",
+      "standalone_full_source_filter": {"numerator": 1, "denominator": 1},
+      "source_rows": 233,
+      "referent_absent_rows": 57,
+      "unique_referent_absent_coordinates": 57,
+      "referent_absent_delete_positive": 0,
+      "unique_referent_absent_text_hashes": 55
+    }
   },
   "deviation_addendum": [
-    "The post-result manual review found no blocking discrepancy and reproduced the three committed artifacts 3/3 byte-identically from clean exact revisions. It also found the original runner did not enforce or artifact-record checkout cleanliness, the Markdown ledger retained a stale planned label, and the prose description of sentence boundaries was broader than the frozen regex. The last two documentation defects were corrected without changing the frozen runner or result artifacts; cleanliness enforcement is reserved for a versioned future runner so EXP-008 remains historically reproducible."
+    "The post-result manual review found no blocking discrepancy and reproduced the three committed artifacts 3/3 byte-identically from clean exact revisions. It also found the original runner did not enforce or artifact-record checkout cleanliness, the Markdown ledger retained a stale planned label, and the prose description of sentence boundaries was broader than the frozen regex. The last two documentation defects were corrected without changing the frozen runner or result artifacts; cleanliness enforcement is reserved for a versioned future runner so EXP-008 remains historically reproducible.",
+    "A later independent GPT Pro verifier closed its two previously incomplete source checks. It reconstructed the exact public CSV bytes and matched both Git blob SHA-1 7486c39634ada4ae1aafcaef941e68488e676c05 and SHA-256 5133fae854abb92cf3856f03efc346e2e6dcf1e13b3f7d86285ba3f3faf8f66d, 1/1. A standalone parser then enumerated 233/233 rows and selected 57/233 referent-absent rows with 57/57 unique coordinates, 0/57 DELETE-positive rows, and 55 unique text hashes, 1/1. The audited files are unchanged through 93baef0. This closes byte identity and filtering arithmetic only, not semantic coverage or official scoring."
   ],
   "artifact_files": [
     {

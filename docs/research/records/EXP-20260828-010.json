@@ -136,8 +136,25 @@
   "artifacts": {
     "runner": "tools/run_late_destination_factorial.py at frozen revision c8a3f151b395211643f1b14548bc4fb51e93efc0",
     "clean_checkouts": "runner, main, and PR 55 git status were all empty after execution",
-    "post_result_reproducibility_hardening": "At 3a75243 the current summarizer rejects non-Boolean values and CI invokes tools/check_late_destination_factorial_reproduction.py, which runs frozen runner c8a3f15 against exact main and PR 55 checkouts and byte-compares all three committed artifacts. This is reproducibility hardening, not a second experiment."
+    "post_result_reproducibility_hardening": "At 3a75243 the current summarizer rejects non-Boolean values and CI invokes tools/check_late_destination_factorial_reproduction.py, which runs frozen runner c8a3f15 against exact main and PR 55 checkouts and byte-compares all three committed artifacts. This is reproducibility hardening, not a second experiment.",
+    "daybreak_followup_review": {
+      "audited_head": "93baef0acd022f1ae3e0251d1f1543fbedb1f3b4",
+      "report_sha256": "64526df845feae61cb30c957ea328a5db514af457a8720ca3d03f3ce2b9dcb1f",
+      "blocking_findings": 0,
+      "non_blocking_findings": 0,
+      "n1_exact_reproduction": {
+        "boolean_outputs": {"numerator": 18, "denominator": 18},
+        "paired_revision_differences": {"numerator": 0, "denominator": 9},
+        "artifact_byte_matches": {"numerator": 3, "denominator": 3}
+      },
+      "n2_non_boolean_rejections": {"numerator": 28, "denominator": 28},
+      "n2_genuine_boolean_preservation": {"numerator": 2, "denominator": 2},
+      "boundary": "model-assisted manual review, not human peer review or new outcome evidence"
+    }
   },
+  "result_addendum": [
+    "A Daybreak high manual follow-up at exact head 93baef0 accepted the N1 and N2 closures with no remaining blocking or non-blocking finding. It independently reran the exact frozen reproduction at 18/18 raw outputs, 0/9 paired differences, and 3/3 artifact matches; a broader mutation harness rejected representative non-Boolean values 28/28 and preserved genuine False/True 2/2. This validates post-result reproducibility hardening only and does not create a second experiment or human peer review."
+  ],
   "artifact_files": [
     {
       "path": "results/research/EXP-20260828-010/cells.csv",

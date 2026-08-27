@@ -18,6 +18,8 @@ explain why it is not applicable.
 | IV-07 | benchmark | GateMem, LongMemEval, HaluMem, MemoryAgentBench | official revision and license recorded |
 | IV-08 | source revision | base/main, feature PR, remediation PR | exact revisions and executable-tree equality recorded |
 | IV-09 | entity creation time relative to use | before, equal, after lineage/replication | all other event fields and query time fixed |
+| IV-10 | deletion-speech family | information deletion, authorization revocation, physical removal, quoted, negated, hypothetical, update-not-delete | freeze cell and template cluster before parser output |
+| IV-11 | target-expression form | explicit current turn, deictic prior context | same operation family and target inventory |
 
 ## Dependent variables
 
@@ -40,6 +42,9 @@ explain why it is not applicable.
 | DV-15 | audit completeness | decisions with reconstructable support / decisions | higher |
 | DV-16 | deletion target grounding | exact gold memory-object ID or frozen target span matched / deletion-positive requests | higher |
 | DV-17 | paired revision divergence | unequal answers / matched implementation-by-condition cells | lower when testing no-regression equivalence |
+| DV-18 | typed operation accuracy | correct DELETE/RESTRICT/NONE outputs / items in each frozen speech-act cell | higher; report every cell |
+| DV-19 | negative-operation abstention | correct NONE outputs / negative speech-act items in each cell | higher |
+| DV-20 | independent annotation agreement | Cohen's kappa for nominal labels and exact target-ID/span agreement / positive rows | higher; before adjudication |
 
 ## Control variables
 
@@ -96,3 +101,5 @@ test split outcomes
 | NV-13 | parser undercoverage | freeze positive deletion-speech probes as well as physical-action negatives; report signal recall separately from benchmark score |
 | NV-14 | future-reference time travel | reject references before entity creation or check entity creation time at every historical resolver |
 | NV-15 | shared-validator common-mode confidence | count one semantic validator separately from constructor wiring and independently test accepted valid logs in each answer evaluator |
+| NV-16 | exact-text or template-cluster overlap | hash prior material and split by frozen template cluster; invalidate collisions before outcome access |
+| NV-17 | coder/adjudicator dependence | two blinded human manifests locked before comparison; preserve disagreement before separate adjudication |

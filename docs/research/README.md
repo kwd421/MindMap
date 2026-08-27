@@ -16,8 +16,10 @@ idea, a pilot observation, a reproduced result, and a supported claim.
    community synthesis, and engineering inference.
 7. `AI_MEMORY_LITERATURE_MAP.md` maps papers and exact public artifacts to
    falsifiable project requirements and planned comparisons.
-8. `COST_LEDGER.csv` records local and paid-model cost.
-9. `records/` contains one machine-readable manifest per experiment.
+8. `GATEMEM_PROSPECTIVE_DELETION_PROTOCOL.md` freezes the current disjoint
+   human-coding and target-grounding gate; it has no outcomes yet.
+9. `COST_LEDGER.csv` records local and paid-model cost.
+10. `records/` contains one machine-readable manifest per experiment.
 
 The record borrows its controls from the NeurIPS paper checklist, ACM artifact
 evaluation, OSF preregistration, Datasheets for Datasets, and Model Cards. It is
