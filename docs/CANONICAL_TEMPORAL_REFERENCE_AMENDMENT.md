@@ -65,9 +65,10 @@ support.
 The finite `CommonEvent` projection does not yet contain the standalone
 `Snapshot` entity specified in `SCHEMA_V0_2.md`. In this runtime only, the first
 complete manifest entry is the snapshot identifier's creation event; a member
-missing its snapshot ID, object kind, or object ID cannot create one. A lineage
-reference before that first entry is invalid. This is a compatibility rule, not a claim
-that the full schema's snapshot lifecycle has been implemented.
+whose snapshot ID, object kind, or object ID is absent, empty, or whitespace-only
+cannot create one. A lineage reference before that first entry is invalid. This
+is a compatibility rule, not a claim that the full schema's snapshot lifecycle
+has been implemented.
 
 `derivation_members` is also still an untyped tuple. The finite runtime accepts
 only evidence members; assertion/claim members fail with an explicit unsupported

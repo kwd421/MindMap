@@ -214,10 +214,9 @@ def validate_temporal_references(events: Iterable[CommonEvent]) -> None:
     for event in ordered:
         if event.event_type != "snapshot_member":
             continue
-        if (
-            event.snapshot_id is None
-            or event.object_kind is None
-            or event.object_id is None
+        if any(
+            value is None or not value.strip()
+            for value in (event.snapshot_id, event.object_kind, event.object_id)
         ):
             raise ValueError(
                 f"{event.event_id} snapshot_member requires snapshot_id, "
