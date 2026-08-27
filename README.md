@@ -42,11 +42,16 @@ Requirements:
 - Git;
 - no API key for the deterministic core below.
 
+Until release PR #49 is merged into `main`, clone its exact review branch:
+
 ```bash
-git clone https://github.com/kwd421/MindMap.git
+git clone --branch release/v0.2-runnable-core --single-branch \
+  https://github.com/kwd421/MindMap.git
 cd MindMap
 python -m venv .venv
 ```
+
+After PR #49 is merged, an ordinary clone of `main` is equivalent.
 
 Activate the environment, then run:
 
