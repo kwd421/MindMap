@@ -45,3 +45,21 @@ def test_summary_uses_nine_paired_revision_cells() -> None:
         "numerator": 0,
         "denominator": 9,
     }
+
+
+def test_summary_rejects_non_boolean_available_values() -> None:
+    main_rows = FACTORIAL.worker_rows(ROOT, "main", FACTORIAL.MAIN_REVISION)
+    pr55_rows = [
+        {**row, "revision_role": "pr55", "revision_sha": FACTORIAL.PR55_REVISION}
+        for row in main_rows
+    ]
+    rows = main_rows + pr55_rows
+    for invalid in ("False", "True", 0, 1, None):
+        mutated = [{**row} for row in rows]
+        mutated[0]["available"] = invalid
+        try:
+            FACTORIAL.summarize(mutated)
+        except RuntimeError as error:
+            assert "non-Boolean output cell" in str(error)
+        else:
+            raise AssertionError(f"summarize accepted non-Boolean {invalid!r}")

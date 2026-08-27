@@ -208,7 +208,12 @@ def summarize(rows: list[dict[str, object]]) -> dict[str, object]:
         )
         if key in keyed:
             raise RuntimeError(f"duplicate output cell: {key}")
-        keyed[key] = bool(row["available"])
+        available = row["available"]
+        if type(available) is not bool:
+            raise RuntimeError(
+                f"non-Boolean output cell: {key}={available!r}"
+            )
+        keyed[key] = available
 
     paired_differences = 0
     paired_rows = 0
