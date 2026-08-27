@@ -180,7 +180,10 @@ manual manifest's key set and text hashes to equal the frozen source, rejects
 missing, extra, duplicate, hash-mismatched, and unknown-enum entries, and can
 represent physical, ambiguous, mixed, and low-confidence outcomes. A clean
 exact-checkout run preserved `annotations.csv` byte-for-byte and three mutation
-controls rejected 3/3. This closes deterministic representation completeness,
+controls initially rejected 3/3; the committed suite now freezes all eight
+structural paths: missing, extra, duplicate, hash mismatch, and four unknown
+enum fields reject 8/8. Cross-field label semantics and the note-code vocabulary
+remain outside this structural claim. This closes deterministic representation completeness,
 not single-coder semantic validity; C-014 therefore remains open with one-coder
 counterevidence rather than contradicted.
 

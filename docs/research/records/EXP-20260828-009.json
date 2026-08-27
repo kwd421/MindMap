@@ -58,6 +58,20 @@
     "manual_label_manifest": "docs/research/inputs/EXP-20260828-009/manual_labels.csv",
     "manual_label_manifest_sha256": "0145e0eea25e50491288bd7f756e4fab796c24a124f5b44867a1182a44ac1bd9",
     "manual_label_manifest_rows": 57,
+    "manifest_rejection_controls": {
+      "numerator": 8,
+      "denominator": 8,
+      "cases": [
+        "missing row",
+        "extra row",
+        "duplicate key",
+        "text hash mismatch",
+        "unknown request type",
+        "unknown target grounding",
+        "unknown authorization mixed",
+        "unknown coder confidence"
+      ]
+    },
     "population_manifest": "results/research/EXP-20260828-008/turn_results.csv",
     "population_filter": "information_referent_present == false",
     "independent_variable": "post-hoc semantic request type within the frozen referent-absent stratum",
@@ -143,5 +157,5 @@
       "sha256": "c95640666c57468c633f52e8503b3a632fc4b4b1775999b6d0df997c0db0efa1"
     }
   ],
-  "claim_boundary": "Post-hoc one-coder description of the 57 referent-absent EXP-008 rows after complete item-level outcome access. The complete explicit label manifest establishes representation completeness, not semantic correctness or independence. The result cannot establish official GateMem performance, semantic recall over all deletion speech acts, independent target-grounding accuracy, state mutation, suppression, persistence, erasure, blinded adjudication, or confirmatory evidence."
+  "claim_boundary": "Post-hoc one-coder description of the 57 referent-absent EXP-008 rows after complete item-level outcome access. The complete explicit label manifest and eight structural rejection controls establish representation completeness, not cross-field semantic correctness, note-code validity, or independence. The result cannot establish official GateMem performance, semantic recall over all deletion speech acts, independent target-grounding accuracy, state mutation, suppression, persistence, erasure, blinded adjudication, or confirmatory evidence."
 }

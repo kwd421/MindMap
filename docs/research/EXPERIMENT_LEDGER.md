@@ -303,5 +303,7 @@ Machine-readable records live in `records/`.
 - **Reproduction:** the original detached clean clone regenerated annotations,
   summary, and manifest byte-identically, 3/3. A second detached clean clone at
   `7c77db9` kept annotations byte-identical and regenerated the v2 summary and
-  manifest; missing, duplicate, and unknown-enum mutation controls rejected
-  3/3.
+  manifest. CI regression cases now reject missing, extra, duplicate,
+  text-hash-mismatched, and each of four unknown-enum mutations, 8/8. The
+  runner intentionally does not claim cross-field semantic correctness or a
+  frozen note-code vocabulary.

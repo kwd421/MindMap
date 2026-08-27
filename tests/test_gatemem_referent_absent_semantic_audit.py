@@ -98,17 +98,48 @@ def _write_labels(path: Path, rows: list[dict[str, str]]) -> None:
         writer.writerows(rows)
 
 
-@pytest.mark.parametrize("mutation", ["missing", "duplicate", "unknown_enum"])
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "missing",
+        "extra",
+        "duplicate",
+        "text_hash_mismatch",
+        "unknown_request_type",
+        "unknown_target_grounding",
+        "unknown_authorization_mixed",
+        "unknown_coder_confidence",
+    ],
+)
 def test_manual_label_manifest_fails_closed(
     tmp_path: Path, mutation: str
 ) -> None:
     rows = _read_labels()
     if mutation == "missing":
         rows.pop()
+    elif mutation == "extra":
+        extra = rows[0].copy()
+        extra.update(
+            {
+                "domain": "synthetic_extra",
+                "episode_id": "synthetic_episode",
+                "turn_id": "synthetic_turn",
+                "text_sha256": "f" * 64,
+            }
+        )
+        rows.append(extra)
     elif mutation == "duplicate":
         rows.append(rows[0].copy())
-    else:
+    elif mutation == "text_hash_mismatch":
+        rows[0]["text_sha256"] = "f" * 64
+    elif mutation == "unknown_request_type":
         rows[0]["request_type"] = "implicit_default"
+    elif mutation == "unknown_target_grounding":
+        rows[0]["target_grounding"] = "implicit_default"
+    elif mutation == "unknown_authorization_mixed":
+        rows[0]["authorization_mixed"] = "unknown"
+    else:
+        rows[0]["coder_confidence"] = "unknown"
     labels = tmp_path / "labels.csv"
     _write_labels(labels, rows)
 
