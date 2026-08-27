@@ -36,6 +36,7 @@ explain why it is not applicable.
 | DV-13 | monetary cost | USD per question and run | lower at matched quality |
 | DV-14 | storage | bytes and memory items per user/session | lower at matched quality |
 | DV-15 | audit completeness | decisions with reconstructable support / decisions | higher |
+| DV-16 | deletion target grounding | exact gold memory-object ID or frozen target span matched / deletion-positive requests | higher |
 
 ## Control variables
 

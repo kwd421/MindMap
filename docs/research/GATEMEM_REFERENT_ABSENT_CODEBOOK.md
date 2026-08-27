@@ -38,6 +38,12 @@ broader access-control label.
 
 Assign exactly one `target_grounding` per turn.
 
+This is an **input-property label** describing whether a human reader can
+identify the requested target from the current utterance. It does not score the
+parser's predicted target. PR #52 emits principal IDs/roles and lexical anchor
+tokens but no memory-object identifier or gold-target span, so exact target
+grounding requires a separate frozen output contract and scorer.
+
 | Label | Operational rule |
 |---|---|
 | `explicit_current_turn` | The deletion or revocation target is identifiable from the current turn alone, including a named person plus access scope. |

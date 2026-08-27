@@ -22,7 +22,8 @@
       "All 57 source turns had already been inspected after EXP-20260828-008 outcomes were known. This is explicitly post-hoc development coding and can never be promoted to blinded or confirmatory evidence.",
       "The planned adjudication has one model-assisted coder and no independent second coder. Labels must remain auditable by source coordinates and text hashes, and any future second-coder disagreement must remain visible.",
       "No official GateMem semantic label or scorer is used.",
-      "The manual row-key label manifest was encoded after the planning/codebook commit and after prior item access. The exact runner was then committed at dd0f857427566ff49dbdc3fa9c71e866b5d349e8 and executed once from a separate clean detached clone; this improves reproducibility but does not create blinding."
+      "The manual row-key label manifest was encoded after the planning/codebook commit and after prior item access. The exact runner was then committed at dd0f857427566ff49dbdc3fa9c71e866b5d349e8 and executed once from a separate clean detached clone; this improves reproducibility but does not create blinding.",
+      "target_grounding in this record labels whether the input utterance is explicit or deictic. It is not parser target-grounding accuracy: PR 52 GovernanceSignal has no memory-object target identifier or gold-target span output."
     ]
   },
   "dataset": {
@@ -105,7 +106,7 @@
     },
     "authorization_mixed": {"numerator": 0, "denominator": 57},
     "official_benchmark_score": false,
-    "interpretation": "Under the frozen one-coder post-hoc codebook, 53/57 missed rows are information-deletion requests and 4/57 are authorization revocations; none was labelled physical/domain removal or ambiguous. PR 52 emitted DELETE on 0/53 annotated information-deletion rows. This narrows the earlier alternative explanation that the 57 misses might mainly be non-memory physical actions, but it is not independent semantic gold."
+    "interpretation": "Under the frozen one-coder post-hoc codebook, 53/57 missed rows are information-deletion requests and 4/57 are authorization revocations; none was labelled physical/domain removal or ambiguous. PR 52 emitted DELETE on 0/53 annotated information-deletion rows. This narrows the earlier alternative explanation that the 57 misses might mainly be non-memory physical actions, but it is not independent semantic gold. The explicit/deictic counts characterize source utterances only and do not measure parser target-grounding accuracy."
   },
   "cost": {
     "provider_usd": 0.0,

@@ -171,6 +171,15 @@ adjudicated semantic gold. A clean detached checkout reproduced the three
 annotation artifacts byte-for-byte, 3/3; reproducibility does not remove the
 single-coder and prior-access limitations.
 
+The 53 explicit and four deictic counts describe the input utterances, not
+parser target-grounding accuracy. At PR #52, `GovernanceSignal` contains
+principal IDs/roles for access policy plus lexical `anchor_tokens`; it has no
+memory-object target identifier or gold-target span. An explicit deletion probe
+with an information referent produced one `DELETE` signal and four anchors but
+no object ID, while the referent-less counterpart produced no signal. Exact
+target grounding therefore remains structurally unmeasured until a typed target
+output and frozen scorer are added on a disjoint set.
+
 ### 4.4 LongMemEval feasibility pilot
 
 EXP-20260827-003 froze eight questions before answer inspection and compared no
