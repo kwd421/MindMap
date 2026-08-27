@@ -9,6 +9,7 @@ from typing import Iterable
 
 REQUIRED_PATHS: tuple[str, ...] = (
     "README.md",
+    "LICENSE",
     "pyproject.toml",
     "PREREG_V0_2.md",
     "SCHEMA_V0_2.md",
@@ -99,6 +100,21 @@ def _read_text(path: Path, errors: list[str]) -> str:
         return ""
 
 
+def _validate_license(root: Path, errors: list[str]) -> None:
+    path = root / "LICENSE"
+    if not path.is_file():
+        return
+    text = _read_text(path, errors)
+    required = (
+        "MIT License",
+        "Permission is hereby granted, free of charge",
+        'THE SOFTWARE IS PROVIDED "AS IS"',
+    )
+    for snippet in required:
+        if snippet not in text:
+            errors.append(f"LICENSE is missing required MIT text: {snippet}")
+
+
 def _validate_pyproject(root: Path, errors: list[str]) -> None:
     path = root / "pyproject.toml"
     if not path.is_file():
@@ -115,6 +131,8 @@ def _validate_pyproject(root: Path, errors: list[str]) -> None:
         return
     if project.get("name") != "mindmap-ncm":
         errors.append("pyproject project.name must be 'mindmap-ncm'")
+    if project.get("license") != {"text": "MIT"}:
+        errors.append("pyproject project.license must match the checked-in MIT LICENSE")
     requires_python = project.get("requires-python")
     if not isinstance(requires_python, str) or ">=3.11" not in requires_python:
         errors.append("pyproject requires-python must include >=3.11")
@@ -175,6 +193,7 @@ def validate_repository(root: Path) -> ContractReport:
     missing = _missing_paths(root, REQUIRED_PATHS)
     errors.extend(f"missing required path: {path}" for path in missing)
 
+    _validate_license(root, errors)
     _validate_pyproject(root, errors)
     _validate_readme(root, errors)
     result_count = _validate_results(root, errors)
