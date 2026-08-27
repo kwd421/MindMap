@@ -8,7 +8,7 @@ from collections import Counter
 from pathlib import Path
 
 
-SCHEMA_VERSION = "gatemem-referent-absent-semantic-audit-v1"
+SCHEMA_VERSION = "gatemem-referent-absent-semantic-audit-v2"
 CODEBOOK_VERSION = "GM-RA-CB-001-v0.1.0"
 PLANNING_COMMIT = "c17d308ba10028ba20e2655a0597ea426bd32005"
 SOURCE_RESULTS_SHA256 = (
@@ -17,58 +17,30 @@ SOURCE_RESULTS_SHA256 = (
 
 
 RowKey = tuple[str, str, str]
-
-
-AUTHORIZATION_REVOCATION_KEYS: frozenset[RowKey] = frozenset(
+LABEL_FIELDS = (
+    "domain",
+    "episode_id",
+    "turn_id",
+    "text_sha256",
+    "request_type",
+    "target_grounding",
+    "authorization_mixed",
+    "coder_confidence",
+    "note_code",
+)
+REQUEST_TYPES = frozenset(
     {
-        (
-            "medical",
-            "med_episode_rewrite_en_007_thyroid_biopsy_deleted_rose_lodge_contact",
-            "t068",
-        ),
-        (
-            "medical",
-            "med_episode_rewrite_en_012_new_hiv_deleted_harbor_light_line",
-            "t084",
-        ),
-        (
-            "medical",
-            "med_episode_rewrite_en_016_early_pregnancy_deleted_haven_house_line",
-            "t073",
-        ),
-        (
-            "medical",
-            "med_episode_rewrite_en_018_hematuria_deleted_harbor_house_line",
-            "t069",
-        ),
+        "information_deletion",
+        "authorization_revocation",
+        "physical_domain_removal",
+        "ambiguous_or_other",
     }
 )
-
-
-DEICTIC_PRIOR_CONTEXT_KEYS: frozenset[RowKey] = frozenset(
-    {
-        (
-            "household",
-            "household_episode_custom_en_007_juniper_paws_juniper_parcel_pet_courier",
-            "t149",
-        ),
-        (
-            "household",
-            "household_episode_custom_en_016_laurel_lift_laurel_locker_gym_supply_private_note",
-            "t152",
-        ),
-        (
-            "household",
-            "household_episode_custom_en_017_apricot_archive_apricot_adapter_media_backup_private_note",
-            "t152",
-        ),
-        (
-            "household",
-            "household_episode_custom_en_018_slate_sweep_slate_soap_robot_supply_private_note",
-            "t152",
-        ),
-    }
+TARGET_GROUNDINGS = frozenset(
+    {"explicit_current_turn", "deictic_prior_context", "ambiguous"}
 )
+BOOLEAN_VALUES = frozenset({"false", "true"})
+CONFIDENCE_VALUES = frozenset({"high", "low"})
 
 
 def sha256_file(path: Path) -> str:
@@ -79,7 +51,60 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def annotate(*, source_csv: Path, output_dir: Path) -> dict[str, object]:
+def validate_manual_label(row: dict[str, str], *, row_number: int) -> None:
+    for field, allowed in (
+        ("request_type", REQUEST_TYPES),
+        ("target_grounding", TARGET_GROUNDINGS),
+        ("authorization_mixed", BOOLEAN_VALUES),
+        ("coder_confidence", CONFIDENCE_VALUES),
+    ):
+        if row[field] not in allowed:
+            raise RuntimeError(
+                f"manual label row {row_number} has invalid {field}: {row[field]!r}"
+            )
+    if not row["note_code"] or any(
+        character.isspace() for character in row["note_code"]
+    ):
+        raise RuntimeError(
+            f"manual label row {row_number} has invalid note_code: {row['note_code']!r}"
+        )
+
+
+def load_manual_labels(
+    *, labels_csv: Path, source_by_key: dict[RowKey, dict[str, str]]
+) -> dict[RowKey, dict[str, str]]:
+    with labels_csv.open(encoding="utf-8", newline="") as handle:
+        reader = csv.DictReader(handle)
+        if tuple(reader.fieldnames or ()) != LABEL_FIELDS:
+            raise RuntimeError("manual label manifest header mismatch")
+        label_rows = list(reader)
+
+    labels_by_key: dict[RowKey, dict[str, str]] = {}
+    for row_number, row in enumerate(label_rows, start=1):
+        validate_manual_label(row, row_number=row_number)
+        key = (row["domain"], row["episode_id"], row["turn_id"])
+        if key in labels_by_key:
+            raise RuntimeError(f"duplicate manual label key: {key}")
+        labels_by_key[key] = row
+
+    source_keys = set(source_by_key)
+    label_keys = set(labels_by_key)
+    if label_keys != source_keys:
+        missing = sorted(source_keys - label_keys)
+        extra = sorted(label_keys - source_keys)
+        raise RuntimeError(
+            f"manual label manifest must cover source keys exactly; "
+            f"missing={missing}, extra={extra}"
+        )
+    for key, label in labels_by_key.items():
+        if label["text_sha256"] != source_by_key[key]["text_sha256"]:
+            raise RuntimeError(f"manual label text hash mismatch for key: {key}")
+    return labels_by_key
+
+
+def annotate(
+    *, source_csv: Path, labels_csv: Path, output_dir: Path
+) -> dict[str, object]:
     if sha256_file(source_csv) != SOURCE_RESULTS_SHA256:
         raise RuntimeError("EXP-008 source CSV hash mismatch")
 
@@ -91,32 +116,20 @@ def annotate(*, source_csv: Path, output_dir: Path) -> dict[str, object]:
     if len(selected) != 57:
         raise RuntimeError(f"expected 57 referent-absent rows, found {len(selected)}")
 
-    keys = {
-        (row["domain"], row["episode_id"], row["turn_id"]) for row in selected
+    source_by_key = {
+        (row["domain"], row["episode_id"], row["turn_id"]): row
+        for row in selected
     }
-    if len(keys) != 57:
+    if len(source_by_key) != 57:
         raise RuntimeError("referent-absent row keys are not unique")
-    for label, expected in (
-        ("authorization", AUTHORIZATION_REVOCATION_KEYS),
-        ("deictic", DEICTIC_PRIOR_CONTEXT_KEYS),
-    ):
-        missing = expected - keys
-        if missing:
-            raise RuntimeError(f"{label} manual label keys absent from source: {missing}")
+    labels_by_key = load_manual_labels(
+        labels_csv=labels_csv, source_by_key=source_by_key
+    )
 
     annotations: list[dict[str, object]] = []
     for source_row_number, row in enumerate(selected, start=1):
         key = (row["domain"], row["episode_id"], row["turn_id"])
-        request_type = (
-            "authorization_revocation"
-            if key in AUTHORIZATION_REVOCATION_KEYS
-            else "information_deletion"
-        )
-        grounding = (
-            "deictic_prior_context"
-            if key in DEICTIC_PRIOR_CONTEXT_KEYS
-            else "explicit_current_turn"
-        )
+        label = labels_by_key[key]
         annotations.append(
             {
                 "source_row_number": source_row_number,
@@ -124,19 +137,11 @@ def annotate(*, source_csv: Path, output_dir: Path) -> dict[str, object]:
                 "episode_id": row["episode_id"],
                 "turn_id": row["turn_id"],
                 "text_sha256": row["text_sha256"],
-                "request_type": request_type,
-                "target_grounding": grounding,
-                "authorization_mixed": "false",
-                "coder_confidence": "high",
-                "note_code": (
-                    "principal_access_revoke"
-                    if request_type == "authorization_revocation"
-                    else (
-                        "deictic_exact_content"
-                        if grounding == "deictic_prior_context"
-                        else "explicit_content"
-                    )
-                ),
+                "request_type": label["request_type"],
+                "target_grounding": label["target_grounding"],
+                "authorization_mixed": label["authorization_mixed"],
+                "coder_confidence": label["coder_confidence"],
+                "note_code": label["note_code"],
                 "delete_signal_count": int(row["delete_signal_count"]),
             }
         )
@@ -176,6 +181,9 @@ def annotate(*, source_csv: Path, output_dir: Path) -> dict[str, object]:
         "codebook_version": CODEBOOK_VERSION,
         "planning_commit": PLANNING_COMMIT,
         "source_csv_sha256": SOURCE_RESULTS_SHA256,
+        "manual_label_manifest_sha256": sha256_file(labels_csv),
+        "manual_label_manifest_rows": len(labels_by_key),
+        "manual_label_manifest_complete": True,
         "population_rows": len(annotations),
         "request_type_counts": {
             name: request_counts.get(name, 0)
@@ -194,7 +202,9 @@ def annotate(*, source_csv: Path, output_dir: Path) -> dict[str, object]:
                 "ambiguous",
             )
         },
-        "authorization_mixed_count": 0,
+        "authorization_mixed_count": sum(
+            row["authorization_mixed"] == "true" for row in annotations
+        ),
         "delete_signal_by_request_type": delete_by_type,
         "claim_boundary": (
             "Single model-assisted post-hoc coder over the frozen 57-row "
@@ -225,6 +235,7 @@ def annotate(*, source_csv: Path, output_dir: Path) -> dict[str, object]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source-csv", type=Path, required=True)
+    parser.add_argument("--labels-csv", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     args = parser.parse_args()
     summary = annotate(**vars(args))
