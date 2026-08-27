@@ -266,3 +266,22 @@ Machine-readable records live in `records/`.
 - **Post-outcome inspection:** the 57 missed rows were read only after artifact
   creation for development error analysis. The extractor, parser, denominator,
   and artifacts were not changed.
+
+## EXP-20260828-009 — Referent-absent semantic audit
+
+- **Class:** development; explicitly post-hoc and non-blinded
+- **Status:** planned; codebook `GM-RA-CB-001` frozen before the versioned
+  annotation artifact, but after all 57 source turns had already been read
+- **Population:** all 57 EXP-008 strict-imperative rows without any PR #52
+  manifest information referent; no deduplication
+- **Primary outcome:** one mutually exclusive request-type label per row:
+  information deletion, authorization revocation, physical/domain removal, or
+  ambiguous/other
+- **Secondary outcomes:** explicit-current-turn versus deictic-prior-context
+  target grounding, mixed authorization, confidence, and PR #52 `DELETE` count
+  within each label
+- **Stopping rule:** one pass over all 57 frozen source coordinates; no codebook
+  or label changes after counts are calculated; ambiguity remains visible
+- **Claim boundary:** single model-assisted coder and prior item access; not an
+  official GateMem score, semantic-gold recall estimate, blinded adjudication,
+  or evidence of state mutation, suppression, persistence, or erasure

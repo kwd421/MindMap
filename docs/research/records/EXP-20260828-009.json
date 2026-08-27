@@ -1,0 +1,98 @@
+{
+  "schema_version": "0.1.0",
+  "experiment_id": "EXP-20260828-009",
+  "title": "Post-hoc semantic audit of GateMem referent-absent deletion imperatives",
+  "status": "planned",
+  "study_class": "development",
+  "research_question_ids": ["RQ3", "RQ4"],
+  "hypothesis_ids": ["H3", "H5"],
+  "started_at": null,
+  "ended_at": null,
+  "timing": {
+    "precision": "unknown",
+    "note": "Execution timestamps will be added after the planning commit is recorded."
+  },
+  "preregistration_commit": null,
+  "source": {
+    "repository": "https://github.com/kwd421/MindMap",
+    "source_revision": "59fdaf85b5666cf88b7f3a0bca90a20b8a25c197",
+    "checkout_revision": "59fdaf85b5666cf88b7f3a0bca90a20b8a25c197",
+    "dirty": false,
+    "deviations": [
+      "All 57 source turns had already been inspected after EXP-20260828-008 outcomes were known. This is explicitly post-hoc development coding and can never be promoted to blinded or confirmatory evidence.",
+      "The planned adjudication has one model-assisted coder and no independent second coder. Labels must remain auditable by source coordinates and text hashes, and any future second-coder disagreement must remain visible.",
+      "No official GateMem semantic label or scorer is used."
+    ]
+  },
+  "dataset": {
+    "name": "EXP-20260828-008 referent-absent strict-imperative stratum",
+    "revision": "GateMem-603f9f4b4ba4b77f043c20f85687fa016fd720b0_EXP008-c86313546da5e670681cf90cc0faf0f170ddb1294c57455c6d2663c186ed93fb",
+    "split": "all 57 rows with information_referent_present=false in EXP-20260828-008",
+    "license": "MIT",
+    "raw_data_committed": false
+  },
+  "method_arms": [
+    "single_pass_manual_codebook_GM-RA-CB-001_v0.1.0"
+  ],
+  "models": [
+    {
+      "role": "post-hoc manual annotation assistant",
+      "model": "Codex current session model",
+      "reasoning_effort": "not independently exposed in the artifact",
+      "claim_boundary": "model-assisted single-coder development annotation, not independent human adjudication"
+    }
+  ],
+  "controls": {
+    "planning_parent_revision": "59fdaf85b5666cf88b7f3a0bca90a20b8a25c197",
+    "codebook": "docs/research/GATEMEM_REFERENT_ABSENT_CODEBOOK.md",
+    "codebook_version": "GM-RA-CB-001-v0.1.0",
+    "population_manifest": "results/research/EXP-20260828-008/turn_results.csv",
+    "population_filter": "information_referent_present == false",
+    "independent_variable": "post-hoc semantic request type within the frozen referent-absent stratum",
+    "dependent_variables": [
+      "request-type count over 57 rows",
+      "target-grounding count over 57 rows",
+      "PR #52 DELETE signal count within each annotated request type"
+    ],
+    "evaluator_only_variables": [
+      "GateMem checkpoints",
+      "leak_targets",
+      "judge_spec",
+      "official answers and scorer outcomes"
+    ],
+    "nuisance_variables": [
+      "prior item-level outcome access",
+      "single-coder subjectivity",
+      "templated repeated wording",
+      "deictic targets requiring prior episode context"
+    ],
+    "stopping_rule": "Annotate all 57 frozen rows exactly once under GM-RA-CB-001 v0.1.0; do not change labels or the codebook after aggregate counts are calculated; preserve ambiguity and failures.",
+    "cost_ceiling_usd": 0.0
+  },
+  "sample": {
+    "unit": "official public GateMem turn",
+    "population_rows": 57,
+    "sampling": "exhaustive within the frozen referent-absent EXP-008 stratum",
+    "deduplication": "none; source row identity and text SHA-256 are retained",
+    "raw_text_retention": "pinned upstream checkout only; not copied into the repository annotation artifact"
+  },
+  "results": {
+    "status": "planned",
+    "primary_outcome": "request_type raw counts over all 57 rows",
+    "secondary_outcomes": [
+      "target_grounding raw counts",
+      "authorization_mixed raw count",
+      "DELETE-signal count by request_type"
+    ],
+    "official_benchmark_score": false
+  },
+  "cost": {
+    "provider_usd": 0.0,
+    "note": "Planned local annotation and deterministic aggregation only; no metered API or official scorer call."
+  },
+  "artifact_retention": {
+    "status": "not_retained",
+    "reason": "Planning state only; the versioned annotation CSV, summary, and manifest will be retained after execution."
+  },
+  "claim_boundary": "Planned post-hoc one-coder description of the 57 referent-absent EXP-008 rows. It cannot establish official GateMem performance, semantic recall over all deletion speech acts, target grounding accuracy, state mutation, suppression, persistence, erasure, or confirmatory evidence."
+}
