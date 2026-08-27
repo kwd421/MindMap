@@ -1,0 +1,27 @@
+{
+  "expected_consequence": "Active-Forgetting recall is incomplete; public B2 must retain and report this limitation without post-outcome grammar tuning",
+  "information_referents": [
+    "memory",
+    "memories",
+    "record",
+    "records",
+    "data",
+    "information",
+    "details",
+    "conversation",
+    "conversations",
+    "message",
+    "messages",
+    "note",
+    "notes",
+    "history"
+  ],
+  "outside_capability": [
+    "referent-less forget <fact> requests",
+    "implicit or deictic deletion without an information referent",
+    "ordinary physical/domain remove or wipe actions"
+  ],
+  "recognized": "deletion verb and explicit information/memory referent in the same observed public turn",
+  "route": "capability-boundary",
+  "schema_version": "track-x-gatemem-b2-deletion-capability-v0.1"
+}
