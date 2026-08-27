@@ -165,6 +165,27 @@ It narrows the 75/75 conformance claim to the authored suite and creates a new
 schema obligation: reject reference-before-creation during validation, or
 enforce entity creation time at every historical resolver.
 
+### 4.6 Full-set LongMemEval lexical retrieval reproduction
+
+EXP-20260828-006 preregistered and ran a source-aligned reproduction of the
+official LongMemEval `flat-bm25` session retrieval arm over the 500-question
+cleaned S dataset. The official exclusions removed 30 abstention items and 51
+items with no answer-bearing user turn, leaving 419 eligible questions. All 51
+no-target exclusions were `single-session-assistant` items, an important metric
+coverage boundary for the user-only session index.
+
+The primary recall-all@5 result was 311/419; recall-any@5 was 372/419. Complete
+top-five evidence coverage varied substantially: 69/72 knowledge-update,
+68/121 multi-session, 4/5 eligible single-session-assistant, 21/30 preference,
+60/64 single-session-user, and 89/127 temporal-reasoning questions. Two detached
+executions produced byte-identical compact row artifacts.
+
+This is retrieval evidence, not answer accuracy. It is also a source-aligned
+reproduction rather than an official leaderboard submission: the published
+entry point imports dense/CUDA dependencies even for BM25, so the local runner
+copied and pinned the official lexical algorithm and metric formulae without
+executing that heavyweight entry point.
+
 ## 5. External evaluation program
 
 The broader source-to-experiment mapping lives in
@@ -200,8 +221,9 @@ project evidence.
 
 LongMemEval is the first executable target because its official repository
 provides data and evaluation scripts and its 500 questions cover several
-memory abilities. The initial run is a small, frozen, costed pilot—not a
-leaderboard submission.
+memory abilities. The project now has both a small frozen, costed end-to-end
+pilot and a zero-cost full-set lexical retrieval reproduction. Neither is a
+leaderboard submission or evidence that MindMap outperforms another system.
 
 ## 6. Reproducibility and research integrity
 
@@ -238,8 +260,10 @@ preregistration, peer review, an ACM badge, or degree-awarding supervision.
    development examples as a later confirmation set.
 2. Freeze temporal referential-integrity semantics and add Gold/G/T adversarial
    regressions for references before creation.
-3. Run a no-cost official LongMemEval harness smoke test.
-4. Freeze a small ordered pilot sample before answer generation.
+3. Add an event/relation-aware retrieval arm against the frozen full-set BM25
+   rows, without inspecting a new held-out outcome during tuning.
+4. Audit why the official user-only retrieval metric excludes 51
+   single-session-assistant questions and define an assistant-evidence metric.
 5. Compare no memory, local lexical retrieval, and governed retrieval using one
    DeepSeek V4-Flash reader with thinking disabled and identical budgets.
 6. Record tokens, price, latency, retries, returned model, prompts, and outputs.

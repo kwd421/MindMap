@@ -149,3 +149,25 @@ Machine-readable records live in `records/`.
   changing data, algorithm, or exclusions
 - **Claim boundary:** source-aligned local reproduction only. It is neither an
   official leaderboard submission nor an end-to-end QA or MindMap result.
+
+### 2026-08-28 result addendum
+
+- **Preregistration commit:**
+  `e5f79d6d513e0e991de30406ce52fb0644fed398`
+- **Execution:** detached source
+  `6ea62666b0cde8f238ae792979fd0559ff8b6b73`; Python 3.11.15;
+  `numpy==1.26.3`; `rank-bm25==0.2.2`; three runner tests passed
+- **Denominator:** 500 released questions minus 30 abstention questions and 51
+  questions with no answer-bearing user turn under the official target rule =
+  419 eligible. All 51 no-target exclusions are `single-session-assistant`.
+- **Primary result:** recall-all@5 311/419 (74.22%).
+- **Secondary result:** recall-any@5 372/419 (88.78%); recall-all@1 75/419,
+  @3 274/419, @10 345/419, @30 401/419, @50 419/419.
+- **Type result at recall-all@5:** knowledge-update 69/72; multi-session 68/121;
+  single-session-assistant 4/5; preference 21/30; user 60/64; temporal 89/127.
+- **Repeatability:** the first detached run and final artifact run produced the
+  same row-file SHA-256 `3420e593...ff3a9`.
+- **Interpretation:** lexical retrieval is already strong on some single-event
+  and update tasks but weak on complete multi-session evidence coverage. The
+  result measures retrieval only and cannot be compared to end-to-end QA scores.
+- **Artifacts:** `results/research/EXP-20260828-006/`.
