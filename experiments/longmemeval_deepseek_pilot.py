@@ -11,6 +11,7 @@ import time
 import urllib.error
 import urllib.request
 from collections import Counter
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -35,6 +36,10 @@ def canonical_json(value: Any) -> str:
 
 def sha256_text(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
 def sha256_file(path: Path) -> str:
@@ -230,6 +235,22 @@ def write_json(path: Path, value: Any) -> None:
 
 
 def run(args: argparse.Namespace) -> int:
+    run_started_at = utc_now()
+    runner_root = Path(__file__).resolve().parents[1]
+    runner_source_revision = subprocess.run(
+        ["git", "-C", str(runner_root), "rev-parse", "HEAD"],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    runner_dirty = bool(
+        subprocess.run(
+            ["git", "-C", str(runner_root), "status", "--porcelain"],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+    )
     actual_oracle_sha256 = sha256_file(args.oracle)
     actual_long_sha256 = sha256_file(args.long)
     if actual_oracle_sha256 != args.oracle_sha256:
@@ -286,9 +307,15 @@ def run(args: argparse.Namespace) -> int:
     oracle_by_id = {row["question_id"]: row for row in oracle_rows}
     raw_path = args.output_dir / "predictions.jsonl"
     results: list[dict[str, Any]] = []
+    running_estimated_cost = 0.0
     with raw_path.open("w", encoding="utf-8") as output:
         for row in selected:
             for arm in ARMS:
+                if running_estimated_cost >= args.cost_ceiling_usd:
+                    raise RuntimeError(
+                        f"estimated cost ceiling reached: {running_estimated_cost:.6f} "
+                        f">= {args.cost_ceiling_usd:.6f}"
+                    )
                 if arm == "no_memory":
                     indices: list[int] = []
                     memory = ""
@@ -328,6 +355,15 @@ def run(args: argparse.Namespace) -> int:
                 judge_text = judge_response["choices"][0]["message"]["content"].strip()
                 usage = response.get("usage", {})
                 judge_usage = judge_response.get("usage", {})
+                estimated_cost = usage_cost(
+                    usage, args.cache_hit_price, args.cache_miss_price, args.output_price
+                ) + usage_cost(
+                    judge_usage,
+                    args.cache_hit_price,
+                    args.cache_miss_price,
+                    args.output_price,
+                )
+                running_estimated_cost += estimated_cost
                 record = {
                     "question_id": row["question_id"],
                     "question_type": row["question_type"],
@@ -337,6 +373,7 @@ def run(args: argparse.Namespace) -> int:
                     else oracle_by_id[row["question_id"]]["haystack_session_ids"],
                     "prompt_sha256": prompt_hash,
                     "answer": answer,
+                    "answer_response_id": response.get("id"),
                     "returned_model": response.get("model"),
                     "answer_usage": usage,
                     "answer_attempts": answer_attempts,
@@ -344,18 +381,11 @@ def run(args: argparse.Namespace) -> int:
                     "judge_prompt_sha256": sha256_text(evaluation_prompt),
                     "judge": judge_text,
                     "judge_label": judge_text.lower().startswith("yes"),
+                    "judge_response_id": judge_response.get("id"),
                     "judge_returned_model": judge_response.get("model"),
                     "judge_usage": judge_usage,
                     "judge_attempts": judge_attempts,
-                    "estimated_cost_usd": usage_cost(
-                        usage, args.cache_hit_price, args.cache_miss_price, args.output_price
-                    )
-                    + usage_cost(
-                        judge_usage,
-                        args.cache_hit_price,
-                        args.cache_miss_price,
-                        args.output_price,
-                    ),
+                    "estimated_cost_usd": estimated_cost,
                 }
                 results.append(record)
                 output.write(canonical_json(record) + "\n")
@@ -377,6 +407,10 @@ def run(args: argparse.Namespace) -> int:
     summary = {
         "experiment_id": args.experiment_id,
         "study_class": "pilot",
+        "started_at": run_started_at,
+        "ended_at": utc_now(),
+        "runner_source_revision": runner_source_revision,
+        "runner_dirty": runner_dirty,
         "official_benchmark": "LongMemEval",
         "official_harness_revision": args.official_harness_revision,
         "oracle_sha256": args.oracle_sha256,
@@ -395,6 +429,7 @@ def run(args: argparse.Namespace) -> int:
             "output": args.output_price,
         },
         "estimated_total_cost_usd": sum(row["estimated_cost_usd"] for row in results),
+        "estimated_cost_ceiling_usd": args.cost_ceiling_usd,
         "balance_before_usd": safe_balance_value(balance_before),
         "balance_after_usd": safe_balance_value(balance_after),
         "claim_boundary": "Eight-question cost/feasibility pilot; not an official score, confirmatory result, or leaderboard submission.",
@@ -424,6 +459,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--cache-hit-price", type=float, default=0.007)
     parser.add_argument("--cache-miss-price", type=float, default=0.22)
     parser.add_argument("--output-price", type=float, default=0.66)
+    parser.add_argument("--cost-ceiling-usd", type=float, default=0.25)
     parser.add_argument("--dry-run", action="store_true")
     return parser
 

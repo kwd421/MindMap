@@ -121,6 +121,20 @@ EXP-20260827-002 passed 86 local tests and a 9/9 surface audit twice at revision
 outcome. A newer remote PR head exists and must be re-audited before any B2
 result is accepted.
 
+### 4.4 LongMemEval feasibility pilot
+
+EXP-20260827-003 froze eight questions before answer inspection and compared no
+memory, BM25 top-3 sessions, and official evidence-only context using DeepSeek
+V4-Flash in non-thinking mode. A non-official same-model pilot judge scored the
+arms 2/8, 7/8, and 7/8 respectively. The run cost an estimated `$0.0272` and
+completed all 48 answer/judge calls without retry.
+
+The key observation was a shared BM25/oracle failure: the reader answered
+“Harvard University” by borrowing a thesis/conference-poster event when asked
+about an unsupported undergraduate-course-poster event. This one-item pilot
+does not estimate benchmark performance, but it supplies a concrete test case
+for event identity, relation qualifiers, provenance, and abstention.
+
 ## 5. External evaluation program
 
 The first benchmark ladder is intentionally multi-dimensional:

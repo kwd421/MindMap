@@ -12,6 +12,7 @@ Status vocabulary: `design`, `exploratory`, `supported`, `contradicted`,
 | C-005 | MindMap outperforms other long-term-memory systems on a public benchmark. | open | none | no matched official comparison | none |
 | C-006 | Explicit backup, lineage, fork/merge, and reconstruction semantics are useful engineering abstractions. | design | canonical model and fictional-source inspiration | operational advantage not yet measured | architecture hypothesis |
 | C-007 | MindMap implements complete deletion. | contradicted | none | current evidence distinguishes answer suppression from persistent context exposure; all storage surfaces not audited | no such claim permitted |
+| C-008 | Semantically adjacent evidence can cause a reader to answer an unsupported event question even when the official evidence-only context is supplied. | exploratory | EXP-20260827-003: `a96c20ee_abs` failed under both BM25 and oracle context | one selected question; same answerer/judge family; pilot only | one pinned LongMemEval item |
 
 ## Claim update rule
 

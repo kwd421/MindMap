@@ -62,3 +62,17 @@ Machine-readable records live in `records/`.
 - **Promotion condition:** prompt hashes, token/cost log, answer-session recall,
   paired results, and a manual judge audit. This pilot cannot be promoted to an
   official score regardless of its outcome.
+
+### 2026-08-27 result addendum
+
+- **Execution:** detached code `c2cdc799...`; preregistration commit
+  `e4101a5b...`; 48/48 calls completed without retry
+- **Pilot judge:** no memory 2/8; BM25 top-3 7/8; oracle context 7/8
+- **BM25 evidence recall:** 12/13 answer sessions; full coverage on 7/8 items
+- **Cost:** 118,832 cache-miss input, 128 cache-hit input, 1,543 output tokens;
+  estimated `$0.027162316`; billed amount unknown
+- **Failure:** both BM25 and oracle substituted a Harvard thesis/conference
+  poster memory for an unsupported undergraduate-course-poster question
+- **Interpretation:** retrieval success did not guarantee event attribution or
+  abstention. This is a pilot failure mode, not a performance estimate.
+- **Artifacts:** `results/research/EXP-20260827-003/`
