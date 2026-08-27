@@ -17,7 +17,7 @@ dev = ["pytest>=8"]
 reader = [
   "torch==2.13.0",
   "transformers==5.15.0",
-  "safetensors==0.6.2",
+  "safetensors==0.8.0",
 ]
 
 [tool.setuptools]
