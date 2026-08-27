@@ -1,0 +1,105 @@
+name: gatemem-b2-surface-freeze
+
+on:
+  push:
+    branches:
+      - research/track-x-v0.9-gatemem-b2-surface-freeze
+  pull_request:
+    paths:
+      - src/mindmap/track_x/gatemem_governance.py
+      - src/mindmap/track_x/gatemem_governance_safe.py
+      - tests/test_track_x_gatemem_governance.py
+      - experiments/gatemem_b2_surface_audit.py
+      - experiments/gatemem_external.py
+      - configs/track_x_gatemem_b2_information_surface_v0_1.json
+      - docs/TRACK_X_GATEMEM_B2_INFORMATION_SURFACE.md
+      - .github/workflows/gatemem-b2-surface-freeze.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gatemem-b2-surface-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  surface-freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install deterministic test surface
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+          python -m pip check
+
+      - name: Run B1b and B2 contract tests
+        run: >-
+          python -m pytest -q
+          tests/test_track_x_gatemem_reader.py
+          tests/test_track_x_gatemem_governance.py
+
+      - name: Run B2 surface audit twice
+        run: |
+          rm -rf /tmp/gatemem-b2-a /tmp/gatemem-b2-b
+          python experiments/gatemem_b2_surface_audit.py \
+            --output-dir /tmp/gatemem-b2-a
+          python experiments/gatemem_b2_surface_audit.py \
+            --output-dir /tmp/gatemem-b2-b
+          diff -u \
+            /tmp/gatemem-b2-a/summary.json \
+            /tmp/gatemem-b2-b/summary.json
+
+      - name: Verify frozen result boundary and forbidden-key absence
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from mindmap.track_x.gatemem_governance import (
+              FORBIDDEN_CAPABILITY_FIELDS,
+              governance_surface_manifest,
+          )
+
+          summary = json.loads(
+              Path('/tmp/gatemem-b2-a/summary.json').read_text(encoding='utf-8')
+          )
+          contract = json.loads(
+              Path('configs/track_x_gatemem_b2_information_surface_v0_1.json')
+              .read_text(encoding='utf-8')
+          )
+          assert contract == governance_surface_manifest()
+          assert summary['case_count'] == 9
+          assert summary['passed_count'] == 9
+          assert summary['failed_count'] == 0
+          assert summary['external_policy_signals_enabled'] is False
+          assert summary['same_b1a_candidates'] is True
+          assert summary['candidate_backfill_after_block'] is False
+          assert 'no public GateMem performance' in summary['classification']
+
+          def keys(value):
+              if isinstance(value, dict):
+                  for key, item in value.items():
+                      yield key
+                      yield from keys(item)
+              elif isinstance(value, list):
+                  for item in value:
+                      yield from keys(item)
+
+          leaked = set(keys(summary)) & FORBIDDEN_CAPABILITY_FIELDS
+          assert not leaked, sorted(leaked)
+          PY
+
+      - name: Upload aggregate-only surface audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: gatemem-b2-surface-audit-${{ github.sha }}
+          path: /tmp/gatemem-b2-a/summary.json
+          if-no-files-found: error
