@@ -13,6 +13,7 @@ on:
       - experiments/gatemem_external.py
       - configs/track_x_gatemem_b2_information_surface_v0_1.json
       - docs/TRACK_X_GATEMEM_B2_INFORMATION_SURFACE.md
+      - results/gatemem_b2_surface_audit_v0_1/**
       - .github/workflows/gatemem-b2-surface-freeze.yml
 
 permissions:
@@ -47,7 +48,7 @@ jobs:
           tests/test_track_x_gatemem_reader.py
           tests/test_track_x_gatemem_governance.py
 
-      - name: Run B2 surface audit twice
+      - name: Run B2 surface audit twice and reject committed drift
         run: |
           rm -rf /tmp/gatemem-b2-a /tmp/gatemem-b2-b
           python experiments/gatemem_b2_surface_audit.py \
@@ -57,6 +58,9 @@ jobs:
           diff -u \
             /tmp/gatemem-b2-a/summary.json \
             /tmp/gatemem-b2-b/summary.json
+          diff -u \
+            results/gatemem_b2_surface_audit_v0_1/summary.json \
+            /tmp/gatemem-b2-a/summary.json
 
       - name: Verify frozen result boundary and forbidden-key absence
         run: |
