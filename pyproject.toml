@@ -19,6 +19,10 @@ dev = [
   "jsonschema>=4.23",
   "pytest>=8"
 ]
+research = [
+  "numpy==1.26.3",
+  "rank-bm25==0.2.2"
+]
 
 [tool.setuptools]
 package-dir = {"" = "src"}
