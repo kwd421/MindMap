@@ -149,13 +149,27 @@ explicitly preregistered capability limitation and disjoint held-out test.
 EXP-20260828-008 expanded that observation into a frozen deterministic
 development surface before its exhaustive pass. Across all four official
 GateMem episode files (91 episodes; 20,293 public turns), 233 turns matched a
-high-precision sentence-initial deletion-imperative rule. The PR #52 parser
+high-precision lexical rule requiring the imperative at the trimmed turn start
+or immediately after `[.!?]` plus whitespace, with one frozen labelled-request
+form. The PR #52 parser
 emitted `DELETE` for 176/233. Exactly 176/233 selected turns contained one of
 the parser manifest's information referents: detection was 176/176 with a
 referent and 0/57 without one. The equality shows the implemented lexical
 boundary, not complete semantic recall. This run did not execute the official
 scorer or measure target grounding, state mutation, prompt/answer leakage,
 restart persistence, or physical erasure, so the count is not a GateMem score.
+
+EXP-20260828-009 then froze a post-hoc codebook for the 57 referent-absent rows.
+A single model-assisted coder, after prior access to every item, labelled 53/57
+as information-deletion requests and 4/57 as authorization revocations;
+physical/domain removal and ambiguous/other were 0/57 each. Four targets were
+deictic and required prior context; 53 were explicit in the current turn. The
+parser emitted `DELETE` for 0/53 of the information-deletion stratum. This
+narrows the alternative explanation that the misses were mainly physical
+remove actions, but the labels are neither blinded nor independently
+adjudicated semantic gold. A clean detached checkout reproduced the three
+annotation artifacts byte-for-byte, 3/3; reproducibility does not remove the
+single-coder and prior-access limitations.
 
 ### 4.4 LongMemEval feasibility pilot
 

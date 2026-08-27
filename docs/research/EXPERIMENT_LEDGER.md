@@ -270,8 +270,9 @@ Machine-readable records live in `records/`.
 ## EXP-20260828-009 — Referent-absent semantic audit
 
 - **Class:** development; explicitly post-hoc and non-blinded
-- **Status:** planned; codebook `GM-RA-CB-001` frozen before the versioned
-  annotation artifact, but after all 57 source turns had already been read
+- **Status:** completed; codebook `GM-RA-CB-001` frozen at `c17d308` before the
+  versioned annotation artifact, but after all 57 source turns had already been
+  read; clean runner revision `dd0f857`
 - **Population:** all 57 EXP-008 strict-imperative rows without any PR #52
   manifest information referent; no deduplication
 - **Primary outcome:** one mutually exclusive request-type label per row:
@@ -285,3 +286,10 @@ Machine-readable records live in `records/`.
 - **Claim boundary:** single model-assisted coder and prior item access; not an
   official GateMem score, semantic-gold recall estimate, blinded adjudication,
   or evidence of state mutation, suppression, persistence, or erasure
+- **Result:** the single coder labelled 53/57 rows information deletion and
+  4/57 authorization revocation; physical/domain removal 0/57 and
+  ambiguous/other 0/57. Target grounding was explicit in the current turn for
+  53/57 and deictic/prior-context-dependent for 4/57. PR #52 emitted `DELETE`
+  on 0/53 annotated information-deletion rows and 0/4 authorization rows.
+- **Reproduction:** a detached clean clone at exact runner revision regenerated
+  annotations, summary, and manifest byte-identically, 3/3.

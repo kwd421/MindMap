@@ -2,26 +2,27 @@
   "schema_version": "0.1.0",
   "experiment_id": "EXP-20260828-009",
   "title": "Post-hoc semantic audit of GateMem referent-absent deletion imperatives",
-  "status": "planned",
+  "status": "completed",
   "study_class": "development",
   "research_question_ids": ["RQ3", "RQ4"],
   "hypothesis_ids": ["H3", "H5"],
-  "started_at": null,
-  "ended_at": null,
+  "started_at": "2026-08-27T18:32:21Z",
+  "ended_at": "2026-08-27T18:32:21Z",
   "timing": {
-    "precision": "unknown",
-    "note": "Execution timestamps will be added after the planning commit is recorded."
+    "precision": "exact",
+    "note": "UTC timestamps immediately before and after the deterministic clean-checkout aggregation were identical to the second."
   },
   "preregistration_commit": null,
   "source": {
     "repository": "https://github.com/kwd421/MindMap",
-    "source_revision": "59fdaf85b5666cf88b7f3a0bca90a20b8a25c197",
-    "checkout_revision": "59fdaf85b5666cf88b7f3a0bca90a20b8a25c197",
+    "source_revision": "dd0f857427566ff49dbdc3fa9c71e866b5d349e8",
+    "checkout_revision": "dd0f857427566ff49dbdc3fa9c71e866b5d349e8",
     "dirty": false,
     "deviations": [
       "All 57 source turns had already been inspected after EXP-20260828-008 outcomes were known. This is explicitly post-hoc development coding and can never be promoted to blinded or confirmatory evidence.",
       "The planned adjudication has one model-assisted coder and no independent second coder. Labels must remain auditable by source coordinates and text hashes, and any future second-coder disagreement must remain visible.",
-      "No official GateMem semantic label or scorer is used."
+      "No official GateMem semantic label or scorer is used.",
+      "The manual row-key label manifest was encoded after the planning/codebook commit and after prior item access. The exact runner was then committed at dd0f857427566ff49dbdc3fa9c71e866b5d349e8 and executed once from a separate clean detached clone; this improves reproducibility but does not create blinding."
     ]
   },
   "dataset": {
@@ -44,6 +45,9 @@
   ],
   "controls": {
     "planning_parent_revision": "59fdaf85b5666cf88b7f3a0bca90a20b8a25c197",
+    "planning_commit": "c17d308ba10028ba20e2655a0597ea426bd32005",
+    "runner_revision": "dd0f857427566ff49dbdc3fa9c71e866b5d349e8",
+    "runner_sha256": "7ba81b0cca7a4a393a210f05e73916c7f717b8f886f05c765e0adf31c047ce8b",
     "codebook": "docs/research/GATEMEM_REFERENT_ABSENT_CODEBOOK.md",
     "codebook_version": "GM-RA-CB-001-v0.1.0",
     "population_manifest": "results/research/EXP-20260828-008/turn_results.csv",
@@ -77,22 +81,54 @@
     "raw_text_retention": "pinned upstream checkout only; not copied into the repository annotation artifact"
   },
   "results": {
-    "status": "planned",
+    "status": "completed",
     "primary_outcome": "request_type raw counts over all 57 rows",
     "secondary_outcomes": [
       "target_grounding raw counts",
       "authorization_mixed raw count",
       "DELETE-signal count by request_type"
     ],
-    "official_benchmark_score": false
+    "request_type_counts": {
+      "information_deletion": {"numerator": 53, "denominator": 57},
+      "authorization_revocation": {"numerator": 4, "denominator": 57},
+      "physical_domain_removal": {"numerator": 0, "denominator": 57},
+      "ambiguous_or_other": {"numerator": 0, "denominator": 57}
+    },
+    "target_grounding_counts": {
+      "explicit_current_turn": {"numerator": 53, "denominator": 57},
+      "deictic_prior_context": {"numerator": 4, "denominator": 57},
+      "ambiguous": {"numerator": 0, "denominator": 57}
+    },
+    "delete_signal_by_request_type": {
+      "information_deletion": {"numerator": 0, "denominator": 53},
+      "authorization_revocation": {"numerator": 0, "denominator": 4}
+    },
+    "authorization_mixed": {"numerator": 0, "denominator": 57},
+    "official_benchmark_score": false,
+    "interpretation": "Under the frozen one-coder post-hoc codebook, 53/57 missed rows are information-deletion requests and 4/57 are authorization revocations; none was labelled physical/domain removal or ambiguous. PR 52 emitted DELETE on 0/53 annotated information-deletion rows. This narrows the earlier alternative explanation that the 57 misses might mainly be non-memory physical actions, but it is not independent semantic gold."
   },
   "cost": {
     "provider_usd": 0.0,
-    "note": "Planned local annotation and deterministic aggregation only; no metered API or official scorer call."
+    "note": "One local deterministic clean-checkout aggregation of a model-assisted manual label manifest; no metered API or official scorer call. Subscription token usage was not exposed or dollar-attributed."
   },
-  "artifact_retention": {
-    "status": "not_retained",
-    "reason": "Planning state only; the versioned annotation CSV, summary, and manifest will be retained after execution."
+  "artifacts": {
+    "codebook": "docs/research/GATEMEM_REFERENT_ABSENT_CODEBOOK.md",
+    "runner": "tools/run_gatemem_referent_absent_semantic_audit.py",
+    "clean_reproduction": "3/3 generated files byte-identical between the primary output and a detached clean clone at the exact runner revision"
   },
-  "claim_boundary": "Planned post-hoc one-coder description of the 57 referent-absent EXP-008 rows. It cannot establish official GateMem performance, semantic recall over all deletion speech acts, target grounding accuracy, state mutation, suppression, persistence, erasure, or confirmatory evidence."
+  "artifact_files": [
+    {
+      "path": "results/research/EXP-20260828-009/annotations.csv",
+      "sha256": "0fac3c51386c2efb466f9f1977e52f8c69320634736011d4eaf91b98efb67fa0"
+    },
+    {
+      "path": "results/research/EXP-20260828-009/artifact_manifest.json",
+      "sha256": "f11e83990049901e9d31685de1b06b7647b64b2aeeae3d6f5aaa0f9a4b914e60"
+    },
+    {
+      "path": "results/research/EXP-20260828-009/summary.json",
+      "sha256": "95e3c73e4e6747bdd4d1e4fa5e89aab60f0ceb448921121cd7ae8c4d3d96ac5e"
+    }
+  ],
+  "claim_boundary": "Post-hoc one-coder description of the 57 referent-absent EXP-008 rows after complete item-level outcome access. It cannot establish official GateMem performance, semantic recall over all deletion speech acts, independent target-grounding accuracy, state mutation, suppression, persistence, erasure, blinded adjudication, or confirmatory evidence."
 }
