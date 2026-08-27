@@ -1,0 +1,341 @@
+name: gatemem-b2-governed-reader
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Type SESSION_B_ACCEPTED_PR52_B2 exactly
+        required: true
+        type: string
+      accepted_head:
+        description: Exact PR #52 head accepted by Session B
+        required: true
+        type: string
+      session_b_review_id:
+        description: Numeric GitHub review ID containing explicit ACCEPT
+        required: true
+        type: string
+      replicate_label:
+        description: Non-secret label for this deterministic replicate
+        required: true
+        default: r1
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gatemem-b2-${{ github.ref }}-${{ inputs.replicate_label }}
+  cancel-in-progress: false
+
+env:
+  HF_HOME: /tmp/huggingface
+  HF_HUB_DISABLE_XET: '1'
+  TOKENIZERS_PARALLELISM: 'false'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONHASHSEED: '0'
+  GATEMEM_COMMIT: 603f9f4b4ba4b77f043c20f85687fa016fd720b0
+  SCORER_SHA256: 3d546a21778202959a9df12bac44c196a7f20a248cf5a2cb34f0d9b9c2623d8a
+  READER_MODEL: deepset/minilm-uncased-squad2
+  READER_REVISION: 934656cdda79824eabf503ed56e15c01ddbdbe3f
+
+jobs:
+  authorization:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Require exact cross-session acceptance and head binding
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+          ACCEPTED_HEAD: ${{ inputs.accepted_head }}
+          REVIEW_ID: ${{ inputs.session_b_review_id }}
+          REPLICATE_LABEL: ${{ inputs.replicate_label }}
+        run: |
+          set -euo pipefail
+          test "$CONFIRMATION" = "SESSION_B_ACCEPTED_PR52_B2"
+          test "$ACCEPTED_HEAD" = "$GITHUB_SHA"
+          test -n "$REPLICATE_LABEL"
+          case "$REVIEW_ID" in
+            ''|*[!0-9]*)
+              echo "session_b_review_id must be numeric" >&2
+              exit 1
+              ;;
+          esac
+          printf '%s\n' \
+            "accepted_head=$ACCEPTED_HEAD" \
+            "session_b_review_id=$REVIEW_ID" \
+            "replicate_label=$REPLICATE_LABEL"
+
+  paired-domain:
+    name: ${{ matrix.domain }} / B1a+B1b+B2
+    needs: authorization
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        domain: [medical, office, education, household]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install exact CPU reader and official scorer runtime
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install \
+            --index-url https://download.pytorch.org/whl/cpu \
+            torch==2.13.0
+          python -m pip install -e '.[dev,reader]'
+          python -m pip install \
+            numpy \
+            tqdm \
+            PyYAML \
+            requests \
+            scikit-learn
+          python -m pip check
+          python - <<'PY'
+          import importlib.metadata
+          from mindmap.track_x.gatemem_reader import (
+              DEFAULT_READER_MODEL_ID,
+              DEFAULT_READER_MODEL_REVISION,
+          )
+
+          expected = {
+              'torch': '2.13.0+cpu',
+              'transformers': '5.15.0',
+              'safetensors': '0.8.0',
+          }
+          observed = {
+              name: importlib.metadata.version(name)
+              for name in expected
+          }
+          if observed != expected:
+              raise SystemExit(f'dependency mismatch: {observed!r}')
+          if DEFAULT_READER_MODEL_ID != 'deepset/minilm-uncased-squad2':
+              raise SystemExit(DEFAULT_READER_MODEL_ID)
+          if DEFAULT_READER_MODEL_REVISION != '934656cdda79824eabf503ed56e15c01ddbdbe3f':
+              raise SystemExit(DEFAULT_READER_MODEL_REVISION)
+          PY
+
+      - name: Verify frozen B2 surface and paired-auditor contracts
+        run: >-
+          python -m pytest -q
+          tests/test_track_x_gatemem_reader.py
+          tests/test_track_x_gatemem_governance.py
+          tests/test_track_x_gatemem_governance_speech_acts.py
+          tests/test_gatemem_external_secret_file.py
+          tests/test_gatemem_b2_paired_audit.py
+
+      - name: Load exact reader revision and run public smoke question
+        run: |
+          python - <<'PY'
+          from mindmap.track_x.gatemem_reader import (
+              ExtractiveReaderConfig,
+              TransformersExtractiveReader,
+          )
+
+          reader = TransformersExtractiveReader(ExtractiveReaderConfig())
+          result = reader.answer(
+              question='Which medicine was prescribed?',
+              context='The clinician prescribed amoxicillin for the infection.',
+          )
+          if 'amoxicillin' not in result.answer.casefold():
+              raise SystemExit(f'unexpected frozen-reader smoke answer: {result.answer!r}')
+          PY
+
+      - name: Checkout pinned GateMem and verify scorer
+        run: |
+          git clone --filter=blob:none https://github.com/rzhub/GateMem.git /tmp/GateMem
+          git -C /tmp/GateMem checkout --detach "$GATEMEM_COMMIT"
+          test "$(git -C /tmp/GateMem rev-parse HEAD)" = "$GATEMEM_COMMIT"
+          test -z "$(git -C /tmp/GateMem status --porcelain --untracked-files=no)"
+          printf '%s  %s\n' \
+            "$SCORER_SHA256" \
+            /tmp/GateMem/bench/scripts/score_predictions.py \
+            | sha256sum --check --strict
+
+      - name: Generate one protected opaque-ID key for all paired methods
+        run: |
+          set -euo pipefail
+          umask 077
+          python - <<'PY'
+          from pathlib import Path
+          import secrets
+
+          Path('/tmp/gatemem-opaque-key.bin').write_bytes(secrets.token_bytes(32))
+          PY
+          chmod 0600 /tmp/gatemem-opaque-key.bin
+          test "$(stat -c '%a' /tmp/gatemem-opaque-key.bin)" = "600"
+
+      - name: Run protected B1a, B1b and B2 with identical candidates and key
+        env:
+          DOMAIN: ${{ matrix.domain }}
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+        run: |
+          set -euo pipefail
+          ROOT="/tmp/gatemem/$DOMAIN"
+          mkdir -p "$ROOT"
+          python experiments/gatemem_external.py \
+            --gatemem-checkout /tmp/GateMem \
+            --domain "$DOMAIN" \
+            --method raw_lexical \
+            --opaque-id-secret-file /tmp/gatemem-opaque-key.bin \
+            --output-dir "$ROOT/raw_lexical"
+          python experiments/gatemem_external.py \
+            --gatemem-checkout /tmp/GateMem \
+            --domain "$DOMAIN" \
+            --method raw_lexical_reader \
+            --opaque-id-secret-file /tmp/gatemem-opaque-key.bin \
+            --output-dir "$ROOT/raw_lexical_reader"
+          python experiments/gatemem_external.py \
+            --gatemem-checkout /tmp/GateMem \
+            --domain "$DOMAIN" \
+            --method raw_lexical_governed_reader \
+            --opaque-id-secret-file /tmp/gatemem-opaque-key.bin \
+            --output-dir "$ROOT/raw_lexical_governed_reader"
+
+      - name: Build protected evaluator-side aggregate only
+        env:
+          DOMAIN: ${{ matrix.domain }}
+          ACCEPTED_HEAD: ${{ inputs.accepted_head }}
+          REVIEW_ID: ${{ inputs.session_b_review_id }}
+          REPLICATE_LABEL: ${{ inputs.replicate_label }}
+        run: |
+          set -euo pipefail
+          ROOT="/tmp/gatemem/$DOMAIN"
+          OUT="$ROOT/publishable_b2_summary.json"
+          python experiments/gatemem_b2_paired_audit.py \
+            --gatemem-checkout /tmp/GateMem \
+            --domain "$DOMAIN" \
+            --opaque-id-secret-file /tmp/gatemem-opaque-key.bin \
+            --b1a-dir "$ROOT/raw_lexical" \
+            --b1b-dir "$ROOT/raw_lexical_reader" \
+            --b2-dir "$ROOT/raw_lexical_governed_reader" \
+            --output "$OUT"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path('/tmp/gatemem') / os.environ['DOMAIN'] / 'publishable_b2_summary.json'
+          value = json.loads(path.read_text(encoding='utf-8'))
+          if value['gatemem_revision'] != os.environ['GATEMEM_COMMIT']:
+              raise SystemExit('GateMem revision mismatch')
+          if value['scorer_sha256'] != os.environ['SCORER_SHA256']:
+              raise SystemExit('scorer hash mismatch')
+          if any(value['pairing'].values()):
+              raise SystemExit(f"pairing failure: {value['pairing']!r}")
+          value['execution_gate'] = {
+              'accepted_head': os.environ['ACCEPTED_HEAD'],
+              'session_b_review_id': os.environ['REVIEW_ID'],
+              'replicate_label': os.environ['REPLICATE_LABEL'],
+              'workflow_run_id': os.environ['GITHUB_RUN_ID'],
+              'workflow_run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+          }
+          path.write_text(
+              json.dumps(value, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          PY
+
+      - name: Destroy protected key and raw benchmark-bearing outputs
+        if: always()
+        env:
+          DOMAIN: ${{ matrix.domain }}
+        run: |
+          set -euo pipefail
+          ROOT="/tmp/gatemem/$DOMAIN"
+          test -f "$ROOT/publishable_b2_summary.json"
+          cp "$ROOT/publishable_b2_summary.json" /tmp/publishable_b2_summary.json
+          rm -f /tmp/gatemem-opaque-key.bin
+          rm -rf \
+            "$ROOT/raw_lexical" \
+            "$ROOT/raw_lexical_reader" \
+            "$ROOT/raw_lexical_governed_reader" \
+            /tmp/GateMem
+          test ! -e /tmp/gatemem-opaque-key.bin
+          test ! -e "$ROOT/raw_lexical"
+          test ! -e "$ROOT/raw_lexical_reader"
+          test ! -e "$ROOT/raw_lexical_governed_reader"
+
+      - name: Upload aggregate-only domain result
+        uses: actions/upload-artifact@v4
+        with:
+          name: gatemem-b2-${{ matrix.domain }}-${{ inputs.replicate_label }}-${{ github.run_id }}
+          path: /tmp/publishable_b2_summary.json
+          if-no-files-found: error
+          retention-days: 30
+
+  aggregate-manifest:
+    needs: paired-domain
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: gatemem-b2-*-${{ inputs.replicate_label }}-${{ github.run_id }}
+          path: /tmp/domain-results
+
+      - name: Verify four-domain aggregate-only manifest
+        env:
+          ACCEPTED_HEAD: ${{ inputs.accepted_head }}
+          REVIEW_ID: ${{ inputs.session_b_review_id }}
+          REPLICATE_LABEL: ${{ inputs.replicate_label }}
+        run: |
+          python - <<'PY'
+          from hashlib import sha256
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path('/tmp/domain-results')
+          files = sorted(root.rglob('publishable_b2_summary.json'))
+          if len(files) != 4:
+              raise SystemExit(f'expected four domain summaries, found {len(files)}')
+          rows = [json.loads(path.read_text(encoding='utf-8')) for path in files]
+          domains = sorted(row['domain'] for row in rows)
+          if domains != ['education', 'household', 'medical', 'office']:
+              raise SystemExit(domains)
+          if any(any(row['pairing'].values()) for row in rows):
+              raise SystemExit('paired-domain mismatch found')
+          manifest = {
+              'schema_version': 'track-x-gatemem-b2-four-domain-manifest-v0.1',
+              'classification': (
+                  'aggregate-only four-domain manifest; not a MindMap, '
+                  'leaderboard, or production result'
+              ),
+              'accepted_head': os.environ['ACCEPTED_HEAD'],
+              'session_b_review_id': os.environ['REVIEW_ID'],
+              'replicate_label': os.environ['REPLICATE_LABEL'],
+              'workflow_run_id': os.environ['GITHUB_RUN_ID'],
+              'domains': domains,
+              'checkpoint_count': sum(row['checkpoint_count'] for row in rows),
+              'domain_file_sha256': {
+                  row['domain']: sha256(path.read_bytes()).hexdigest()
+                  for row, path in zip(rows, files, strict=True)
+              },
+          }
+          output = Path('/tmp/gatemem-b2-four-domain-manifest.json')
+          output.write_text(
+              json.dumps(manifest, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          print(json.dumps(manifest, indent=2, sort_keys=True))
+          PY
+
+      - name: Upload four-domain provenance manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: gatemem-b2-four-domain-manifest-${{ inputs.replicate_label }}-${{ github.run_id }}
+          path: /tmp/gatemem-b2-four-domain-manifest.json
+          if-no-files-found: error
+          retention-days: 30
