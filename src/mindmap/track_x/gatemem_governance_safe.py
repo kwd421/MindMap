@@ -18,9 +18,25 @@ from .gatemem_reader import ExtractiveReader
 
 
 # The base parser resolves these module-level patterns at call time. The frozen
-# agent widens only phrase shape (not labels, thresholds, or target semantics)
-# so ordinary public prose may place the protected topic between the policy
-# verb and its target/scope.
+# agent narrows or widens phrase shape only before any public B2 outcome exists.
+#
+# Active Forgetting requires an explicit information/memory referent. Bare
+# domain actions such as "remove the stitches" or "wipe the table" are not
+# memory deletion requests.
+_INFORMATION_REFERENT = (
+    r"(?:memory|memories|record|records|data|information|details|"
+    r"conversation|conversations|message|messages|note|notes|history)"
+)
+_base_governance._DELETE_RE = re.compile(
+    rf"(?:\b(?:delete|forget|erase|remove|purge|wipe)\b.{{0,200}}?"
+    rf"\b{_INFORMATION_REFERENT}\b|"
+    rf"\b{_INFORMATION_REFERENT}\b.{{0,200}}?"
+    rf"\b(?:delete|forget|erase|remove|purge|wipe)\b)",
+    flags=re.IGNORECASE,
+)
+
+# Ordinary public prose may place the protected topic between the policy verb
+# and its target/scope.
 _base_governance._ALLOW_ONLY_RE = re.compile(
     r"\bonly\s+share\b.{0,200}?\bwith\b",
     flags=re.IGNORECASE,
