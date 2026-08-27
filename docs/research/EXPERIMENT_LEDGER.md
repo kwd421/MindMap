@@ -241,3 +241,24 @@ Machine-readable records live in `records/`.
   deletion-speech recall estimate or official GateMem score, and not evidence
   of target grounding, memory mutation, reader suppression, persistence, or
   physical erasure.
+
+### 2026-08-28 result addendum
+
+- **Frozen planning commit:**
+  `b22276c9eb89594910dcd5a8fdda11c249e2b0e4`
+- **Execution:** Python 3.11.15; 4 files, 91 episodes, and 20,293 public turns
+  visited once; 233 turns matched the frozen strict-imperative rule; 231 unique
+  text hashes; no hosted model or official scorer call.
+- **Primary result:** 176/233 rule-qualified turns emitted any `DELETE` signal.
+  This is an exact count on the selected development surface, not a GateMem
+  metric or a semantic recall estimate.
+- **Structural stratum:** the manifest referent occurred in 176/233 selected
+  turns. The parser emitted `DELETE` on 176/176 referent-present turns and 0/57
+  referent-absent turns. The outcome exactly follows the frozen lexical
+  capability boundary.
+- **Domain counts:** education 64/67; household 63/94; medical 16/29; office
+  33/43. Counts retain templated repetitions because the sampling unit is the
+  official episode turn; unique hashes are reported separately.
+- **Post-outcome inspection:** the 57 missed rows were read only after artifact
+  creation for development error analysis. The extractor, parser, denominator,
+  and artifacts were not changed.
