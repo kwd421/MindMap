@@ -89,3 +89,5 @@ test split outcomes
 | NV-10 | parser overbreadth | adversarial non-memory negative controls |
 | NV-11 | incomplete deletion | inspect store, retrieval, prompt, answer, backup, cache |
 | NV-12 | cost-driven early stopping | preregister stopping rule and label truncation |
+| NV-13 | parser undercoverage | freeze positive deletion-speech probes as well as physical-action negatives; report signal recall separately from benchmark score |
+| NV-14 | future-reference time travel | reject references before entity creation or check entity creation time at every historical resolver |

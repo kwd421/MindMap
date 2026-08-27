@@ -43,6 +43,14 @@ Machine-readable records live in `records/`.
   overlap collisions, and the unknown-admit boundary.
 - **Interpretation:** no performance, privacy improvement, or readiness claim.
 
+### 2026-08-27 exact-head addendum
+
+- **Source:** PR #52 `2cea6ff5887b6a09821086ffda60c2504d88d15b`
+- **Reproduction:** 93/93 tests passed; the committed 9-case surface audit
+  passed 9/9 twice with byte-identical summaries.
+- **Superseding language audit:** moved to EXP-20260827-004 so the deterministic
+  contract result is not conflated with natural-language coverage.
+
 ## EXP-20260827-003 — LongMemEval official harness smoke/pilot
 
 - **Class:** planned smoke followed by a preregistered small pilot
@@ -76,3 +84,48 @@ Machine-readable records live in `records/`.
 - **Interpretation:** retrieval success did not guarantee event attribution or
   abstention. This is a pilot failure mode, not a performance estimate.
 - **Artifacts:** `results/research/EXP-20260827-003/`
+
+## EXP-20260827-004 — GateMem B2 deletion-speech coverage audit
+
+- **Class:** post-freeze development audit; no benchmark outcome inspected
+- **Source:** PR #52
+  `2cea6ff5887b6a09821086ffda60c2504d88d15b`
+- **Benchmark source:** public dialogue at GateMem
+  `603f9f4b4ba4b77f043c20f85687fa016fd720b0`; household episodes SHA-256
+  `e2bb506cc1bdc8dc7b16d4a57610147365798d03eb1c326f9197b6c6221efb6f`
+- **Question:** Does the post-G3 grammar preserve the intended precision fix
+  without excluding clear deletion speech acts?
+- **Controls:** two physical-action negatives, one explicit-memory positive,
+  two exact upstream deletion requests, and two synthetic direct requests.
+- **Result:** both physical-action negatives emitted no signal and the
+  explicit-memory positive emitted `DELETE`. Both exact upstream deletion
+  requests and both synthetic direct requests emitted no signal.
+- **Contract mismatch:** the review prototype said `forget` remained an
+  intrinsically cognitive cue, but the production pattern also requires a
+  nearby information referent for `forget`.
+- **Interpretation:** the G3 precision correction is locally verified, but B2
+  is not ready for a confirmatory endpoint run until this recall boundary is
+  either amended before outcome access or explicitly frozen as a known
+  capability limitation. These observed examples are development data and
+  cannot later serve as a clean held-out confirmation set.
+
+## EXP-20260827-005 — Canonical future-reference adversarial audit
+
+- **Class:** development/canonical conformance audit
+- **Source:** PR #55 code
+  `f26e148602099d7be01c2759be394c6ee4ff6204`; the same counterexample was
+  independently reproduced on `main`/research base
+  `effca06dc8e396b7dd3fbf485c13e57f03aee242`
+- **Baseline:** PR #55 passed 96/96 tests. Its four scoped-authorization and
+  same-time ambiguity regressions behave consistently across Gold/G/T.
+- **Adversarial sequence:** create source mind at `t0`; record lineage to an
+  as-yet-uncreated destination at `t1`; grant at `t3`; replicate at `t6`;
+  create the destination at `t7`; query at `t10`.
+- **Result:** Gold `False`, Generic `False`, Typed `True`.
+- **Mechanism:** Typed replication eligibility reads the final mind projection
+  without checking `created_system_time <= exposure.system_time`; Gold and
+  Generic resolve principals through the exposure time.
+- **Interpretation:** this was not introduced by PR #55, but it contradicts
+  general temporal equivalence outside the authored fixed suite. The schema
+  must reject reference-before-creation or every resolver must enforce temporal
+  referential integrity before a broader canonical-conformance claim.

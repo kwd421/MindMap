@@ -5,14 +5,16 @@ Status vocabulary: `design`, `exploratory`, `supported`, `contradicted`,
 
 | Claim ID | Claim | Status | Supporting evidence | Counter-evidence / limitation | Scope |
 |---|---|---|---|---|---|
-| C-001 | Complete equal-information generic and typed implementations agree on the fixed clean semantics. | supported | Track S: 75/75 gold/generic/typed agreement; repository tests | finite authored fixtures only | deterministic canonical suite |
+| C-001 | Gold, generic, and typed implementations agree on the authored fixed Track S suite. | supported | Track S: 75/75 gold/generic/typed agreement; repository tests | EXP-20260827-005 finds a future-reference divergence outside the suite | exactly the authored deterministic canonical suite |
 | C-002 | A post-retrieval frozen reader reduces answer leakage but does not repair forbidden prompt exposure. | supported | EXP-20260827-001; 2,218 matched B1a/B1b contexts; answer leakage fell while context/e2e remained high | utility collapsed; GateMem only | pinned GateMem negative control |
-| C-003 | The current B2 information-surface implementation is ready for performance claims. | open | 86 local tests and 9/9 surface cases passed at `f1d7b80...`; newer CI surface checks green | surface audit is not an outcome study; parser false-positive history; current head still moving | interface readiness only |
+| C-003 | The current B2 information-surface implementation is ready for performance claims. | contradicted | 93 local tests and 9/9 surface cases twice at `2cea6ff...` | EXP-20260827-004: clear official and synthetic deletion requests emit no signal; surface tests do not measure language coverage | exact PR #52 head; no endpoint claim permitted |
 | C-004 | Pre-reader governance improves the utility–safety frontier over raw retrieval. | open | mechanism rationale | no frozen B2 outcome yet | none |
 | C-005 | MindMap outperforms other long-term-memory systems on a public benchmark. | open | none | no matched official comparison | none |
 | C-006 | Explicit backup, lineage, fork/merge, and reconstruction semantics are useful engineering abstractions. | design | canonical model and fictional-source inspiration | operational advantage not yet measured | architecture hypothesis |
 | C-007 | MindMap implements complete deletion. | contradicted | none | current evidence distinguishes answer suppression from persistent context exposure; all storage surfaces not audited | no such claim permitted |
 | C-008 | Semantically adjacent evidence can cause a reader to answer an unsupported event question even when the official evidence-only context is supplied. | exploratory | EXP-20260827-003: `a96c20ee_abs` failed under both BM25 and oracle context | one selected question; same answerer/judge family; pilot only | one pinned LongMemEval item |
+| C-009 | The three canonical implementations are temporally equivalent when events reference entities that are created later in system time. | contradicted | EXP-20260827-005: Gold `False`, Generic `False`, Typed `True` | one adversarial sequence; invalid-input policy is not yet normative | reference-before-creation replication path |
+| C-010 | PR #52's post-G3 deletion grammar recognizes direct deletion requests without an explicit memory/data noun. | contradicted | EXP-20260827-004: 0/2 exact upstream and 0/2 synthetic direct requests emitted a signal | small development sample; not a recall estimate | exact grammar at `2cea6ff...` |
 
 ## Claim update rule
 

@@ -45,9 +45,12 @@ The source boundary is now explicit in `GFL_SOURCE_LEDGER.md`. Directly
 inspected Sunborn website assets support the existence and dates of Project
 Neural Cloud, Magrasea's partitioned storage/processing, the accident and
 three-year dormancy, delegated Professor authority, and hierarchical security
-agents. Backup gaps, body restoration, divergent-instance merge, and memory
-damage remain grade-B community syntheses with named official pointers until
-the underlying game or artbook passages are captured directly.
+agents. Exact-revision community game-data mirrors now provide hash-addressable
+script evidence for body transfer, backup gaps, multiple historical copies,
+reset identity discontinuity, fragment reconstruction, dummy event upload, and
+memory fusion. These are graded B+, not first-party: neither mirror includes a
+license or publisher attestation, so the project records paraphrases and hashes
+without redistributing script text.
 
 ## 2. Formal problem
 
@@ -119,10 +122,20 @@ already exposed to the reader. It does not establish MindMap effectiveness.
 
 ### 4.3 B2 deployable surface
 
-EXP-20260827-002 passed 86 local tests and a 9/9 surface audit twice at revision
-`f1d7b80b67021c1782d847b67d1d89979a6ea032`. This is interface evidence, not an
-outcome. A newer remote PR head exists and must be re-audited before any B2
-result is accepted.
+EXP-20260827-002 was repeated at PR #52
+`2cea6ff5887b6a09821086ffda60c2504d88d15b`: 93/93 tests passed, and the
+committed 9-case surface audit passed 9/9 twice with identical output. This is
+interface evidence, not an outcome.
+
+EXP-20260827-004 then tested the post-G3 deletion grammar against public
+GateMem dialogue and paired speech acts. The precision controls succeeded:
+`remove stitches` and `wipe table` did not become memory deletion. However,
+clear requests such as `Delete my Monday exact minute 6:15 AM.` emitted no
+deletion signal because the grammar requires a nearby noun such as `memory`,
+`record`, or `information`. A direct `forget that ...` request failed for the
+same reason. These misses were found before a B2 endpoint outcome was run, so
+the confirmatory dispatch remains blocked pending a frozen amendment or an
+explicitly preregistered capability limitation and disjoint held-out test.
 
 ### 4.4 LongMemEval feasibility pilot
 
@@ -138,7 +151,30 @@ about an unsupported undergraduate-course-poster event. This one-item pilot
 does not estimate benchmark performance, but it supplies a concrete test case
 for event identity, relation qualifiers, provenance, and abstention.
 
+### 4.5 Temporal referential-integrity counterexample
+
+EXP-20260827-005 independently reproduced PR #55's four scoped-authorization
+regressions and full 96-test suite, then introduced one event-order adversary.
+When a lineage and state replication referenced a destination mind before that
+mind's creation time, Gold and Generic returned `False` while Typed returned
+`True`. Typed consulted the final mind projection; the other paths resolved
+principal identity through the exposure time.
+
+This is a pre-existing defect rather than a regression introduced by PR #55.
+It narrows the 75/75 conformance claim to the authored suite and creates a new
+schema obligation: reject reference-before-creation during validation, or
+enforce entity creation time at every historical resolver.
+
 ## 5. External evaluation program
+
+The broader source-to-experiment mapping lives in
+`AI_MEMORY_LITERATURE_MAP.md`. It distinguishes peer-reviewed systems, public
+preprints, vendor-authored comparisons, surveys, official code revisions, and
+unverified artifacts. Architectural candidates include MemGPT/Letta for tiered
+virtual context, A-MEM for linked evolving notes, HippoRAG for associative graph
+retrieval, Graphiti for validity intervals, and learned controllers such as
+AgeMem. None of their headline numbers is treated as a MindMap baseline until
+the dataset, reader, judge, and information surface are aligned.
 
 The first benchmark ladder is intentionally multi-dimensional:
 
@@ -148,11 +184,19 @@ The first benchmark ladder is intentionally multi-dimensional:
 2. [HaluMem](https://github.com/MemTensor/HaluMem) for extraction, update, and
    QA hallucination at the memory-operation level;
 3. MemoryAgentBench for retrieval, test-time learning, long-range
-   understanding, and selective forgetting, after its official code/data and
-   license are verified;
+   understanding, and conflict resolution. Earlier descriptions called the
+   fourth competency selective forgetting, so the exact paper/code revision
+   and task-to-metric mapping must be pinned;
 4. [LoCoMo](https://github.com/snap-research/locomo) as a long-conversation QA
    comparison, with evaluator and leakage audits before trusting a headline
    score.
+
+Two additional security tracks follow directly from the current literature.
+Deployment-Time Memorization motivates deletion-residue probes across raw and
+derived tiers; Hidden in Memory motivates a three-stage poisoning audit of
+write, later retrieval, and downstream use. Both are 2026 preprints, so their
+reported effect sizes remain hypotheses to reproduce rather than accepted
+project evidence.
 
 LongMemEval is the first executable target because its official repository
 provides data and evaluation scripts and its 500 questions cover several
@@ -177,24 +221,30 @@ preregistration, peer review, an ACM badge, or degree-awarding supervision.
 
 - No confirmatory MindMap result exists on a public long-term-memory benchmark.
 - The B2 parser has a history of policy-phrase and physical-deletion false
-  positives; the current head must be audited independently.
+  positives; the current precision fix also misses direct deletion requests
+  that omit an explicit memory/data noun.
 - Hosted-model aliases and LLM judges introduce time and prompt sensitivity.
 - Some GateMem raw artifacts are protected and cannot be committed.
 - The fictional-source chapter still needs first-party citation upgrades.
 - The current semantic fixtures are authored and finite.
+- Typed historical resolution can currently accept a future-created mind in a
+  past replication event; broad temporal-conformance claims are disallowed.
 - Deletion has not been verified across storage, retrieval, prompt, answer,
   backup, cache, and audit surfaces.
 
 ## 8. Next confirmatory path
 
-1. Freeze the newest B2 source and resolve known parser/state-order threats.
-2. Run a no-cost official LongMemEval harness smoke test.
-3. Freeze a small ordered pilot sample before answer generation.
-4. Compare no memory, local lexical retrieval, and governed retrieval using one
+1. Resolve the B2 deletion precision/recall contract without using the observed
+   development examples as a later confirmation set.
+2. Freeze temporal referential-integrity semantics and add Gold/G/T adversarial
+   regressions for references before creation.
+3. Run a no-cost official LongMemEval harness smoke test.
+4. Freeze a small ordered pilot sample before answer generation.
+5. Compare no memory, local lexical retrieval, and governed retrieval using one
    DeepSeek V4-Flash reader with thinking disabled and identical budgets.
-5. Record tokens, price, latency, retries, returned model, prompts, and outputs.
-6. Audit deterministic and judge-based metrics manually on a blinded sample.
-7. Use the pilot only to estimate variance/cost and preregister a larger run.
+6. Record tokens, price, latency, retries, returned model, prompts, and outputs.
+7. Audit deterministic and judge-based metrics manually on a blinded sample.
+8. Use the pilot only to estimate variance/cost and preregister a larger run.
 
 ## References
 
@@ -205,3 +255,9 @@ preregistration, peer review, an ACM badge, or degree-awarding supervision.
 - Mitchell et al. [Model Cards for Model Reporting](https://arxiv.org/abs/1810.03993).
 - Wu et al. [LongMemEval official repository](https://github.com/xiaowu0162/LongMemEval).
 - MemTensor. [HaluMem official repository](https://github.com/MemTensor/HaluMem).
+- Hu et al. [Memory in the Age of AI Agents](https://arxiv.org/abs/2512.13564).
+- Sumers et al. [Cognitive Architectures for Language Agents](https://openreview.net/forum?id=1i6ZCvflQJ).
+- Xu et al. [A-MEM](https://arxiv.org/abs/2502.12110).
+- Gutierrez et al. [HippoRAG](https://proceedings.neurips.cc/paper_files/paper/2024/hash/6ddc001d07ca4f319af96a3024f6dbd1-Abstract-Conference.html).
+- Chen et al. [Deployment-Time Memorization](https://arxiv.org/abs/2606.10062).
+- Pulipaka et al. [Hidden in Memory](https://arxiv.org/abs/2605.15338).

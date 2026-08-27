@@ -2,3 +2,5 @@ timestamp_utc,experiment_id,provider,model,input_tokens,cached_input_tokens,outp
 2026-08-27T00:00:00Z,EXP-20260827-001,local,deepset/minilm-uncased-squad2,0,0,0,0,0.000000,0.000000,,Local CPU reproduction; no hosted-model API charge
 2026-08-27T00:00:00Z,EXP-20260827-002,local,deterministic-python,0,0,0,0,0.000000,0.000000,,Local deterministic surface audit; no hosted-model API charge
 2026-08-27T14:45:30Z,EXP-20260827-003,DeepSeek,deepseek-v4-flash,118960,128,1543,0,0.027162,,8.57,Estimated from 118832 cache-miss plus 128 cache-hit input tokens and documented off-peak rates; immediate two-decimal balance was unchanged so billed cost is unknown
+2026-08-27T14:56:45Z,EXP-20260827-004,local,deterministic-python,0,0,0,0,0.000000,0.000000,,Clean PR 52 tests surface repeatability and seven-case language audit; no hosted-model API charge
+2026-08-27T14:56:45Z,EXP-20260827-005,local,deterministic-python,0,0,0,0,0.000000,0.000000,,Clean PR 55 tests plus one temporal adversarial sequence on PR and main; no hosted-model API charge
