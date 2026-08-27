@@ -1,0 +1,44 @@
+name: track-x-v02-heldout
+
+on:
+  pull_request:
+    paths:
+      - data/track_x_v02/heldout/session_a.json
+      - data/track_x_v02/heldout/AUTHORSHIP.md
+
+permissions:
+  contents: read
+
+jobs:
+  heldout:
+    if: >-
+      startsWith(github.head_ref, 'research/track-x-v0.2-heldout-') &&
+      github.base_ref == 'research/track-x-v0.2-independent-raw'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install
+        run: python -m pip install -e '.[dev]'
+      - name: Validate isolated Session A contribution
+        run: >-
+          python experiments/validate_track_x_v02_contribution.py
+          --repository-root .
+          --base-ref '${{ github.event.pull_request.base.sha }}'
+      - name: Run frozen held-out evaluation
+        run: >-
+          python experiments/track_x_v02_heldout.py
+          --repository-root .
+          --output-dir /tmp/track_x_v02_heldout
+      - name: Upload held-out outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: track-x-v02-heldout
+          path: /tmp/track_x_v02_heldout
+          if-no-files-found: error

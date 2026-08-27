@@ -1,0 +1,193 @@
+name: test
+
+on:
+  push:
+    branches:
+      - main
+      - 'release/**'
+      - research/v0.2-reconciled
+      - research/track-x-v0.1-raw-verifier
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package-and-tests:
+    name: package-and-tests-py${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12', '3.13', '3.14']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install advertised development package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+          python -m pip check
+
+      - name: Verify enumerated v0.2 release contract
+        run: python tools/check_repository_contract.py
+
+      - name: Test
+        run: python -m pytest -q
+
+  distribution-package:
+    name: distribution-package
+    needs: package-and-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install build and test tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+          python -m pip check
+
+      - name: Build wheel and sdist from exact head
+        run: |
+          rm -rf dist build
+          python -m build --wheel --sdist --outdir dist
+
+      - name: Verify distribution metadata and write hashes
+        run: |
+          python tools/check_distribution_metadata.py \
+            --dist-dir dist \
+            --sha256-manifest dist/SHA256SUMS
+          cat dist/SHA256SUMS
+
+      - name: Verify clean wheel installation
+        run: |
+          set -euo pipefail
+          python -m venv /tmp/mindmap-wheel-venv
+          WHEEL_PATH="$(find dist -maxdepth 1 -name '*.whl' -print -quit)"
+          test -n "$WHEEL_PATH"
+          /tmp/mindmap-wheel-venv/bin/python -m pip install --upgrade pip
+          /tmp/mindmap-wheel-venv/bin/python -m pip install --no-deps "$WHEEL_PATH"
+          cd /tmp
+          /tmp/mindmap-wheel-venv/bin/python - <<'PY'
+          import mindmap
+          import mindmap.canonical
+          import mindmap.track_x
+          print(mindmap.__name__)
+          PY
+
+      - name: Verify clean sdist installation
+        run: |
+          set -euo pipefail
+          python -m venv /tmp/mindmap-sdist-venv
+          SDIST_PATH="$(find "$GITHUB_WORKSPACE/dist" -maxdepth 1 -name '*.tar.gz' -print -quit)"
+          test -n "$SDIST_PATH"
+          /tmp/mindmap-sdist-venv/bin/python -m pip install --upgrade pip
+          /tmp/mindmap-sdist-venv/bin/python -m pip install --no-deps "$SDIST_PATH"
+          cd /tmp
+          /tmp/mindmap-sdist-venv/bin/python - <<'PY'
+          import mindmap
+          import mindmap.canonical
+          import mindmap.track_x
+          print(mindmap.__name__)
+          PY
+
+      - name: Upload reviewable release distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: mindmap-v0.2-distributions-${{ github.sha }}
+          path: |
+            dist/*.whl
+            dist/*.tar.gz
+            dist/SHA256SUMS
+          if-no-files-found: error
+
+  deterministic-reproduction:
+    name: deterministic-reproduction
+    needs: [package-and-tests, distribution-package]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install
+        run: python -m pip install -e '.[dev]'
+
+      - name: Recheck enumerated release contract on reproduction job
+        run: python tools/check_repository_contract.py
+
+      - name: Track S semantic regeneration / zero disagreement
+        run: python experiments/s_track_conformance.py
+
+      - name: Track X v0.1 committed artifact drift comparison
+        run: |
+          rm -rf /tmp/track_x_v01
+          python experiments/track_x_v01.py --output-dir /tmp/track_x_v01
+          diff -u results/track_x_v01/verification_rows.csv /tmp/track_x_v01/verification_rows.csv
+          diff -u results/track_x_v01/downstream_development_oracle_raw_ceiling.csv /tmp/track_x_v01/downstream_development_oracle_raw_ceiling.csv
+          diff -u results/track_x_v01/downstream_development_raw_verifier.csv /tmp/track_x_v01/downstream_development_raw_verifier.csv
+          diff -u results/track_x_v01/downstream_development_structured_only.csv /tmp/track_x_v01/downstream_development_structured_only.csv
+          diff -u results/track_x_v01/downstream_heldout_oracle_raw_ceiling.csv /tmp/track_x_v01/downstream_heldout_oracle_raw_ceiling.csv
+          diff -u results/track_x_v01/downstream_heldout_raw_verifier.csv /tmp/track_x_v01/downstream_heldout_raw_verifier.csv
+          diff -u results/track_x_v01/downstream_heldout_structured_only.csv /tmp/track_x_v01/downstream_heldout_structured_only.csv
+          diff -u results/track_x_v01/summary.json /tmp/track_x_v01/summary.json
+
+      - name: Track X v0.3 development context-gate run
+        run: |
+          rm -rf /tmp/track_x_v03_context_gate
+          python experiments/track_x_v03_context_gate_p0.py \
+            --repository-root "$GITHUB_WORKSPACE" \
+            --output-dir /tmp/track_x_v03_context_gate
+          test "$(jq -r .heldout_read /tmp/track_x_v03_context_gate/run_metadata.json)" = false
+          test "$(jq -r .n_rows /tmp/track_x_v03_context_gate/summary.json)" = 420
+          test "$(jq -r '.generic_typed_disagreements | length' /tmp/track_x_v03_context_gate/summary.json)" = 0
+
+      - name: Upload Track S semantic outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: s-track-semantic-regeneration
+          path: |
+            results/s_track_conformance_rows.csv
+            results/s_track_conformance_summary.json
+          if-no-files-found: warn
+
+      - name: Upload Track X v0.1 drift-checked outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: track-x-v01-p0
+          path: /tmp/track_x_v01
+          if-no-files-found: warn
+
+      - name: Upload Track X v0.3 same-environment outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: track-x-v03-context-gate-p0
+          path: /tmp/track_x_v03_context_gate
+          if-no-files-found: warn

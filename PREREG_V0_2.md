@@ -1,247 +1,548 @@
-# Preregistration Draft: MindMap / NCM-Ψ v0.2
+# MindMap / NCM-Ψ v0.2 Research Protocol
 
-**Status:** provisional preregistration for adversarial review; not yet frozen  
+**Status:** Track S completed; Track E/X freeze candidate  
+**Revision:** 1  
 **Date:** 2026-08-17  
-**Working study title:** *Policy- and Modality-Correct Reconstruction after Selective Cross-Lineage Memory Transfer*
+**Coordination:** Issues #6, #7, and #8
 
-## 1. Primary research question
+## 1. Claim pivot
 
-Under equal raw evidence, extractor, reader, token budget, and index budget, does an explicit lineage–transfer–adoption–justification model improve reconstruction of world state, principal belief, first-person attribution, and requester-disclosable knowledge after selective memory transfer, revocation, or deletion?
+This protocol supersedes proposals to show that a typed v0.2 ledger has higher clean-oracle question-answering accuracy than a complete equal-information generic event ledger.
 
-## 2. Hypotheses
+For a finite event history and finite query set, a generic bitemporal event relation carrying the same operations, identifiers, cutoffs, policies, and support links can be evaluated by an equivalent relational program. Therefore:
 
-### H1 — primary quality hypothesis
+- complete equal-information implementations should agree on clean semantics;
+- withholding answer-defining operations from the generic implementation would make a typed-schema advantage tautological;
+- schema typing is not justified by representational expressiveness or clean oracle QA superiority.
 
-Compared with the strongest simple composition—branch/principal filters, attributed transfer records, explicit belief adoption, and one flattened claim policy—the full model will improve **Lineage-Epistemic Reconstruction Accuracy (LERA)** by at least **5 absolute percentage points** on the held-out collision benchmark.
+The research program has three tracks:
 
-### H2 — safety/attribution hypothesis
+- **S — Semantic conformance:** independent declarative gold; complete generic and typed implementations must agree.
+- **E — Lifecycle enforcement and fault handling:** matched operational faults; compare silent invariant violations, detection, localization, repair, residue, safety, and cost.
+- **X — Extraction and topology generalization:** held-out raw-language topology families; compare calibrated extraction, abstention, downstream reconstruction, safety, and cost.
 
-The full model will reduce the combined rate of unauthorized disclosure and false first-person attribution by at least **50% relative**, without increasing over-withholding by more than 2 absolute points.
+Cost and implementation complexity are reported across E and X.
 
-### H3 — non-branch control hypothesis
+## 2. Scope and non-claims
 
-The full model will lose no more than **2 absolute points** on ordinary non-branch temporal/update controls relative to the strongest simple baseline.
+### In scope
 
-### H4 — graph hypothesis
+- mind instances distinct from principals and runtimes;
+- world branches distinct from cognitive lineages;
+- valid time distinct from system time;
+- explicit snapshot manifests;
+- normative parent/child branch visibility;
+- source assertions and about-world scope;
+- exposure, current availability, attitude, memory attribution, world truth, and disclosure as separate states;
+- copy, restore, selective transfer, adoption/rejection, seal/forget/reacquire, revoke/delete, and alternative support paths;
+- independent semantic fixtures;
+- matched lifecycle fault injection;
+- held-out natural-language topology evaluation;
+- auditability and cost.
 
-Routed graph expansion will not improve aggregate LERA unless it yields a preregistered benefit on multi-hop provenance questions. If a typed relational implementation matches it within the equivalence margin while being cheaper, graph traversal will be excluded from the minimal architecture.
+### Out of scope
 
-## 3. Target state spaces
+- general semantic merge of independently acting identities;
+- philosophical personal-identity scoring;
+- unrestricted defeasible reasoning;
+- always-on graph traversal as a default;
+- independently writable memory-layer hierarchies;
+- public-benchmark SOTA claims;
+- novelty claims for bitemporal storage, provenance, information-flow control, epistemic logic, event sourcing, or provenance witnesses;
+- a claim that typed storage is more expressive than an equal-information generic ledger.
 
-Every question is labelled as exactly one target:
+## 3. Canonical target spaces
 
-1. `WORLD`: objective branch-local world state.
-2. `SOURCE_BELIEF`: source principal's belief or stance.
-3. `DESTINATION_BELIEF`: receiving principal's adopted stance.
-4. `REMEMBER_1P`: whether the destination may claim first-person memory.
-5. `DISCLOSE`: what the requester may receive under the active policy.
-6. `PROVENANCE`: an admissible active justification or required abstention.
+For proposition `φ`, evidence `e`, world branch `b`, mind instance `m`, requester `u`, valid time `t_v`, and system time `t_s`:
 
-The confirmatory primary metric uses the first five target spaces. Provenance exactness is a mandatory secondary metric because several alternative support paths may be valid.
+```math
+WORLD(φ,b,t_v,t_s)
+EVER_EXPOSED(m,e,t_s)
+AVAILABLE(m,e,t_s)
+ATTITUDE(m,φ,b,t_v,t_s)
+ATTRIBUTION(m,φ,b,t_s)
+DISCLOSE(u,φ,b,t_s)
+JUSTIFICATION(u,φ,b,t_s)
+```
 
-## 4. Study tracks
+`ATTRIBUTION` values:
 
-### Track A — oracle component study
+```text
+direct_observation
+same_principal_snapshot_inheritance
+same_principal_state_replication
+attributed_report
+evidence_copy
+reconstruction
+unknown
+```
 
-Inputs are gold structured events and queries. Purpose: test whether the semantics distinguish the intended cases. Results are explicitly labelled **oracle/component ceilings**.
+Every question declares exactly one target and uses a target-specific answer schema. Irrelevant fields are excluded rather than silently scored.
 
-### Track B — end-to-end natural-language study
+## 4. Common append-only event contract
 
-Inputs are only raw dialogues/events and raw questions. The system must infer:
+Every complete oracle implementation receives a byte-equivalent event history containing the same information:
 
-- event boundaries;
-- entities and principal identities;
-- target state space;
-- relation and negation/modality;
-- valid time and source assertion event;
-- branch and lineage type;
-- witnesses/audience;
-- transfer kind and belief adoption;
+```text
+CommonEvent(
+  event_id,
+  event_type,
+  valid interval,
+  system time,
+  actor principal/mind instance,
+  source/destination mind instance,
+  source/destination placement,
+  object kind/id,
+  proposition id,
+  about-world branch,
+  lineage kind and snapshot reference,
+  snapshot-manifest membership attributes,
+  transfer/exposure operation,
+  attitude transition,
+  attribution kind,
+  authorization id/operation,
+  policy operation/label,
+  source-family id,
+  justification members and sufficiency threshold,
+  raw-evidence reference
+)
+```
+
+No implementation receives a hidden final field such as:
+
+```text
+correct_answer
+current
+eligible
+first_person = true
+final disclosure decision
+```
+
+Gold semantics do not import generic or typed resolver code. Generic and typed implementations do not import gold transition helpers. Mutation tests must demonstrate separation.
+
+## 5. Implementations
+
+### G — complete generic event ledger
+
+A complete generic bitemporal event relation using ordinary normalized tables or event rows, recursive traversal, explicit resolver rules, and the full common event history.
+
+G may reconstruct every canonical target. It is not intentionally weakened.
+
+### T — typed v0.2 ledger
+
+The representation in `SCHEMA_V0_2.md`, including typed projections for:
+
+```text
+Principal / MindInstance / Runtime
+WorldBranch / MindPlacement
+LineageEdge
+Snapshot / SnapshotManifestEntry
+EvidenceEvent / SourceAssertion
+ClaimRevision
+ExposureTransition
+PolicyEvent
+MemoryAttribution
+JustificationSet / JustificationMember
+```
+
+T receives no event unavailable to G.
+
+### Diagnostic baselines
+
+Scoped slots, principal-only holders, receipt-as-belief, claim-level policy flattening, or lineage-free stores may be used to expose causal failure classes. They are not the decisive equal-information comparison.
+
+### Optional graph control
+
+Graph traversal is evaluated only for preregistered multi-hop provenance questions. It is removed from the minimal architecture if relational traversal matches it within the frozen equivalence margin at lower cost.
+
+## 6. Track S — semantic conformance
+
+### 6.1 Objective
+
+Verify that independent declarative gold, complete generic G, and typed T agree on clean finite event histories. A complete implementation disagreement is a bug or underspecified semantics, not evidence of superiority.
+
+### 6.2 Frozen fixture families
+
+The fixed suite contains fourteen families:
+
+```text
+F01 branch visibility and late pre-fork import
+F02 mind copy without world fork
+F03 world fork without mind copy
+F04 unsynchronized same-principal replicas
+F05 identity-fork evidence-copy attribution
+F06 receipt, rejection, and adoption
+F07 seal/unseal/forget/reacquire lifecycle
+F08 explicit snapshot manifest and recovery gap
+F09 cross-world reference versus holding context
+F10 protected-only support and revocation
+F11 independent public support surviving protected-path revocation
+F12 same-origin deduplication
+F13 authorized state replication and authorization revocation
+F14 ordinary temporal negative controls
+```
+
+The suite covers every canonical target space. Fixed-suite reporting uses exact counts only; no confidence interval or p-value is attached.
+
+### 6.3 Exit criterion
+
+```text
+independent gold = G = T = declared expected value
+```
+
+for every fixed case, with mutation tests detecting at least:
+
+- silent about-world rescoping;
+- authorization-revocation failure;
+- receipt-as-belief collapse;
+- snapshot-cutoff-without-membership inheritance.
+
+### 6.4 Completed result
+
+Track S was executed in GitHub Actions run `32014966255` on Python 3.11.15.
+
+```text
+fixtures:                  14
+cases:                     75
+gold correct:              75 / 75
+generic correct:           75 / 75
+typed correct:             75 / 75
+all three agree:           75 / 75
+disagreements:             0
+failures:                  0
+pytest:                    16 passed
+```
+
+Target coverage:
+
+```text
+WORLD              12
+EVER_EXPOSED       14
+AVAILABLE          11
+ATTITUDE           12
+ATTRIBUTION        10
+DISCLOSE            8
+JUSTIFICATION       8
+```
+
+Committed outputs:
+
+- `results/s_track_conformance_rows.csv`
+- `results/s_track_conformance_summary.json`
+
+The workflow also publishes artifact `9283150208`. This is a deterministic semantic-conformance result, not comparative architecture evidence.
+
+## 7. Track E — lifecycle enforcement and fault handling
+
+### 7.1 Primary research question
+
+Under identical source events and semantically matched faults, does typed T reduce silent semantic/safety failures or improve detection, localization, containment, repair, and residue relative to generic G?
+
+A T advantage, if any, must arise from explicit constraints, typed projections, and diagnostics—not additional information.
+
+### 7.2 Fault specification
+
+Fault schedules are generated and frozen independently of outcomes. Each semantic fault has a documented injection mapping for G and T.
+
+#### Journal/input faults
+
+- missing event;
+- duplicate event;
+- reordered or late event;
+- malformed or mismatched identifier;
+- corrupted valid/system interval;
+- corrupted source-family or support member;
+- corrupted lineage, placement, snapshot-manifest, or authorization link.
+
+#### Transaction and replay faults
+
+- crash after journal append but before projection update;
+- crash after one of several dependent writes;
+- duplicate replay;
+- out-of-order replay;
+- stale checkpoint or snapshot manifest;
+- partial restore;
+- concurrent transfer and policy-change race.
+
+#### Projection/cache/index faults
+
+- stale availability projection;
+- stale attribution projection;
+- stale attitude or world projection;
+- stale derived claim after revoke/delete;
+- stale vector/graph index after deletion;
+- missing descendant invalidation;
+- cache rebuilt from the wrong system-time cutoff.
+
+#### Authorization/policy faults
+
+- absent authorization for state replication;
+- revoked authorization reused;
+- declassification without an auditable event;
+- protected ancestor omitted from a support path;
+- independent public support incorrectly over-tainted;
+- deletion contract applied to the wrong descendants.
+
+### 7.3 Matched-fault fairness
+
+Report separately:
+
+- implementation-neutral journal faults;
+- physical-layout/projection faults;
+- faults prevented at write time;
+- faults detected only at replay/read time;
+- faults not detected before a target answer or downstream action.
+
+G and T receive no fault label at inference.
+
+### 7.4 Primary E endpoints
+
+- silent invariant-violation rate;
+- unauthorized-disclosure rate;
+- false first-person-attribution rate;
+- cross-instance contamination rate;
+- cross-world contamination rate;
+- fault-detection precision and recall;
+- events/operations to detection;
+- localization accuracy and candidate-set size;
+- repair success rate;
+- repair blast radius;
+- deletion/revocation residue rate;
+- post-repair semantic conformance;
+- abstention or containment quality during uncertainty.
+
+### 7.5 E cost endpoints
+
+- write amplification;
+- projection/index rebuild time;
+- p50/p95 ingest and query latency;
+- storage bytes/event;
+- recovery time and replay count;
+- schema objects, constraints, resolver branches, and migration surface;
+- operator-visible diagnostics produced per fault.
+
+### 7.6 E hypotheses
+
+Before confirmatory outcomes are opened, freeze independent practical/equivalence margins for:
+
+- silent invariant violation;
+- each safety error separately;
+- localization candidate-set size;
+- repair blast radius;
+- cost.
+
+A G/T tie or G advantage is retained and narrows or rejects the typed-enforcement contribution.
+
+## 8. Track X — extraction and topology generalization
+
+### 8.1 Primary research question
+
+Given raw dialogue/documents and held-out topology families, do typed extraction constraints and projections improve calibrated event reconstruction, abstention, and downstream target correctness under equal model and budget conditions?
+
+### 8.2 Conditions
+
+#### X-A — frozen extractor, different validation/projection
+
+One frozen extractor produces joint event hypotheses and confidence masses. G and T receive identical hypotheses. This isolates validation, projection, and abstention.
+
+#### X-B — equal-budget end-to-end extraction
+
+G and T may use representation-specific prompts or constrained outputs, but receive equal:
+
+- model family and revision;
+- training/development examples;
+- raw evidence;
+- token, call, retry, and wall-clock budget;
+- reader model and evidence budget.
+
+Any representation-specific extra call or token is counted.
+
+#### X-C — reference ceilings
+
+Report separately:
+
+- raw retrieval/reader baseline;
+- oracle structured-event ceiling;
+- structured-only memory;
+- dual structured/raw fallback.
+
+### 8.3 Held-out topology discipline
+
+Splits are grouped by:
+
+- cognitive-lineage topology;
+- world-branch topology;
+- transfer/adoption pattern;
 - policy lifecycle;
-- support/derivation links.
+- support topology;
+- temporal-expression family;
+- entity vocabulary and rendering family.
 
-No answer-defining canonical entities, gold question type, `current`, `trust`, branch eligibility, or policy decision may be exposed at inference.
+Entire topology families are held out. A value substitution, paraphrase, or reordered version of a held-out topology may not appear in development. At least one test partition composes mechanisms whose exact joint topology was absent from development.
 
-## 5. Scenario design
+### 8.4 Correlated extraction modes
 
-### 5.1 Core factors
-
-- **Lineage:** identity fork / operational replica / restore.
-- **Transfer:** no transfer / attributed report / evidence copy / state replication request.
-- **Adoption:** accepted / doubted / rejected / quarantined.
-- **Policy lifecycle:** public / private→shared / shared→revoked / source deleted.
-- **Support topology:** protected-only / independent public support / duplicated same-source support.
-- **Query target:** world / source belief / destination belief / first-person / disclosure / provenance.
-
-A covering array will cover all pairwise factor interactions. Hand-written adversarial scenarios will cover higher-order interactions:
-
-- attempted state replication into an identity fork;
-- receipt followed by explicit rejection;
-- secret-only derivation followed by revocation;
-- secret and genuinely independent public support paths;
-- copied summary that launders hearsay;
-- restored runtime with an explicit recovery gap;
-- sealed existence versus sealed content;
-- same-principal replica merge versus new-principal coexistence.
-
-### 5.2 Natural-language rendering
-
-Each hidden event log will be rendered through multiple templates and paraphrase models. Split boundaries are by hidden scenario template, event ordering family, and entity vocabulary—not by individual questions. Near-duplicate renderings of one hidden world may not cross splits.
-
-### 5.3 Controls
-
-At least 20% of the final questions are ordinary temporal/update controls with no fork, transfer, or restricted evidence. This prevents a system from appearing safer merely by refusing to answer.
-
-## 6. Baselines
-
-1. Full transcript truncated to the same evidence-token budget.
-2. Raw BM25+dense reciprocal-rank fusion.
-3. RRF + branch/principal/current-policy filters.
-4. Filters + attributed transfer records.
-5. Filters + transfer + explicit adoption/modality.
-6. Model 5 + lineage-aware first-person rules, but flattened claim policy.
-7. Model 5 + alternative support sets, but no lineage-aware replication rule.
-8. **NCM-Ψ v0.2:** lineage + transfer/adoption + alternative justification sets + policy lifecycle.
-9. NCM-Ψ + routed graph expansion, tested as a secondary ablation.
-10. Reproducible external systems where one frozen harness can supply equal evidence, reader, and budgets.
-
-The critical falsifier is baseline 5, 6, or 7 matching baseline 8.
-
-## 7. Primary endpoint
-
-### 7.1 Lineage-Epistemic Reconstruction Accuracy (LERA)
-
-For each query, the reader must produce a structured answer tuple:
+Evaluate event/joint-hypothesis errors rather than independent field dropout:
 
 ```text
-(answer,
- target_state_space,
- holder,
- epistemic_modality,
- first_person_status,
- disclosure_decision)
+identity collapse
+fork-cutoff shift
+world/mind-branch swap
+about-world-scope swap
+exposure source/destination swap
+attitude laundering
+attribution laundering
+policy declassification
+restore-parent or snapshot-membership error
+source-family collapse
+assertion/event-time collapse
 ```
 
-LERA is macro exact accuracy across scenario families and target state spaces. Unauthorized disclosure, false first-person attribution, or wrong-branch answers are incorrect even when the proposition is globally true.
+### 8.5 X endpoints
 
-### 7.2 Evidence budget
+- event-boundary accuracy;
+- principal/mind-instance/entity linking;
+- valid/system-time accuracy;
+- lineage, placement, snapshot, transfer, adoption, attribution, policy, and support-link accuracy;
+- joint-hypothesis log loss, Brier score, and ECE;
+- target-space routing accuracy;
+- downstream exact accuracy by target;
+- unauthorized disclosure and over-withholding;
+- false first-person attribution and under-attribution;
+- cross-instance and cross-world contamination;
+- correct abstention and risk-coverage;
+- evidence recall and evidence-use accuracy;
+- latency, calls, tokens, and monetary cost.
 
-Primary comparison uses a fixed maximum of **2,000 retrieved evidence tokens per query** and the same frozen answer model/prompt. Systems that need fewer tokens retain that efficiency advantage; unused tokens are not backfilled with unrelated evidence.
+### 8.6 Raw fallback
 
-## 8. Mandatory secondary metrics
+Compare:
 
-- unauthorized disclosure rate;
-- false first-person attribution rate;
-- cross-lineage contamination rate;
-- revocation/deletion residue rate;
-- over-withholding rate;
-- belief-adoption error rate;
-- provenance precision and complete evidence recall;
-- correct abstention and selective risk–coverage;
-- Brier score and expected calibration error;
-- p50/p95 ingestion and query latency;
-- tokens/query, bytes/event, write amplification, and monetary inference cost.
+1. same model and prompt family as extraction;
+2. same model, different prompt;
+3. independent model or deterministic reconstruction;
+4. idealized independent simulator, labelled only as an upper bound.
 
-No single composite “memory score” will hide these error classes.
+Report extractor/fallback error correlation, false-trigger harm, repair accuracy, evidence distraction, leakage, and cost.
 
-## 9. Correlated extraction errors
+## 9. Development and confirmatory organization
 
-Independent field dropout is prohibited as the only robustness test. Each event receives a latent corruption mode:
+### Development suite
+
+Target:
 
 ```text
-clean
-wrong_entity_or_principal_link
-wrong_event_boundary
-temporal_scope_shift
-speaker_or_witness_swap
-branch_or_lineage_misattribution
-modality_or_negation_laundering
-visibility_misclassification
-transfer_or_adoption_confusion
-source_family_duplication
+48 topology/archetype clusters
+x 5 independently seeded surface/entity/value realizations
+= 240 instantiated scenarios
 ```
 
-One mode jointly mutates dependent fields and downstream derivations. Two robustness tracks are reported:
+The 240 instances are not treated as 240 independent generalization units. Report within-archetype and between-archetype variation separately.
 
-1. deterministic interventions for causal attribution;
-2. naturally produced errors from one frozen extractor, manually labelled at the joint event-hypothesis level.
+### Confirmatory E/X suites
 
-A verifier outputs a distribution over joint extraction hypotheses. Field confidences may be reported diagnostically but are not multiplied as if independent.
+Before outcomes are opened, hash and freeze:
 
-## 10. Raw-evidence fallback
+- topology/archetype manifests;
+- fault schedules and implementation mappings;
+- raw renderings;
+- target-family weights;
+- practical/equivalence and safety margins justified independently of observed development effects;
+- sample-size rationale based on archetype-level or hierarchical variance;
+- analysis code and seeds;
+- failure/exclusion policy.
 
-Structured-only, raw-only, and dual-path systems are compared. The fallback threshold is selected on validation data only.
+## 10. Statistical analysis
 
-Two fallback conditions are required:
+### Fixed S suite
 
-- the fallback reader is independent from the extractor;
-- the fallback reader reuses the extractor model.
+Exact counts only.
 
-The gap estimates the cost of correlated model failure. Accuracy, safety errors, fallback rate, and latency are reported as a frontier.
+### E/X development
 
-## 11. Sample size and splits
+Report:
 
-The final confirmatory set will contain at least **800 independent hidden scenarios**, based on detecting an approximately 5-point paired difference under a conservative discordant-pair rate near 0.25 with 80% power and two-sided 5% error. Each scenario produces several target-space questions, but statistical resampling clusters by scenario.
+- paired scenario differences;
+- topology/archetype-cluster bootstrap diagnostics;
+- within-archetype seed variation;
+- between-archetype variation;
+- hierarchical or mixed-effects estimates where identifiable;
+- exact discordant archetype/scenario counts;
+- all failures and exclusions.
 
-Provisional split:
+Question-level tests are supplementary only.
 
-- train/development: 400 scenarios;
-- calibration/validation: 200 scenarios;
-- confirmatory test: 800 scenarios.
+### Confirmatory E/X
 
-The exact size will be recomputed from end-to-end pilot variance before freezing the test manifest.
+Use the prespecified topology/archetype-level or hierarchical analysis. Safety endpoints are reported separately; unauthorized disclosure and false first-person attribution are not merged into one score.
 
-## 12. Statistical analysis
+## 11. Falsification and narrowing
 
-- Primary: paired difference in scenario-level LERA with a scenario-clustered bootstrap 95% confidence interval.
-- Secondary paired binary comparison: McNemar exact test.
-- Error-class comparisons: clustered bootstrap intervals and rate ratios.
-- Calibration: Brier, ECE, and risk–coverage curves.
-- Secondary endpoint multiplicity: Holm correction within each metric family.
-- Random seed, prompts, model revisions, package versions, and per-query outputs are recorded in an immutable run manifest.
+Narrow or reject the project claim if any occurs:
 
-The primary claim is accepted only when the preregistered direction holds and the confidence interval excludes zero. A practically smaller gain is reported as a failed effect-size target even if nominally significant.
+1. complete G and T disagree on clean Track S semantics after specification reconciliation;
+2. T enforcement benefits disappear under matched information and fault schedules;
+3. G matches or exceeds T in silent-failure prevention, localization, repair, safety, and cost;
+4. apparent T gains come from target-encoding fields or additional model budget;
+5. X gains disappear on held-out topology families;
+6. correctness improves by increasing unauthorized disclosure or attribution errors;
+7. alternative support sets add no measurable safety/audit value;
+8. graph traversal adds no held-out multi-hop benefit at acceptable cost;
+9. raw fallback adds distraction/cost without robust correlated-error repair;
+10. an external system matches the same mechanism in the frozen harness.
 
-## 13. Acceptance and rejection rules
+Negative results are retained. They may show that generic event sourcing plus ordinary constraints is sufficient.
 
-The architecture claim is narrowed or rejected when any of the following occurs:
+## 12. Reproducibility
 
-1. Baseline 5, 6, or 7 is statistically equivalent to full v0.2 within the predefined equivalence margin.
-2. Improvement is below 5 points or safety error reduction is below 50% relative.
-3. Ordinary temporal controls lose more than 2 points.
-4. Raw fallback adds enough distraction/cost to erase its robustness benefit.
-5. A simple typed relational index matches graph expansion on the preregistered multi-hop subset.
-6. External temporal/provenance systems match or exceed v0.2 in the frozen harness.
-7. Natural-language extraction errors eliminate the oracle component advantage.
+Every run commits or release-hashes:
 
-## 14. Completed exploratory collision audit
+- common event schema and serialized events;
+- independent declarative gold implementation;
+- G/T projections, constraints, and resolvers;
+- fault specifications and implementation mappings;
+- topology/archetype and split manifests;
+- renderer/extractor versions, prompts, models, and seeds;
+- per-event, per-question, per-scenario, and per-archetype outputs;
+- target-conditioned scoring;
+- field-information audit;
+- dependency lock;
+- hardware and timestamps;
+- exact statistical configuration;
+- exclusions and failures.
 
-A 48-scenario, 192-decision symbolic unit test was run before this preregistration. It crossed six lineage/transfer/adoption cases, four policy lifecycles, and two support topologies.
+CI regenerates compact result files and fails on drift.
 
-| System | Decision accuracy | All-four-correct scenarios |
-|---|---:|---:|
-| NCM-Ψ v0.2 | 100.00% | 100.00% |
-| Alternative support, no lineage | 93.75% | 83.33% |
-| Lineage, no alternative support | 87.50% | 75.00% |
-| Transfer + adoption | 81.25% | 62.50% |
-| Attributed transfer | 72.92% | 37.50% |
-| Branch/principal/ACL only | 39.58% | 0.00% |
+## 13. Classification of earlier results
 
-Against the strongest ablation, the full rule set improved decision accuracy by 6.25 points; scenario-clustered bootstrap interval approximately 2.60–10.42 points; paired exact p=0.000488.
+### Original 25,000-query report
 
-**Interpretation restriction:** the full model directly implements the hidden-world rules, so this is a discriminability/unit test, not an estimate of real-world LLM performance or publication-ready confirmatory evidence.
+Permitted label:
 
-## 15. Freeze checklist
+> unverified structured-oracle resolver/scaffold smoke test until its implementation and outputs are committed.
 
-Before the confirmatory run, commit and hash:
+It does not power S, E, or X.
 
-- schema and task definitions;
-- generator and rendering code;
-- split manifest;
-- scoring code;
-- prompts and model versions;
-- token/call budgets;
-- extraction-error interventions;
-- fallback threshold selection procedure;
-- primary and secondary analyses;
-- exclusion and failure handling rules.
+### Fixed 48-case collision script
+
+Permitted label:
+
+> deterministic truth-table discriminability/conformance smoke test.
+
+Its basic aggregate fields are reproducible. The fixed Cartesian suite receives exact counts, not inferential statistics, and does not establish schema sufficiency or natural-language robustness.
+
+## 14. Remaining freeze checklist
+
+- [x] canonical schema revision with explicit snapshot membership and branch visibility
+- [x] independent declarative gold semantics
+- [x] complete equal-information G and T
+- [x] Track S exact equality on 75 cases
+- [x] committed Track S per-case and summary outputs
+- [ ] explicit cross-session acceptance of schema revision 1
+- [ ] Track E fault taxonomy and mappings implemented
+- [ ] Track E practical/equivalence margins frozen
+- [ ] Track X topology manifests and raw renderers implemented
+- [ ] Track X model/budget conditions frozen
+- [ ] explicit cross-session approval before confirmatory E/X outcomes are opened
+
+Silence is not consensus. Any post-freeze substantive change requires a dated amendment before affected confirmatory outcomes are inspected.

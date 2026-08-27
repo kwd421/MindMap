@@ -1,46 +1,180 @@
-# MindMap — NCM³ / Neural-Cloud Memory Research
+# MindMap — Runnable Neural-Cloud Memory Research Core
 
-Research repository for long-horizon agent memory inspired by the **mindmap / neural-cloud** metaphor.
+MindMap is a research repository for long-horizon agent memory inspired by the **mindmap / neural-cloud** metaphor. The implemented core models a persistent, versioned software mind rather than a visual mind-map diagram.
 
-The current research direction is **NCM³-E**, a perspective-conditioned, branch-isolated epistemic memory architecture. It separates:
+The central semantic rule is:
 
-- **world validity** — when a fact was true;
-- **system transaction time** — when the memory system recorded it;
-- **possession** — which character or agent actually observed or received it;
-- **authorization** — which caller may retrieve it now;
-- **worldline** — which branch or counterfactual history the memory belongs to;
-- **provenance and revision** — who asserted, corrected, or retracted it.
+> **world truth ≠ a principal's belief ≠ first-person memory ≠ current disclosure permission**
 
-## Status
+The code therefore keeps world state, possession/exposure, availability, attitude, attribution, policy, provenance, valid time, transaction time, world branch, and mind-instance lineage as separable concepts.
 
-This is an early research prototype, not a production memory service and not a public-benchmark SOTA claim.
+## Repository status
 
-Completed so far:
+This branch is an **installable deterministic research prototype**. It is not a production memory service and it is not a public-benchmark SOTA claim.
 
-1. A reproducible synthetic retrieval/state-resolution pilot for the original NCM³ proposal.
-2. A 2026 prior-art review showing that bitemporal storage, graph memory, rollback, provenance, hierarchical retrieval, and memory governance each already have close precedents.
-3. A narrowed research hypothesis: **access is not knowledge, knowledge is not truth, and neither should cross worldline boundaries.**
-4. A mechanism-isolation experiment for epistemic, temporal, access-control, and branch semantics.
-5. A fault-injection study for extraction errors and correlated multi-pass failures.
+Implemented and executable here:
 
-## Repository layout
+- a Python package under `src/mindmap/`;
+- independent declarative gold semantics for the canonical fixture suite;
+- complete generic and normalized typed reference ledgers;
+- branch, mind-copy, attribution, policy, availability, bitemporal, and alternative-support fixtures;
+- deterministic semantic-conformance and Track X mechanism tests;
+- synthetic raw-evidence/verifier experiments with explicit information firewalls;
+- a development-only candidate → context gate → prompt → answer audit;
+- committed compact result artifacts and GitHub Actions verification.
 
-- `docs/` — research direction, literature map, and preregistered experiment protocol.
-- `src/mindmap/` — deterministic reference implementation of the memory semantics.
-- `experiments/` — controlled pilots.
-- `tests/` — noninterference and state-consistency invariants.
-- `results/` — compact aggregate results; large generated files are intentionally excluded.
-- `benchmarks/` — public benchmark adapters and provenance instructions.
+Not integrated or not yet established here:
 
-## Reproduce
+- Track E observer/physical-fault packages from draft PRs #36/#37;
+- a production database, server, or multi-user deployment;
+- an unrestricted LLM extraction and answer pipeline;
+- a held-out natural-language generalization result for Track X v0.2;
+- superiority over an equal-information generic event ledger;
+- a public GateMem/LoCoMo/LongMemEval architecture result;
+- a universal benefit from always-on graph retrieval.
+
+Public GateMem endpoint work remains in separate reviewed PRs #46/#47. Those endpoint controls do **not** constitute a MindMap effectiveness result. Pending Track E heads are preserved in `docs/LOST_WORK_REGISTER.md` rather than silently absorbed into this release.
+
+## Quick start
+
+Requirements:
+
+- Python 3.11 or newer;
+- Git;
+- no API key for the deterministic core below.
+
+Until release PR #49 is merged into `main`, clone its exact review branch:
 
 ```bash
-python -m pip install -e '.[dev]'
-pytest -q
-python experiments/epistemic_branch_pilot.py
-python experiments/extraction_noise_pilot.py
+git clone --branch release/v0.2-runnable-core --single-branch \
+  https://github.com/kwd421/MindMap.git
+cd MindMap
+python -m venv .venv
 ```
 
-## Interpretation rule
+After PR #49 is merged, an ordinary clone of `main` is equivalent.
 
-A clean synthetic resolver reaching 100% means only that the implementation satisfies the semantics used to generate the test cases. It is a **conformance result**, not evidence of real conversational accuracy. End-to-end claims require public datasets, non-oracle extraction, fixed model/token budgets, and separate retrieval/utilization evaluation.
+Activate the environment, then run:
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -e '.[dev]'
+python tools/check_repository_contract.py
+python -m pytest -q
+```
+
+`release_contract_v0_2.json` is the machine-readable **enumerated v0.2 release contract**. The checker validates every path, command, status statement, stale-claim guard, result entry, Python declaration, package metadata field, and license rule listed in that manifest. It does not claim to infer arbitrary future prose references that have not been added to the manifest.
+
+## Reproduce the stable deterministic core
+
+### 1. Canonical semantic conformance
+
+```bash
+python experiments/s_track_conformance.py
+```
+
+This checks that the independent gold interpreter, complete generic ledger, and normalized typed ledger agree on the fixed canonical semantics. Equality is the expected result under equal information.
+
+Reproducibility contract: **semantic regeneration / zero disagreement**. The Track S summary can include Python/platform identity, so this is not a cross-environment byte-identity claim.
+
+### 2. Track X v0.1 raw-verifier mechanism audit
+
+```bash
+python experiments/track_x_v01.py --output-dir /tmp/track_x_v01
+```
+
+This is a deterministic information-firewall and mechanism audit. Its templates and controlled faults are not unrestricted natural language and must not be reported as production accuracy.
+
+Reproducibility contract: **committed artifact drift comparison** for the declared v0.1 CSV/JSON outputs.
+
+### 3. Track X v0.3 development context-gate audit
+
+```bash
+python experiments/track_x_v03_context_gate_p0.py --output-dir /tmp/track_x_v03_context_gate
+```
+
+This development-only audit separates:
+
+```text
+R  candidate evidence before governance
+G  pre-reader verification/gating
+P  evidence actually admitted to the prompt surface
+A  downstream answer/use
+```
+
+It reads Session-B development passages only. It is not a Session-A-held-out or public-benchmark result.
+
+Reproducibility contract: **same-environment deterministic double-run plus held-out boundary**. The dedicated workflow requires `heldout_read=false` and checks its frozen row/topology invariants.
+
+## What the deterministic results mean
+
+A clean symbolic system reaching 100% means only that the implementation satisfies the frozen semantics or controlled fixture contract. It does **not** estimate real conversational accuracy.
+
+The evidence hierarchy is:
+
+1. unit and conformance tests;
+2. deterministic synthetic mechanism audits;
+3. independently authored held-out synthetic text;
+4. protected public-benchmark endpoint controls;
+5. matched end-to-end comparisons with one frozen extractor/reader and equal budgets;
+6. production evidence.
+
+Only levels actually completed may be claimed.
+
+## Actual repository layout
+
+```text
+.github/workflows/              CI and declared reproduction checks
+archive/                        superseded research drafts
+data/                           synthetic development/freeze metadata
+docs/                           protocols, status, audits, lost-work register
+experiments/                    executable controlled studies
+results/                        compact committed deterministic artifacts
+src/mindmap/                    installable reference implementation
+tests/                          semantic and experiment invariants
+tools/                          release/distribution contract checks
+LICENSE                         MIT license text
+pyproject.toml                  package and distribution metadata
+release_contract_v0_2.json      enumerated runnable-release contract
+PREREG_V0_2.md                  current preregistration candidate
+SCHEMA_V0_2.md                  current canonical schema candidate
+```
+
+There is no active `benchmarks/` directory in this runnable core. Public benchmark data remain external and pinned by the relevant protected-runner work rather than copied into this repository.
+
+## Main research tracks
+
+### Track S — semantic conformance
+
+Question: do complete equal-information generic and typed implementations compute the same finite semantics?
+
+Expected result: equality. A typed oracle advantage would indicate unequal information, unequal validators, or an implementation defect.
+
+### Track E — lifecycle and fault behavior
+
+The canonical Track E P0/P1 implementations are **not integrated in PR #49**. They remain review-gated in draft PRs #36/#37 at the exact heads recorded in `docs/LOST_WORK_REGISTER.md`.
+
+Their research question is which faults are observable, preventable, localizable, repairable, or non-identifiable under declared witnesses. Comparative claims belong to enforcement, repair blast radius, residue, concurrency, auditability, or cost—not abstract schema expressiveness.
+
+### Track X — raw evidence and external validity
+
+Question: under identical input capability, model, prompt, retrieval budget, answer budget, retry budget, and cost accounting, which pre-generation memory mechanisms improve permitted evidence delivery while preventing unauthorized, deleted, stale, or cross-branch evidence from entering generation?
+
+Synthetic Track X tests fine-grained mechanisms. Public Track X tests external realism. Neither substitutes for the other.
+
+## Development discipline
+
+- Gold answers must not be generated by the system being evaluated.
+- `receipt`, `belief`, and `first-person attribution` remain distinct.
+- Correct `refuse` and `no_memory` actions are not generic uncertainty abstentions.
+- Stateful benchmark methods require checkpoint-isolated replay or verified snapshot clones.
+- Raw evidence and every derived claim retain provenance.
+- Corrections create revision history rather than silent overwrite.
+- Null, generic-favourable, and falsifying outcomes remain visible.
+- CI executes the commands advertised in this README.
+
+## License
+
+The executable research core is released under the MIT License. See `LICENSE`.
+
+See `docs/IMPLEMENTATION_STATUS.md` for the exact implemented/proven boundary, `docs/LOST_WORK_REGISTER.md` for intentionally excluded pending research, and `PREREG_V0_2.md` for the current experimental hypotheses and stopping rules.

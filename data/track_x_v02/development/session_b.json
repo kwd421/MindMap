@@ -1,0 +1,128 @@
+[
+  {
+    "bundle_id": "X2-F01",
+    "fixture_id": "F01",
+    "topology_family": "branch_visibility",
+    "event_id": "F01.c2",
+    "query_id": "F01.q3",
+    "author_session": "B",
+    "complete_text": "Archive note F01.c2 was entered at system time 20. It concerns the main world: for the proposition key.location, the key was in Room 0 from world time 0 until time 12, when that interval ended.",
+    "ambiguous_text": "An old note entered at time 20 says the key had been in Room 0 before the split, but it does not identify which worldline or the exact interval.",
+    "distractor_passages": [
+      "A separate later report says that after world time 12 the key in the main branch was moved to Room 2."
+    ],
+    "candidate_mutation": {
+      "field_name": "about_world_branch_id",
+      "replacement": "wrong-world"
+    },
+    "notes": "Late database import of a pre-fork fact."
+  },
+  {
+    "bundle_id": "X2-F02",
+    "fixture_id": "F02",
+    "topology_family": "mind_copy_without_world_fork",
+    "event_id": "F02.a1",
+    "query_id": "F02.q5",
+    "author_session": "B",
+    "complete_text": "Replica A1 made attitude record F02.a1 at system time 11: it believed the proposition key_in_r4 about the main world. The attitude is effective from world time 0 onward.",
+    "ambiguous_text": "A replica later said it believed the key claim, but the note does not name the replica or the worldline.",
+    "distractor_passages": [
+      "Sibling replica A2 did not receive A1's post-copy experience and has no recorded attitude toward key_in_r4."
+    ],
+    "candidate_mutation": {
+      "field_name": "attitude_transition",
+      "replacement": "disbelieve"
+    },
+    "notes": "Instance-specific attitude after a cognitive copy."
+  },
+  {
+    "bundle_id": "X2-F03",
+    "fixture_id": "F03",
+    "topology_family": "world_fork_without_mind_copy",
+    "event_id": "F03.c2",
+    "query_id": "F03.q2",
+    "author_session": "B",
+    "complete_text": "World-state record F03.c2 entered at system time 12 says that door.color in the alt branch became red at valid time 12 and remained red afterward.",
+    "ambiguous_text": "A post-fork record says the door became red, but the branch name is missing.",
+    "distractor_passages": [
+      "The main branch has a different post-fork record: door.color became blue at world time 12."
+    ],
+    "candidate_mutation": {
+      "field_name": "about_world_branch_id",
+      "replacement": "main"
+    },
+    "notes": "World branch is independent from mind-copy lineage."
+  },
+  {
+    "bundle_id": "X2-F04",
+    "fixture_id": "F04",
+    "topology_family": "unsynchronized_same_principal_replicas",
+    "event_id": "F04.a2",
+    "query_id": "F04.q2",
+    "author_session": "B",
+    "complete_text": "At system time 8, replica R2 wrote attitude record F04.a2. R2 disbelieved alarm_on in the main world, with the attitude effective from world time 0.",
+    "ambiguous_text": "One of the two replicas recorded disbelief about the alarm, but the note does not say whether it was R1 or R2.",
+    "distractor_passages": [
+      "Replica R1 separately recorded belief that alarm_on was true; the replicas had not synchronized."
+    ],
+    "candidate_mutation": {
+      "field_name": "attitude_transition",
+      "replacement": "believe"
+    },
+    "notes": "Same principal does not collapse unsynchronized mind instances."
+  },
+  {
+    "bundle_id": "X2-F05",
+    "fixture_id": "F05",
+    "topology_family": "identity_fork_copy_attribution",
+    "event_id": "F05.x2",
+    "query_id": "F05.q3",
+    "author_session": "B",
+    "complete_text": "Transfer record F05.x2 was committed at system time 7. Source mind A1 copied evidence E.copy into destination mind A2 as an evidence copy. It was not a direct observation by A2.",
+    "ambiguous_text": "A2 received information concerning E.copy from A1, but the note does not say whether it was a report, a state replication, or an evidence copy.",
+    "distractor_passages": [
+      "A2 later believed event_x, but belief adoption alone does not convert copied evidence into A2's first-person observation."
+    ],
+    "candidate_mutation": {
+      "field_name": "transfer_kind",
+      "replacement": "receive"
+    },
+    "notes": "Copied evidence is not first-person memory for an identity fork."
+  },
+  {
+    "bundle_id": "X2-F06",
+    "fixture_id": "F06",
+    "topology_family": "receive_accept_reject",
+    "event_id": "F06.xr",
+    "query_id": "F06.q1",
+    "author_session": "B",
+    "complete_text": "At system time 5, record F06.xr says that source mind S sent evidence E.report to destination mind D, which received it as a report. Receipt occurred before D chose any attitude toward the report.",
+    "ambiguous_text": "The report was passed from S to another mind at time 5, but the destination is not identified.",
+    "distractor_passages": [
+      "Mind S already had direct access to E.report; that fact does not prove that D received it."
+    ],
+    "candidate_mutation": {
+      "field_name": "destination_mind_instance_id",
+      "replacement": "S"
+    },
+    "notes": "Receipt is separate from later adoption or rejection."
+  },
+  {
+    "bundle_id": "X2-F07",
+    "fixture_id": "F07",
+    "topology_family": "exposure_policy_lifecycle",
+    "event_id": "F07.seal",
+    "query_id": "F07.q3",
+    "author_session": "B",
+    "complete_text": "Policy record F07.seal was entered at system time 3. It self-sealed evidence E.life for mind M, making the evidence unavailable to that mind while leaving the earlier exposure in the audit history.",
+    "ambiguous_text": "At time 3, access to E.life changed for M, but the note does not say whether the action sealed or unsealed the evidence.",
+    "distractor_passages": [
+      "A later policy event at system time 5 explicitly unsealed E.life for M."
+    ],
+    "candidate_mutation": {
+      "field_name": "policy_operation",
+      "replacement": "self_unseal"
+    },
+    "notes": "Current availability changes without rewriting historical exposure."
+  }
+]

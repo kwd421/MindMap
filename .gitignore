@@ -1,0 +1,10 @@
+__pycache__/
+.pytest_cache/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Reproducible large outputs; compact aggregates remain versioned.
+results/*_query_results.csv
+collision_audit_outputs/

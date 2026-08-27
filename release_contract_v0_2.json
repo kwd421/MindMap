@@ -1,0 +1,80 @@
+{
+  "schema_version": "mindmap-release-contract-v0.2",
+  "python": {
+    "requires_python": ">=3.11",
+    "ci_versions": ["3.11", "3.12", "3.13", "3.14"]
+  },
+  "package": {
+    "name": "mindmap-ncm",
+    "license_expression": "MIT",
+    "license_file": "LICENSE",
+    "setuptools_minimum": 77,
+    "package_root": "src"
+  },
+  "required_paths": [
+    "README.md",
+    "LICENSE",
+    "pyproject.toml",
+    "release_contract_v0_2.json",
+    "PREREG_V0_2.md",
+    "SCHEMA_V0_2.md",
+    "docs/IMPLEMENTATION_STATUS.md",
+    "docs/LOST_WORK_REGISTER.md",
+    "src/mindmap/__init__.py",
+    "src/mindmap/canonical/model.py",
+    "src/mindmap/canonical/gold.py",
+    "src/mindmap/canonical/generic.py",
+    "src/mindmap/canonical/typed.py",
+    "src/mindmap/distribution_contract.py",
+    "src/mindmap/track_x/v03_context_gate.py",
+    "tests/test_canonical_conformance.py",
+    "tests/test_distribution_contract.py",
+    "tests/test_repository_contract.py",
+    "tools/check_distribution_metadata.py",
+    "experiments/s_track_conformance.py",
+    "experiments/track_x_v01.py",
+    "experiments/track_x_v03_context_gate_p0.py",
+    "results/s_track_conformance_summary.json",
+    "results/track_x_v01/summary.json",
+    "data/track_x_v02/FREEZE_V02.json",
+    "data/track_x_v02/heldout/AUTHORSHIP_TEMPLATE.md"
+  ],
+  "readme_commands": [
+    "python -m pip install -e '.[dev]'",
+    "python tools/check_repository_contract.py",
+    "python -m pytest -q",
+    "python experiments/s_track_conformance.py",
+    "python experiments/track_x_v01.py --output-dir /tmp/track_x_v01",
+    "python experiments/track_x_v03_context_gate_p0.py --output-dir /tmp/track_x_v03_context_gate"
+  ],
+  "readme_required_statements": [
+    "world truth ≠ a principal's belief ≠ first-person memory ≠ current disclosure permission",
+    "This branch is an **installable deterministic research prototype**.",
+    "There is no active `benchmarks/` directory in this runnable core.",
+    "CI executes the commands advertised in this README.",
+    "docs/IMPLEMENTATION_STATUS.md",
+    "release_contract_v0_2.json"
+  ],
+  "readme_forbidden_snippets": [
+    "- `benchmarks/` — public benchmark adapters",
+    "python experiments/epistemic_branch_pilot.py\npython experiments/extraction_noise_pilot.py",
+    "generated artifacts reproduce byte-for-byte under the frozen code path"
+  ],
+  "result_entries": [
+    {
+      "path": "results/s_track_conformance_summary.json",
+      "kind": "json_object",
+      "contract": "semantic_regeneration_zero_disagreement"
+    },
+    {
+      "path": "results/track_x_v01/summary.json",
+      "kind": "json_object",
+      "contract": "committed_artifact_drift_comparison"
+    }
+  ],
+  "reproduction_surfaces": {
+    "track_s": "semantic regeneration / zero disagreement; no cross-environment byte identity claim",
+    "track_x_v01": "committed artifact drift comparison",
+    "track_x_v03": "same-environment deterministic double-run plus held-out boundary"
+  }
+}
