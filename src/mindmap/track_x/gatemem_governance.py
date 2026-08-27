@@ -9,7 +9,12 @@ import re
 from typing import Any
 
 from .gatemem_baselines import LexicalHit, RawLexicalConfig
-from .gatemem_public import PublicCheckpoint, PublicEpisode, PublicPrincipal, PublicTurn
+from .gatemem_public import (
+    PublicCheckpoint,
+    PublicEpisode,
+    PublicPrincipal,
+    PublicTurn,
+)
 from .gatemem_reader import (
     ExtractiveReader,
     ExtractiveReaderResult,
@@ -45,12 +50,21 @@ FORBIDDEN_CAPABILITY_FIELDS = frozenset(
 
 _TOKEN_RE = re.compile(r"\w+", flags=re.UNICODE)
 _DELETE_RE = re.compile(
-    r"\b(?:delete|forget|erase|remove|purge|wipe)\b", flags=re.IGNORECASE
+    r"\b(?:delete|forget|erase|remove|purge|wipe)\b",
+    flags=re.IGNORECASE,
 )
-_RESTRICT_RE = re.compile(
+_DENY_TARGET_RE = re.compile(
     r"\b(?:do\s+not\s+share|don't\s+share|must\s+not\s+share|"
-    r"do\s+not\s+disclose|don't\s+disclose|keep\s+(?:this|that|it)?\s*private|"
-    r"keep\s+(?:this|that|it)?\s*confidential|only\s+share\s+with)\b",
+    r"do\s+not\s+disclose|don't\s+disclose)\b",
+    flags=re.IGNORECASE,
+)
+_ALLOW_ONLY_RE = re.compile(
+    r"\bonly\s+share\s+with\b",
+    flags=re.IGNORECASE,
+)
+_ACTOR_ONLY_RE = re.compile(
+    r"\b(?:keep\s+(?:this|that|it)?\s*(?:private|confidential)|"
+    r"this\s+is\s+(?:private|confidential))\b",
     flags=re.IGNORECASE,
 )
 _GRANT_RE = re.compile(
@@ -59,8 +73,6 @@ _GRANT_RE = re.compile(
     r"authori[sz]e\w*\s+.+?\s+to\s+(?:access|see|read))\b",
     flags=re.IGNORECASE,
 )
-_ONLY_SHARE_RE = re.compile(r"\bonly\s+share\s+with\b", flags=re.IGNORECASE)
-_PRIVATE_RE = re.compile(r"\b(?:private|confidential)\b", flags=re.IGNORECASE)
 
 _POLICY_WORDS = frozenset(
     {
@@ -152,6 +164,13 @@ class SignalOperation(StrEnum):
     GRANT = "grant"
 
 
+class RestrictionScope(StrEnum):
+    NONE = "none"
+    DENY_TARGETS = "deny_targets"
+    ALLOW_ONLY = "allow_only"
+    ACTOR_ONLY = "actor_only"
+
+
 class GateDisposition(StrEnum):
     ADMIT = "admit"
     BLOCK = "block"
@@ -164,7 +183,7 @@ class UnknownDisposition(StrEnum):
 
 @dataclass(frozen=True, slots=True)
 class GovernanceConfig:
-    """Pre-outcome B2 policy fixed before any public benchmark result.
+    """Pre-outcome B2 policy fixed before a public B2 result.
 
     The primary condition admits candidates when no public policy assertion can
     be linked to them. This avoids turning B2 into an always-refuse baseline.
@@ -213,13 +232,13 @@ class GovernanceCandidate:
 class GovernanceSignal:
     signal_id: str
     operation: SignalOperation
+    restriction_scope: RestrictionScope
     actor_principal_id: str
     actor_role: str
     observed_index: int
     source_public_turn_id: str
     target_principal_ids: tuple[str, ...]
     target_roles: tuple[str, ...]
-    deny_all_others: bool
     anchor_tokens: tuple[str, ...]
     source_text_sha256: str
     source_kind: str = "public_turn_assertion"
@@ -297,7 +316,9 @@ def assert_no_forbidden_capabilities(value: Any) -> None:
                 raise ValueError(f"forbidden B2 capability field: {key}")
             assert_no_forbidden_capabilities(item)
         return
-    if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
+    if isinstance(value, Sequence) and not isinstance(
+        value, (str, bytes, bytearray)
+    ):
         for item in value:
             assert_no_forbidden_capabilities(item)
         return
@@ -321,7 +342,9 @@ def governance_surface_manifest() -> dict[str, Any]:
             "GovernanceSurface": names(GovernanceSurface),
         },
         "forbidden_fields": sorted(FORBIDDEN_CAPABILITY_FIELDS),
-        "chronology": "incremental ingest order only; no future turns or source as-of ID",
+        "chronology": (
+            "incremental ingest order only; no future turns or source as-of ID"
+        ),
         "external_policy_signals": "disabled in primary B2",
         "default_unknown_disposition": UnknownDisposition.ADMIT.value,
         "same_b1a_candidates": True,
@@ -353,12 +376,23 @@ class PublicTurnPolicyParser:
         principal_ids = {
             principal_id
             for principal_id, aliases in self._principal_aliases.items()
-            if any(alias and re.search(rf"(?<!\w){re.escape(alias)}(?!\w)", lowered) for alias in aliases)
+            if any(
+                alias
+                and re.search(
+                    rf"(?<!\w){re.escape(alias)}(?!\w)",
+                    lowered,
+                )
+                for alias in aliases
+            )
         }
         roles = {
             role
             for role in self._role_aliases
-            if role and re.search(rf"(?<!\w){re.escape(role)}s?(?!\w)", lowered)
+            if role
+            and re.search(
+                rf"(?<!\w){re.escape(role)}s?(?!\w)",
+                lowered,
+            )
         }
         return tuple(sorted(principal_ids)), tuple(sorted(roles))
 
@@ -380,26 +414,44 @@ class PublicTurnPolicyParser:
         return tuple(sorted(output))
 
     @staticmethod
-    def _signal_id(turn: PublicTurn, operation: SignalOperation, ordinal: int) -> str:
+    def _signal_id(
+        turn: PublicTurn,
+        operation: SignalOperation,
+        scope: RestrictionScope,
+        ordinal: int,
+    ) -> str:
         payload = (
-            f"{turn.turn_id}\0{operation.value}\0{ordinal}\0{turn.text}"
+            f"{turn.turn_id}\0{operation.value}\0{scope.value}\0{ordinal}\0{turn.text}"
         ).encode("utf-8")
         return "sig_" + sha256(payload).hexdigest()[:24]
 
-    def parse(self, turn: PublicTurn, *, observed_index: int) -> tuple[GovernanceSignal, ...]:
+    def parse(
+        self,
+        turn: PublicTurn,
+        *,
+        observed_index: int,
+    ) -> tuple[GovernanceSignal, ...]:
         text = turn.text
-        operations: list[tuple[SignalOperation, bool]] = []
+        operations: list[tuple[SignalOperation, RestrictionScope]] = []
         if _DELETE_RE.search(text):
-            operations.append((SignalOperation.DELETE, False))
-        if _RESTRICT_RE.search(text) or _PRIVATE_RE.search(text):
+            operations.append((SignalOperation.DELETE, RestrictionScope.NONE))
+
+        if _ALLOW_ONLY_RE.search(text):
             operations.append(
-                (
-                    SignalOperation.RESTRICT,
-                    bool(_ONLY_SHARE_RE.search(text) or _PRIVATE_RE.search(text)),
-                )
+                (SignalOperation.RESTRICT, RestrictionScope.ALLOW_ONLY)
             )
-        if _GRANT_RE.search(text):
-            operations.append((SignalOperation.GRANT, False))
+        elif _DENY_TARGET_RE.search(text):
+            operations.append(
+                (SignalOperation.RESTRICT, RestrictionScope.DENY_TARGETS)
+            )
+        elif _ACTOR_ONLY_RE.search(text):
+            operations.append(
+                (SignalOperation.RESTRICT, RestrictionScope.ACTOR_ONLY)
+            )
+
+        # "only share with" is an allow-list restriction, not an independent grant.
+        if _GRANT_RE.search(text) and not _ALLOW_ONLY_RE.search(text):
+            operations.append((SignalOperation.GRANT, RestrictionScope.NONE))
         if not operations:
             return ()
 
@@ -407,18 +459,18 @@ class PublicTurnPolicyParser:
         anchors = self._anchor_tokens(text)
         digest = sha256(text.encode("utf-8")).hexdigest()
         signals = []
-        for ordinal, (operation, deny_all_others) in enumerate(operations):
+        for ordinal, (operation, scope) in enumerate(operations):
             signals.append(
                 GovernanceSignal(
-                    signal_id=self._signal_id(turn, operation, ordinal),
+                    signal_id=self._signal_id(turn, operation, scope, ordinal),
                     operation=operation,
+                    restriction_scope=scope,
                     actor_principal_id=turn.speaker_principal_id,
                     actor_role=turn.speaker_role,
                     observed_index=observed_index,
                     source_public_turn_id=turn.turn_id,
                     target_principal_ids=target_principal_ids,
                     target_roles=target_roles,
-                    deny_all_others=deny_all_others,
                     anchor_tokens=anchors,
                     source_text_sha256=digest,
                 )
@@ -432,8 +484,8 @@ class PublicTextGovernanceGate:
     def __init__(self, config: GovernanceConfig | None = None) -> None:
         self.config = config or GovernanceConfig()
 
+    @staticmethod
     def _topic_overlap(
-        self,
         candidate: GovernanceCandidate,
         signal: GovernanceSignal,
     ) -> int:
@@ -442,7 +494,10 @@ class PublicTextGovernanceGate:
         return len(set(_tokens(candidate.text)) & set(signal.anchor_tokens))
 
     @staticmethod
-    def _targets_asker(signal: GovernanceSignal, query: GovernanceQuery) -> bool:
+    def _targets_asker(
+        signal: GovernanceSignal,
+        query: GovernanceQuery,
+    ) -> bool:
         if query.asker_principal_id in signal.target_principal_ids:
             return True
         return query.asker_role.casefold() in signal.target_roles
@@ -474,7 +529,9 @@ class PublicTextGovernanceGate:
                 applies, overlap = self._relevant(candidate, signal)
                 if applies:
                     relevant.append((signal, overlap))
-            relevant.sort(key=lambda row: (row[0].observed_index, row[0].signal_id))
+            relevant.sort(
+                key=lambda row: (row[0].observed_index, row[0].signal_id)
+            )
 
             matched: list[str] = []
             reasons: list[str] = []
@@ -493,22 +550,38 @@ class PublicTextGovernanceGate:
                     disposition = GateDisposition.BLOCK
                     deleted = True
                     reasons.append("public_same_speaker_delete")
-                    if self.config.deletion_is_terminal:
-                        continue
-                elif deleted and self.config.deletion_is_terminal:
                     continue
-                elif signal.operation is SignalOperation.RESTRICT:
-                    targets_asker = self._targets_asker(signal, surface.query)
-                    actor_is_asker = (
-                        signal.actor_principal_id == surface.query.asker_principal_id
-                    )
-                    if targets_asker or (signal.deny_all_others and not actor_is_asker):
-                        disposition = GateDisposition.BLOCK
-                        reasons.append("public_same_speaker_restriction")
-                elif signal.operation is SignalOperation.GRANT:
-                    if self._targets_asker(signal, surface.query):
-                        disposition = GateDisposition.ADMIT
-                        reasons.append("public_same_speaker_grant")
+                if deleted and self.config.deletion_is_terminal:
+                    continue
+
+                targets_asker = self._targets_asker(signal, surface.query)
+                actor_is_asker = (
+                    signal.actor_principal_id
+                    == surface.query.asker_principal_id
+                )
+
+                if signal.operation is SignalOperation.RESTRICT:
+                    if signal.restriction_scope is RestrictionScope.DENY_TARGETS:
+                        if targets_asker:
+                            disposition = GateDisposition.BLOCK
+                            reasons.append("public_same_speaker_deny_target")
+                    elif signal.restriction_scope is RestrictionScope.ALLOW_ONLY:
+                        if targets_asker:
+                            disposition = GateDisposition.ADMIT
+                            reasons.append("public_same_speaker_allow_only_target")
+                        else:
+                            disposition = GateDisposition.BLOCK
+                            reasons.append("public_same_speaker_allow_only_other")
+                    elif signal.restriction_scope is RestrictionScope.ACTOR_ONLY:
+                        if actor_is_asker:
+                            disposition = GateDisposition.ADMIT
+                            reasons.append("public_same_speaker_actor_only_self")
+                        else:
+                            disposition = GateDisposition.BLOCK
+                            reasons.append("public_same_speaker_actor_only_other")
+                elif signal.operation is SignalOperation.GRANT and targets_asker:
+                    disposition = GateDisposition.ADMIT
+                    reasons.append("public_same_speaker_grant")
 
             if not matched:
                 reasons.append(
@@ -623,7 +696,9 @@ class RawLexicalGovernedReaderGateMemAgent(RawLexicalSharedReaderGateMemAgent):
         )
         evaluation = self._governance_gate.evaluate(surface)
         admitted = set(evaluation.admitted_turn_ids)
-        admitted_hits = tuple(hit for hit in hits if hit.turn.turn_id in admitted)
+        admitted_hits = tuple(
+            hit for hit in hits if hit.turn.turn_id in admitted
+        )
         exposure = self._prompt_exposure(admitted_hits)
 
         if exposure.text:
