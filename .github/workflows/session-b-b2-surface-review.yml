@@ -31,10 +31,14 @@ jobs:
           python -m pip install -e '.[dev]'
           python -m pip check
 
-      - name: Verify Session A frozen B2 tests
+      - id: upstream
+        name: Verify Session A frozen B2 tests
+        continue-on-error: true
         run: python -m pytest -q tests/test_track_x_gatemem_governance.py
 
-      - name: Run deterministic B2 surface audit
+      - id: audit
+        name: Run deterministic B2 surface audit
+        continue-on-error: true
         run: |
           rm -rf /tmp/gatemem-b2-surface-audit
           python experiments/gatemem_b2_surface_audit.py \
@@ -47,5 +51,19 @@ jobs:
           PY
           )" = 0
 
-      - name: Run Session B adversarial surface cases
+      - id: adversarial
+        name: Run Session B adversarial surface cases
+        continue-on-error: true
         run: python -m pytest -q tests/test_track_x_gatemem_governance_session_b_review.py
+
+      - name: Fail closed if any review layer failed
+        if: always()
+        env:
+          UPSTREAM: ${{ steps.upstream.outcome }}
+          AUDIT: ${{ steps.audit.outcome }}
+          ADVERSARIAL: ${{ steps.adversarial.outcome }}
+        run: |
+          printf 'upstream=%s\naudit=%s\nadversarial=%s\n' "$UPSTREAM" "$AUDIT" "$ADVERSARIAL"
+          test "$UPSTREAM" = success
+          test "$AUDIT" = success
+          test "$ADVERSARIAL" = success
