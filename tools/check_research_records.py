@@ -132,8 +132,10 @@ def check_timing(record: dict[str, Any], root: Path, relative_path: Path) -> lis
 
     prereg = record.get("preregistration_commit")
     if prereg is None:
-        if record["study_class"] == "confirmatory":
-            errors.append("confirmatory record requires preregistration_commit")
+        if record["study_class"] in {"confirmatory", "reproduction"}:
+            errors.append(
+                f"{record['study_class']} record requires preregistration_commit"
+            )
         return errors
 
     if git(root, "cat-file", "-e", f"{prereg}^{{commit}}").returncode != 0:

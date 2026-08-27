@@ -64,6 +64,11 @@ GateMem negative-control studies. H3–H5 remain open or only partially tested.
 | `reproduction` | same code/data, independent run | no silent changes | at least 2 where stochastic | reproduced result |
 | `replication` | independent implementation or changed setting | preregistered | justified by design | external corroboration |
 
+Within this project, `confirmatory` and `reproduction` records require a
+non-null preregistration commit that contains the frozen record. A pilot or
+replication may also declare one, in which case the same ancestry, timing, and
+frozen-field checks apply.
+
 Promotion requires all of the following:
 
 1. a manifest created before outcome inspection for confirmatory work;

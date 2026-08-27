@@ -83,3 +83,28 @@ def test_dirty_source_without_reconstructability_is_rejected() -> None:
     record["source"].pop("reconstructability")
     errors = CHECKER.check_source(record, ROOT)
     assert "dirty source requires source.reconstructability" in errors
+
+
+def test_reproduction_without_preregistration_anchor_is_rejected() -> None:
+    schema = json.loads(
+        (ROOT / "docs" / "research" / "record.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    record = json.loads(
+        (
+            ROOT
+            / "docs"
+            / "research"
+            / "records"
+            / "EXP-20260828-006.json"
+        ).read_text(encoding="utf-8")
+    )
+
+    record.pop("preregistration_commit")
+    missing_errors = list(Draft202012Validator(schema).iter_errors(record))
+    assert any("preregistration_commit" in error.message for error in missing_errors)
+
+    record["preregistration_commit"] = None
+    null_errors = list(Draft202012Validator(schema).iter_errors(record))
+    assert any("None is not of type 'string'" in error.message for error in null_errors)

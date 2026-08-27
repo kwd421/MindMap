@@ -63,6 +63,8 @@ and project semantic checks. A green result means:
   unreconstructability;
 - exact timestamps are ordered, while unknown timestamps are explicitly
   marked rather than replaced by midnight placeholders;
+- confirmatory and reproduction records contain a non-null preregistration
+  anchor;
 - a declared preregistration commit contains the record, descends from the
   source revision, predates the run, and preserves method arms, models,
   controls, sample, primary outcome, and stopping rule;

@@ -154,5 +154,24 @@
   "oneOf": [
     {"required": ["artifact_files"]},
     {"required": ["artifact_retention"]}
+  ],
+  "allOf": [
+    {
+      "if": {
+        "required": ["study_class"],
+        "properties": {
+          "study_class": {"enum": ["confirmatory", "reproduction"]}
+        }
+      },
+      "then": {
+        "required": ["preregistration_commit"],
+        "properties": {
+          "preregistration_commit": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{40}$"
+          }
+        }
+      }
+    }
   ]
 }
