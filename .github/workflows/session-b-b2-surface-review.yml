@@ -1,0 +1,51 @@
+name: session-b-b2-surface-review
+
+on:
+  push:
+    branches:
+      - research/session-b-b2-surface-review
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: session-b-b2-surface-review-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install deterministic review dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+          python -m pip check
+
+      - name: Verify Session A frozen B2 tests
+        run: python -m pytest -q tests/test_track_x_gatemem_governance.py
+
+      - name: Run deterministic B2 surface audit
+        run: |
+          rm -rf /tmp/gatemem-b2-surface-audit
+          python experiments/gatemem_b2_surface_audit.py \
+            --output-dir /tmp/gatemem-b2-surface-audit
+          test "$(python - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path('/tmp/gatemem-b2-surface-audit/summary.json').read_text())
+          print(x['failed_count'])
+          PY
+          )" = 0
+
+      - name: Run Session B adversarial surface cases
+        run: python -m pytest -q tests/test_track_x_gatemem_governance_session_b_review.py
