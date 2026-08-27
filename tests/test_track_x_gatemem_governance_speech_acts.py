@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 from mindmap.track_x.gatemem_baselines import RawLexicalConfig
-from mindmap.track_x.gatemem_governance import (
-    PublicTurnPolicyParser,
-    SignalOperation,
+from mindmap.track_x.gatemem_governance import SignalOperation
+from mindmap.track_x.gatemem_governance_safe import (
+    FrozenB2GateMemAgent,
+    FrozenPublicTurnPolicyParser,
+    deletion_capability_manifest,
 )
-# Importing the frozen agent installs the pre-outcome speech-act grammar used by
-# the actual B2 method.
-from mindmap.track_x.gatemem_governance_safe import FrozenB2GateMemAgent
 from mindmap.track_x.gatemem_public import (
     PublicCheckpoint,
     PublicEpisode,
@@ -63,7 +62,7 @@ def _turn(turn_id: str, text: str) -> PublicTurn:
 
 
 def test_explicit_information_record_deletion_emits_delete_signal():
-    parser = PublicTurnPolicyParser(_episode())
+    parser = FrozenPublicTurnPolicyParser(_episode())
     signals = parser.parse(
         _turn("t1", "Please delete the migraine diagnosis record."),
         observed_index=0,
@@ -74,7 +73,7 @@ def test_explicit_information_record_deletion_emits_delete_signal():
 
 
 def test_remove_stitches_is_not_active_forgetting():
-    parser = PublicTurnPolicyParser(_episode())
+    parser = FrozenPublicTurnPolicyParser(_episode())
     assert (
         parser.parse(
             _turn("t1", "Please remove the stitches tomorrow."),
@@ -85,7 +84,7 @@ def test_remove_stitches_is_not_active_forgetting():
 
 
 def test_wipe_table_is_not_active_forgetting():
-    parser = PublicTurnPolicyParser(_episode())
+    parser = FrozenPublicTurnPolicyParser(_episode())
     assert (
         parser.parse(
             _turn("t1", "Please wipe the table."),
@@ -93,6 +92,31 @@ def test_wipe_table_is_not_active_forgetting():
         )
         == ()
     )
+
+
+def test_referentless_forget_fact_is_explicitly_outside_v09_capability():
+    parser = FrozenPublicTurnPolicyParser(_episode())
+    assert (
+        parser.parse(
+            _turn("t1", "Please forget the migraine diagnosis."),
+            observed_index=0,
+        )
+        == ()
+    )
+    assert (
+        parser.parse(
+            _turn("t2", "Forget that Alice has migraines."),
+            observed_index=1,
+        )
+        == ()
+    )
+
+
+def test_deletion_capability_route_is_machine_readable_and_incomplete():
+    manifest = deletion_capability_manifest()
+    assert manifest["route"] == "capability-boundary"
+    assert "referent-less forget <fact> requests" in manifest["outside_capability"]
+    assert "incomplete" in str(manifest["expected_consequence"])
 
 
 def test_ordinary_remove_action_does_not_block_prior_fact():
