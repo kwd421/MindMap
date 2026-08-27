@@ -77,6 +77,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skip-official-scorer", action="store_true")
     parser.add_argument("--gate-by-action", action="store_true")
     parser.add_argument("--scorer-python", default=sys.executable)
+    parser.add_argument(
+        "--opaque-id-secret-file",
+        type=Path,
+        default=None,
+        help=(
+            "Evaluator-owned binary key file reused only to pair protected runs. "
+            "The key and mapping are never written to outputs; only commitments are."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -88,6 +97,18 @@ def _lexical_config(args: argparse.Namespace) -> RawLexicalConfig:
         recency_weight=args.recency_weight,
         max_answer_characters=args.max_answer_characters,
     )
+
+
+def _load_opaque_secret(path: Path | None) -> bytes | None:
+    if path is None:
+        return None
+    resolved = path.resolve()
+    if not resolved.is_file():
+        raise ValueError(f"opaque-ID secret file is missing: {resolved}")
+    secret = resolved.read_bytes()
+    if len(secret) < 16:
+        raise ValueError("opaque-ID secret file must contain at least 128 bits")
+    return secret
 
 
 def _package_version(name: str) -> str | None:
@@ -210,6 +231,7 @@ def main() -> int:
         scorer_python=args.scorer_python,
         gate_by_action=args.gate_by_action,
         repository_revision=repository_revision,
+        opaque_id_secret=_load_opaque_secret(args.opaque_id_secret_file),
     )
 
     reader_runtime_sha256: str | None = None
