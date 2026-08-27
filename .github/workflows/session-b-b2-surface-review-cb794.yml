@@ -1,0 +1,62 @@
+name: session-b-b2-surface-review-cb794
+
+on:
+  push:
+    branches:
+      - research/session-b-b2-surface-review-cb794
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: session-b-b2-surface-review-cb794-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install deterministic review dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+          python -m pip check
+
+      - id: frozen
+        name: Run frozen B2 unit contract
+        continue-on-error: true
+        run: python -m pytest -q tests/test_track_x_gatemem_governance.py
+
+      - id: audit
+        name: Regenerate deterministic nine-case surface audit
+        continue-on-error: true
+        run: |
+          rm -rf /tmp/gatemem-b2-surface-audit
+          python experiments/gatemem_b2_surface_audit.py \
+            --output-dir /tmp/gatemem-b2-surface-audit
+
+      - id: adversarial
+        name: Run Session B capability-boundary cases
+        continue-on-error: true
+        run: python -m pytest -q tests/test_track_x_gatemem_governance_session_b_review.py
+
+      - name: Report and fail closed
+        if: always()
+        env:
+          FROZEN: ${{ steps.frozen.outcome }}
+          AUDIT: ${{ steps.audit.outcome }}
+          ADVERSARIAL: ${{ steps.adversarial.outcome }}
+        run: |
+          printf 'frozen=%s\naudit=%s\nadversarial=%s\n' "$FROZEN" "$AUDIT" "$ADVERSARIAL"
+          test "$FROZEN" = success
+          test "$AUDIT" = success
+          test "$ADVERSARIAL" = success
