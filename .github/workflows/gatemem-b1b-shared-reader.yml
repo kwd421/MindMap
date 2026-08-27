@@ -289,9 +289,11 @@ jobs:
               ),
           }
 
+          # `answer` may be an aggregate action-class label in the official
+          # summary. Per-query answer payloads are never added to `publishable`.
           forbidden_keys = {
               'checkpoint_id', 'episode_id', 'turn_id', 'principal_id',
-              'query_text', 'answer', 'prompt_context', 'record_refs',
+              'query_text', 'prompt_context', 'record_refs',
               'memory_ops', 'relationships',
           }
 
