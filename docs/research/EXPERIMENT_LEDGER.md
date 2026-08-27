@@ -46,8 +46,19 @@ Machine-readable records live in `records/`.
 ## EXP-20260827-003 — LongMemEval official harness smoke/pilot
 
 - **Class:** planned smoke followed by a preregistered small pilot
-- **Status:** pending
+- **Status:** preregistered; outcome not yet inspected
 - **Primary purpose:** verify official data/evaluator identity and measure a
   no-memory/local retrieval/DeepSeek Flash comparison on a fixed small sample.
-- **Promotion condition:** exact data and scorer hashes, frozen sample, prompt
-  hashes, token/cost log, and manual audit of judge behavior.
+- **Official harness:** `9e0b455f4ef0e2ab8f2e582289761153549043fc`
+- **Data hashes:** oracle `821a2034...20c`; cleaned S `d6f21ea9...442`
+- **Frozen sample:** six non-abstention question types plus two abstention items,
+  selected by the predeclared SHA-256 ranking rule; ordered-ID hash
+  `c0e75cb7dce45e7f70cc0aedfca6c1ef9fe6620bfb1b3fa09620917202720e6f`
+- **Arms:** no memory, local BM25 top-3 sessions, oracle evidence context
+- **Reader/judge:** `deepseek-v4-flash`, non-thinking, temperature 0; the pilot
+  judge adapts the official rubric but is not the official GPT-4o metric
+- **Stopping rule:** 24 answer and 24 judge calls, or stop before projected cost
+  exceeds USD 0.25
+- **Promotion condition:** prompt hashes, token/cost log, answer-session recall,
+  paired results, and a manual judge audit. This pilot cannot be promoted to an
+  official score regardless of its outcome.
