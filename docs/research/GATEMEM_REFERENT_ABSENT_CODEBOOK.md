@@ -18,6 +18,16 @@ Raw public turn text remains in the pinned GateMem checkout. The committed
 annotation artifact contains source coordinates, the EXP-008 text SHA-256, and
 labels, but not raw text.
 
+The original deterministic runner encoded only the four authorization and four
+deictic exceptions and assigned every unlisted key a default label. A later
+model-assisted manual review correctly identified that this representation
+could not distinguish a deliberate complement from an omitted annotation. The
+existing, already-known labels are therefore also frozen row-by-row in
+`docs/research/inputs/EXP-20260828-009/manual_labels.csv`. This is provenance
+hardening after outcome access, not a new coding pass, a second coder, or new
+semantic evidence. A runner must require exact 57/57 key coverage and reject
+missing, extra, duplicate, hash-mismatched, or unknown-enum rows.
+
 ## Primary request-type label
 
 Assign exactly one `request_type` per turn.
