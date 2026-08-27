@@ -37,6 +37,25 @@ _base_governance._GRANT_RE = re.compile(
     flags=re.IGNORECASE,
 )
 
+# G3 review prototype: distinguish an information/memory erasure speech act
+# from an ordinary domain action that happens to use verbs such as `remove` or
+# `wipe`.  `forget` is intrinsically cognitive; the other destructive verbs
+# require a nearby data/memory referent in either order.  This is deliberately
+# conservative: unknown/ambiguous cases remain under the frozen unknown-admit
+# policy rather than manufacturing a false deletion signal.
+_MEMORY_REFERENT = (
+    r"(?:mem(?:ory|ories)|record(?:s)?|data|information|details?|"
+    r"conversation(?:s)?|message(?:s)?|note(?:s)?|history|"
+    r"profile|entr(?:y|ies))"
+)
+_DESTRUCTIVE_VERB = r"(?:delete|erase|purge|wipe|remove)"
+_base_governance._DELETE_RE = re.compile(
+    rf"(?:\bforget\b|"
+    rf"\b{_DESTRUCTIVE_VERB}\b.{{0,160}}?\b{_MEMORY_REFERENT}\b|"
+    rf"\b{_MEMORY_REFERENT}\b.{{0,160}}?\b{_DESTRUCTIVE_VERB}\b)",
+    flags=re.IGNORECASE,
+)
+
 
 class PolicySourceBlockingGovernanceGate(PublicTextGovernanceGate):
     """Whole-turn B2 gate that never sends policy directives to the reader.
