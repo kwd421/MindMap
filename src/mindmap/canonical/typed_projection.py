@@ -2,7 +2,12 @@ from __future__ import annotations
 
 from typing import Iterable
 
-from .model import Attribution, CommonEvent, sorted_events
+from .model import (
+    Attribution,
+    CommonEvent,
+    sorted_events,
+    validate_temporal_references,
+)
 from .typed_rows import (
     PrincipalRow,
     MindRow,
@@ -25,7 +30,9 @@ class TypedProjectionMixin:
     implementation_name = "T_typed_v0_2_ledger"
 
     def __init__(self, events: Iterable[CommonEvent]):
-        self.common_events = sorted_events(events)
+        input_events = tuple(events)
+        validate_temporal_references(input_events)
+        self.common_events = sorted_events(input_events)
         ids = [event.event_id for event in self.common_events]
         if len(ids) != len(set(ids)):
             raise ValueError("duplicate CommonEvent.event_id")
@@ -164,6 +171,7 @@ class TypedProjectionMixin:
                     ExposureRow(
                         event.event_id,
                         event.destination_mind_instance_id,
+                        event.object_kind or "evidence",
                         event.object_id,
                         event.transfer_kind,
                         event.source_mind_instance_id,
@@ -178,6 +186,7 @@ class TypedProjectionMixin:
                 self.policies.append(
                     PolicyRow(
                         event.event_id,
+                        event.object_kind or "evidence",
                         event.object_id,
                         event.policy_operation,
                         event.destination_mind_instance_id,

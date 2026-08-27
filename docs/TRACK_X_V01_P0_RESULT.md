@@ -1,9 +1,10 @@
-# Track X v0.1 — Leakage-Free Raw-Verifier P0 Result
+# Track X v0.1 — Leakage-Free Raw-Verifier P0 Result and RI Reanalysis
 
 **Status:** fixed deterministic component audit; cross-session review required  
 **Manifest:** `track-x-v0.1-manifest-2`  
 **Date:** 2026-08-17  
 **Pull request:** #38
+**Current analysis revision:** `track-x-v0.1-post-hoc-temporal-ri-1`
 
 ## 1. Question
 
@@ -88,7 +89,7 @@ held-out:    0.0117142857
 overall:     0.0110285714
 ```
 
-## 4. Downstream result
+## 4. Original downstream result
 
 Per split and per downstream architecture, each treatment has 28 rows.
 
@@ -109,6 +110,43 @@ Per split and per downstream architecture, each treatment has 28 rows.
 | Oracle raw ceiling | 28/28 | 0/28 | 0/28 | 0/28 |
 
 The generic and typed downstream ledgers produced no treatment-level outcome disagreement.
+
+### 4.1 Post-hoc temporal-RI intervention
+
+The original fixed result was produced before the canonical input layer rejected
+missing and future entity references. The temporal referential-integrity
+amendment is an intervention on the downstream ledgers, not on the raw verifier.
+It converts some malformed structured-only candidates from silent use to schema
+rejection and abstention. The frozen 56 verifier decisions, manifest, raw
+renderings, and raw-verifier/oracle rows are unchanged.
+
+The pre-intervention source and artifacts remain available at
+`main@069c5f4b16b2f594aec48924161ae8944f39652e`. Current committed artifacts are
+the explicitly labelled post-hoc reanalysis. Exact row comparison found:
+
+```text
+verification rows changed:                         0/56
+development raw-verifier/oracle rows changed:      0/112
+held-out raw-verifier/oracle rows changed:         0/112
+development structured-only rows changed:         12/56
+held-out structured-only rows changed:             16/56
+all structured-only rows changed:                  28/112
+```
+
+The new structured-only aggregates are:
+
+| Split | Architecture | Correct | Schema reject / abstain | Silent wrong | Unsafe disclosure |
+|---|---|---:|---:|---:|---:|
+| Development | Generic | 7/28 | 6/28 | 15/28 | 0/28 |
+| Development | Typed | 7/28 | 6/28 | 15/28 | 0/28 |
+| Held-out | Generic | 7/28 | 8/28 | 13/28 | 3/28 |
+| Held-out | Typed | 7/28 | 8/28 | 13/28 | 3/28 |
+
+Accuracy remains 7/28 because schema rejection is not counted as a correct
+answer. The apparent silent-wrong-use reduction must not be attributed to the
+raw verifier: it comes from a new input gate shared by the structured-only,
+raw-verifier, and oracle downstream constructors. In the latter two treatments
+the selected event is valid, so their observed rows do not change.
 
 ## 5. Interpretation
 
@@ -135,6 +173,9 @@ The manifest was corrected to select information-complete F09 event `F09.xb`, an
 - Topology families are held out, but the underlying event-type grammar is not held out.
 - There is no learned model, free-form dialogue, OCR, speech, multilingual variation, or adversarial prose.
 - Corruptions are single-field or complete candidate omission and are deliberately recoverable when raw text is present.
+- The current artifact set is a declared post-hoc downstream reanalysis after a
+  schema intervention; the original pre-intervention artifacts are preserved in
+  Git history rather than silently presented as the current run.
 - Primary-candidate and verifier failures are not yet independently sampled or correlated.
 - Confidence values are assigned by template family rather than fitted and externally calibrated.
 - One selected event/query pair represents each topology family.
@@ -171,3 +212,7 @@ Committed deterministic artifacts:
 - `run_metadata.json` with SHA-256 hashes.
 
 CI regenerates all deterministic files into `/tmp`, diffs them against the committed results, and uploads the full run artifact.
+The summary and run metadata identify the reanalysis as
+`track-x-v0.1-post-hoc-temporal-ri-1`; tests pin the exact structured-only
+projection-error and silent-wrong-use fractions so a common-mode G/T agreement
+cannot hide another change.

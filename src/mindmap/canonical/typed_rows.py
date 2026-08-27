@@ -97,6 +97,7 @@ class AttitudeRow:
 class ExposureRow:
     exposure_id: str
     destination_mind_instance_id: str
+    object_kind: str
     object_id: str
     operation: str
     source_mind_instance_id: Optional[str]
@@ -107,6 +108,7 @@ class ExposureRow:
 @dataclass(frozen=True)
 class PolicyRow:
     policy_event_id: str
+    object_kind: str
     object_id: str
     operation: str
     destination_mind_instance_id: Optional[str]

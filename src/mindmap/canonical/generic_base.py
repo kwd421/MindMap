@@ -2,14 +2,16 @@ from __future__ import annotations
 
 from typing import Iterable, Optional
 
-from .model import CommonEvent, TargetQuery, sorted_events
+from .model import CommonEvent, TargetQuery, sorted_events, validate_temporal_references
 
 
 class GenericBase:
     implementation_name = "G_generic_event_ledger"
 
     def __init__(self, events: Iterable[CommonEvent]):
-        self.events = sorted_events(events)
+        input_events = tuple(events)
+        validate_temporal_references(input_events)
+        self.events = sorted_events(input_events)
         ids = [event.event_id for event in self.events]
         if len(ids) != len(set(ids)):
             raise ValueError("duplicate CommonEvent.event_id")

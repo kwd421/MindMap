@@ -20,6 +20,7 @@ from .model import (
     TargetQuery,
     TargetSpace,
     freeze_attrs,
+    validate_temporal_references,
 )
 
 __all__ = [
@@ -33,4 +34,5 @@ __all__ = [
     "TargetQuery",
     "TargetSpace",
     "freeze_attrs",
+    "validate_temporal_references",
 ]

@@ -1,4 +1,6 @@
 {
+  "analysis_kind": "post_hoc_intervention_reanalysis",
+  "analysis_revision": "track-x-v0.1-post-hoc-temporal-ri-1",
   "downstream": {
     "development:oracle_raw_ceiling:G_generic": {
       "abstention_rate": 0.0,
@@ -41,23 +43,23 @@
       "unsafe_disclosure_rate": 0.0
     },
     "development:structured_only:G_generic": {
-      "abstention_rate": 0.0,
+      "abstention_rate": 0.21428571428571427,
       "answer_accuracy": 0.25,
       "false_denial_rate": 0.0,
       "n_rows": 28,
-      "projection_error_rate": 0.0,
+      "projection_error_rate": 0.21428571428571427,
       "selected_event_exact_rate": 0.25,
-      "silent_wrong_use_rate": 0.75,
+      "silent_wrong_use_rate": 0.5357142857142857,
       "unsafe_disclosure_rate": 0.0
     },
     "development:structured_only:T_typed": {
-      "abstention_rate": 0.0,
+      "abstention_rate": 0.21428571428571427,
       "answer_accuracy": 0.25,
       "false_denial_rate": 0.0,
       "n_rows": 28,
-      "projection_error_rate": 0.0,
+      "projection_error_rate": 0.21428571428571427,
       "selected_event_exact_rate": 0.25,
-      "silent_wrong_use_rate": 0.75,
+      "silent_wrong_use_rate": 0.5357142857142857,
       "unsafe_disclosure_rate": 0.0
     },
     "heldout:oracle_raw_ceiling:G_generic": {
@@ -101,28 +103,29 @@
       "unsafe_disclosure_rate": 0.0
     },
     "heldout:structured_only:G_generic": {
-      "abstention_rate": 0.0,
+      "abstention_rate": 0.2857142857142857,
       "answer_accuracy": 0.25,
       "false_denial_rate": 0.0,
       "n_rows": 28,
-      "projection_error_rate": 0.0,
+      "projection_error_rate": 0.2857142857142857,
       "selected_event_exact_rate": 0.25,
-      "silent_wrong_use_rate": 0.75,
+      "silent_wrong_use_rate": 0.4642857142857143,
       "unsafe_disclosure_rate": 0.10714285714285714
     },
     "heldout:structured_only:T_typed": {
-      "abstention_rate": 0.0,
+      "abstention_rate": 0.2857142857142857,
       "answer_accuracy": 0.25,
       "false_denial_rate": 0.0,
       "n_rows": 28,
-      "projection_error_rate": 0.0,
+      "projection_error_rate": 0.2857142857142857,
       "selected_event_exact_rate": 0.25,
-      "silent_wrong_use_rate": 0.75,
+      "silent_wrong_use_rate": 0.4642857142857143,
       "unsafe_disclosure_rate": 0.10714285714285714
     }
   },
   "generic_typed_disagreements": {},
   "interpretation": "fixed deterministic parser/information-firewall audit; no inferential statistics or unrestricted natural-language claim",
+  "intervention": "shared canonical temporal referential-integrity input gate; verifier decisions and frozen manifest unchanged",
   "n_cases": 56,
   "n_topology_families": 14,
   "study": "MindMap Track X v0.1 leakage-free raw verifier P0",

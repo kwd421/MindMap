@@ -171,6 +171,323 @@ def sorted_events(events: Iterable[CommonEvent], *, through_system_time: Optiona
     return tuple(sorted(selected, key=lambda event: (event.system_time, event.event_id)))
 
 
+def validate_temporal_references(events: Iterable[CommonEvent]) -> None:
+    """Reject references to entities that do not yet exist at event time.
+
+    System time is the append-only observation axis. A reference is valid when
+    its target was created at or before the referencing event's system time;
+    a target that appears only in a later event must not retroactively make an
+    earlier lineage, exposure, placement, or claim valid.
+    """
+
+    ordered = sorted_events(events)
+
+    def creation_times(
+        event_type: str, *, use_event_id: bool = False
+    ) -> dict[str, int]:
+        result: dict[str, int] = {}
+        for event in ordered:
+            if event.event_type != event_type:
+                continue
+            object_id = event.event_id if use_event_id else event.object_id
+            if object_id is not None:
+                result[object_id] = min(
+                    result.get(object_id, event.system_time), event.system_time
+                )
+        return result
+
+    principals = creation_times("principal_create")
+    minds = creation_times("mind_create")
+    branches = creation_times("world_create")
+    placements = creation_times("placement")
+    evidence = creation_times("evidence")
+    assertions = creation_times("assertion")
+    claims = creation_times("world_claim", use_event_id=True)
+    attitudes = creation_times("attitude", use_event_id=True)
+    policies = creation_times("policy", use_event_id=True)
+    authorizations = creation_times("authorization")
+
+    # The finite CommonEvent runtime does not yet project the standalone
+    # Snapshot entity from SCHEMA_V0_2.md. Until it does, the first complete
+    # manifest entry is the explicit runtime creation point for an identifier.
+    snapshots: dict[str, int] = {}
+    for event in ordered:
+        if event.event_type != "snapshot_member":
+            continue
+        if any(
+            value is None or not value.strip()
+            for value in (event.snapshot_id, event.object_kind, event.object_id)
+        ):
+            raise ValueError(
+                f"{event.event_id} snapshot_member requires snapshot_id, "
+                "object_kind, and object_id"
+            )
+        snapshots[event.snapshot_id] = min(
+            snapshots.get(event.snapshot_id, event.system_time), event.system_time
+        )
+
+    def require(
+        event: CommonEvent,
+        field: str,
+        target_id: Optional[str],
+        targets: dict[str, int],
+    ) -> None:
+        if target_id is None:
+            return
+        created_at = targets.get(target_id)
+        if created_at is None:
+            raise ValueError(
+                f"{event.event_id}.{field} references missing entity: {target_id}"
+            )
+        if created_at > event.system_time:
+            raise ValueError(
+                f"{event.event_id}.{field} references future entity {target_id}: "
+                f"created at {created_at}, referenced at {event.system_time}"
+            )
+
+    def require_typed_object(
+        event: CommonEvent,
+        field: str,
+        target_id: Optional[str],
+        object_kind: Optional[str],
+        *,
+        default_kind: Optional[str],
+        allowed_kinds: frozenset[str],
+    ) -> None:
+        if target_id is None:
+            return
+        kind = object_kind or default_kind
+        if kind is None or kind not in allowed_kinds:
+            raise ValueError(
+                f"{event.event_id}.{field} has unsupported object_kind: {kind}"
+            )
+        targets_by_kind = {
+            "evidence": evidence,
+            "assertion": assertions,
+            "claim": claims,
+            "snapshot": snapshots,
+            "attitude": attitudes,
+            "policy": policies,
+        }
+        require(event, field, target_id, targets_by_kind[kind])
+
+    def require_derivation_member(event: CommonEvent, member_id: str) -> None:
+        created_at = evidence.get(member_id)
+        if created_at is None:
+            unsupported_kind = next(
+                (
+                    kind
+                    for kind, targets in (
+                        ("assertion", assertions),
+                        ("claim", claims),
+                    )
+                    if member_id in targets
+                ),
+                None,
+            )
+            if unsupported_kind is not None:
+                raise ValueError(
+                    f"{event.event_id}.derivation_members references unsupported "
+                    f"untyped {unsupported_kind}: {member_id}"
+                )
+            raise ValueError(
+                f"{event.event_id}.derivation_members references missing entity: "
+                f"{member_id}"
+            )
+        if created_at > event.system_time:
+            raise ValueError(
+                f"{event.event_id}.derivation_members references future entity "
+                f"{member_id}: created at {created_at}, "
+                f"referenced at {event.system_time}"
+            )
+
+    for event in ordered:
+        attrs = attrs_dict(event)
+        if event.event_type == "mind_create":
+            require(event, "actor_principal_id", event.actor_principal_id, principals)
+        elif event.event_type == "world_create":
+            require(event, "parent", attrs.get("parent") or None, branches)
+        elif event.event_type == "placement":
+            require(
+                event,
+                "destination_mind_instance_id",
+                event.destination_mind_instance_id,
+                minds,
+            )
+            require(
+                event,
+                "about_world_branch_id",
+                event.about_world_branch_id,
+                branches,
+            )
+        elif event.event_type == "lineage":
+            require(
+                event,
+                "source_mind_instance_id",
+                event.source_mind_instance_id,
+                minds,
+            )
+            require(
+                event,
+                "destination_mind_instance_id",
+                event.destination_mind_instance_id,
+                minds,
+            )
+            require(event, "snapshot_id", event.snapshot_id, snapshots)
+            require(
+                event,
+                "authorization_id",
+                event.authorization_id,
+                authorizations,
+            )
+        elif event.event_type == "evidence":
+            require(event, "actor_principal_id", event.actor_principal_id, principals)
+            require(
+                event,
+                "actor_mind_instance_id",
+                event.actor_mind_instance_id,
+                minds,
+            )
+            require(
+                event,
+                "source_placement_id",
+                event.source_placement_id,
+                placements,
+            )
+            require(
+                event,
+                "destination_placement_id",
+                event.destination_placement_id,
+                placements,
+            )
+            require(
+                event,
+                "about_world_branch_id",
+                event.about_world_branch_id,
+                branches,
+            )
+        elif event.event_type == "world_claim":
+            require(
+                event,
+                "about_world_branch_id",
+                event.about_world_branch_id,
+                branches,
+            )
+            require(
+                event,
+                "destination_placement_id",
+                event.destination_placement_id,
+                placements,
+            )
+        elif event.event_type == "attitude":
+            require(
+                event,
+                "destination_mind_instance_id",
+                event.destination_mind_instance_id,
+                minds,
+            )
+            require(
+                event,
+                "about_world_branch_id",
+                event.about_world_branch_id,
+                branches,
+            )
+            require(
+                event,
+                "destination_placement_id",
+                event.destination_placement_id,
+                placements,
+            )
+        elif event.event_type == "exposure":
+            require(
+                event,
+                "source_mind_instance_id",
+                event.source_mind_instance_id,
+                minds,
+            )
+            require(
+                event,
+                "destination_mind_instance_id",
+                event.destination_mind_instance_id,
+                minds,
+            )
+            require(
+                event,
+                "source_placement_id",
+                event.source_placement_id,
+                placements,
+            )
+            require(
+                event,
+                "destination_placement_id",
+                event.destination_placement_id,
+                placements,
+            )
+            require_typed_object(
+                event,
+                "object_id",
+                event.object_id,
+                event.object_kind,
+                default_kind="evidence",
+                allowed_kinds=frozenset(
+                    {"evidence", "assertion", "claim", "snapshot"}
+                ),
+            )
+            require(
+                event,
+                "authorization_id",
+                event.authorization_id,
+                authorizations,
+            )
+        elif event.event_type == "snapshot_member":
+            require(event, "snapshot_id", event.snapshot_id, snapshots)
+            require_typed_object(
+                event,
+                "object_id",
+                event.object_id,
+                event.object_kind,
+                default_kind=None,
+                allowed_kinds=frozenset(
+                    {"evidence", "assertion", "claim", "attitude", "policy"}
+                ),
+            )
+        elif event.event_type == "authorization":
+            require(event, "actor_principal_id", event.actor_principal_id, principals)
+            require(
+                event,
+                "source_mind_instance_id",
+                event.source_mind_instance_id,
+                minds,
+            )
+            require(
+                event,
+                "destination_mind_instance_id",
+                event.destination_mind_instance_id,
+                minds,
+            )
+        elif event.event_type == "policy":
+            require(event, "actor_principal_id", event.actor_principal_id, principals)
+            require(
+                event,
+                "destination_mind_instance_id",
+                event.destination_mind_instance_id,
+                minds,
+            )
+            require_typed_object(
+                event,
+                "object_id",
+                event.object_id,
+                event.object_kind,
+                default_kind="evidence",
+                allowed_kinds=frozenset(
+                    {"evidence", "assertion", "claim", "snapshot", "attitude"}
+                ),
+            )
+        elif event.event_type == "justification":
+            for member_id in event.derivation_members:
+                require_derivation_member(event, member_id)
+
+
 def normalize_answer(value: Answer) -> Answer:
     if isinstance(value, tuple):
         return tuple(sorted(value))

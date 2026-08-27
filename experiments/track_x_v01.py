@@ -84,6 +84,12 @@ def _write_downstream_tables(
 def run(output_dir: Path) -> dict[str, object]:
     cases = all_raw_verifier_cases()
     verification_rows, downstream_rows, summary = evaluate_raw_verifier_suite(cases)
+    summary["analysis_revision"] = "track-x-v0.1-post-hoc-temporal-ri-1"
+    summary["analysis_kind"] = "post_hoc_intervention_reanalysis"
+    summary["intervention"] = (
+        "shared canonical temporal referential-integrity input gate; verifier "
+        "decisions and frozen manifest unchanged"
+    )
     output_dir.mkdir(parents=True, exist_ok=True)
 
     verification_path = output_dir / "verification_rows.csv"
@@ -105,6 +111,9 @@ def run(output_dir: Path) -> dict[str, object]:
     )
     metadata = {
         "study": summary["study"],
+        "analysis_revision": summary["analysis_revision"],
+        "analysis_kind": summary["analysis_kind"],
+        "intervention": summary["intervention"],
         "manifest_version": FROZEN_MANIFEST_VERSION,
         "interpretation": summary["interpretation"],
         "python": sys.version,
