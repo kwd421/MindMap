@@ -12,6 +12,8 @@ The code therefore keeps world state, possession/exposure, availability, attitud
 
 This branch is an **installable deterministic research prototype**. It is not a production memory service and it is not a public-benchmark SOTA claim.
 
+The runnable v0.2 core was integrated into `main` through reviewed PR #49. The merge commit is `069c5f4b16b2f594aec48924161ae8944f39652e`; post-merge package, distribution, and deterministic-reproduction checks passed on that exact commit.
+
 Implemented and executable here:
 
 - a Python package under `src/mindmap/`;
@@ -33,7 +35,7 @@ Not integrated or not yet established here:
 - a public GateMem/LoCoMo/LongMemEval architecture result;
 - a universal benefit from always-on graph retrieval.
 
-Public GateMem endpoint work remains in separate reviewed PRs #46/#47. Those endpoint controls do **not** constitute a MindMap effectiveness result. Pending Track E heads are preserved in `docs/LOST_WORK_REGISTER.md` rather than silently absorbed into this release.
+Public GateMem endpoint work remains in separate reviewed/review-gated PRs #46/#47/#50. Those endpoint controls do **not** constitute a MindMap effectiveness result. Pending Track E heads are preserved in `docs/LOST_WORK_REGISTER.md` rather than silently absorbed into this release.
 
 ## Quick start
 
@@ -43,16 +45,13 @@ Requirements:
 - Git;
 - no API key for the deterministic core below.
 
-Until release PR #49 is merged into `main`, clone its exact review branch:
+Clone the runnable default branch:
 
 ```bash
-git clone --branch release/v0.2-runnable-core --single-branch \
-  https://github.com/kwd421/MindMap.git
+git clone https://github.com/kwd421/MindMap.git
 cd MindMap
 python -m venv .venv
 ```
-
-After PR #49 is merged, an ordinary clone of `main` is equivalent.
 
 Activate the environment, then run:
 
@@ -152,7 +151,7 @@ Expected result: equality. A typed oracle advantage would indicate unequal infor
 
 ### Track E — lifecycle and fault behavior
 
-The canonical Track E P0/P1 implementations are **not integrated in PR #49**. They remain review-gated in draft PRs #36/#37 at the exact heads recorded in `docs/LOST_WORK_REGISTER.md`.
+The canonical Track E P0/P1 implementations are **not integrated in `main`**. They remain review-gated in draft PRs #36/#37 at the exact heads recorded in `docs/LOST_WORK_REGISTER.md`.
 
 Their research question is which faults are observable, preventable, localizable, repairable, or non-identifiable under declared witnesses. Comparative claims belong to enforcement, repair blast radius, residue, concurrency, auditability, or cost—not abstract schema expressiveness.
 
