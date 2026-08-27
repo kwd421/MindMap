@@ -1,0 +1,394 @@
+{
+  "classification": "source/boundary audit; not a benchmark score",
+  "mindmap_pr43": {
+    "boundary_scan": {
+      "candidate_files": [
+        "src/mindmap/track_x/__init__.py",
+        "src/mindmap/track_x/benchmark_specs.py",
+        "src/mindmap/track_x/gatemem_baselines.py",
+        "src/mindmap/track_x/gatemem_public.py",
+        "src/mindmap/track_x/gatemem_rpc.py",
+        "src/mindmap/track_x/gatemem_runner.py",
+        "src/mindmap/track_x/gatemem_session.py",
+        "tests/test_track_x_adapter_guard.py",
+        "tests/test_track_x_gatemem_baselines.py",
+        "tests/test_track_x_gatemem_boundary.py",
+        "tests/test_track_x_gatemem_runner.py"
+      ],
+      "note": "Static token hits are review leads, not automatic leakage findings; tests, adapters, and evaluator code may legitimately name these fields.",
+      "token_findings": {
+        "expected_answer": [
+          {
+            "line": 42,
+            "path": "tests/test_canonical_conformance.py",
+            "text": "def test_common_event_contract_contains_no_expected_answer_field():"
+          },
+          {
+            "line": 22,
+            "path": "tests/test_track_e_v02.py",
+            "text": "def test_clean_expected_answers_are_generated_by_independent_gold():"
+          }
+        ],
+        "future_turn": [
+          {
+            "line": 97,
+            "path": "tests/test_track_x_gatemem_boundary.py",
+            "text": "def test_public_episode_excludes_future_turns_and_gold_records():"
+          }
+        ],
+        "gold_answer": [
+          {
+            "line": 74,
+            "path": "src/mindmap/track_x/benchmark_specs.py",
+            "text": "\"gold_answer_structured\","
+          },
+          {
+            "line": 38,
+            "path": "tests/test_track_x_adapter_guard.py",
+            "text": "\"gold_answer_structured\": {\"value\": \"secret\"},"
+          },
+          {
+            "line": 55,
+            "path": "tests/test_track_x_adapter_guard.py",
+            "text": "\"$.gold_answer_structured\","
+          },
+          {
+            "line": 91,
+            "path": "tests/test_track_x_gatemem_boundary.py",
+            "text": "\"gold_answer_structured\": {\"time\": \"08:00\"},"
+          },
+          {
+            "line": 98,
+            "path": "tests/test_track_x_gatemem_runner.py",
+            "text": "\"gold_answer_structured\": {\"time\": \"10:00\"},"
+          }
+        ],
+        "gold_record": [
+          {
+            "line": 97,
+            "path": "tests/test_track_x_gatemem_boundary.py",
+            "text": "def test_public_episode_excludes_future_turns_and_gold_records():"
+          }
+        ],
+        "memory_ops": [
+          {
+            "line": 75,
+            "path": "tests/test_track_x_gatemem_boundary.py",
+            "text": "\"memory_ops\": [{\"op\": \"grant\"}],"
+          },
+          {
+            "line": 126,
+            "path": "tests/test_track_x_gatemem_boundary.py",
+            "text": "assert not hasattr(public, \"memory_ops\")"
+          },
+          {
+            "line": 54,
+            "path": "tests/test_track_x_gatemem_runner.py",
+            "text": "\"memory_ops\": [{\"op\": \"grant\"}],"
+          },
+          {
+            "line": 68,
+            "path": "tests/test_track_x_gatemem_runner.py",
+            "text": "\"memory_ops\": [{\"op\": \"revoke\"}],"
+          },
+          {
+            "line": 118,
+            "path": "tests/test_track_x_gatemem_runner.py",
+            "text": "assert not hasattr(turn, \"memory_ops\")"
+          },
+          {
+            "line": 185,
+            "path": "tests/test_track_x_gatemem_runner.py",
+            "text": "\"$.memory_ops\","
+          },
+          {
+            "line": 254,
+            "path": "tests/test_track_x_gatemem_runner.py",
+            "text": "self.turn_gold_capability = hasattr(turn, \"record_refs\") or hasattr(turn, \"memory_ops\")"
+          }
+        ],
+        "record_refs": [
+          {
+            "line": 127,
+            "path": "tests/test_track_x_gatemem_baselines.py",
+            "text": "\"record_refs\": [\"hidden-gold-record\"],"
+          },
+          {
+            "line": 74,
+            "path": "tests/test_track_x_gatemem_boundary.py",
+            "text": "\"record_refs\": [\"gold-record\"],"
+          },
+          {
+            "line": 125,
+            "path": "tests/test_track_x_gatemem_boundary.py",
+            "text": "assert not hasattr(public, \"record_refs\")"
+          },
+          {
+            "line": 205,
+            "path": "tests/test_track_x_gatemem_boundary.py",
+            "text": "assert not hasattr(turn, \"record_refs\")"
+          },
+          {
+            "line": 53,
+            "path": "tests/test_track_x_gatemem_runner.py",
+            "text": "\"record_refs\": [\"gold-r1\"],"
+          },
+          {
+            "line": 61,
+            "path": "tests/test_track_x_gatemem_runner.py",
+            "text": "\"record_refs\": [\"gold-r2\"],"
+          },
+          {
+            "line": 117,
+            "path": "tests/test_track_x_gatemem_runner.py",
+            "text": "assert not hasattr(turn, \"record_refs\")"
+          },
+          {
+            "line": 186,
+            "path": "tests/test_track_x_gatemem_runner.py",
+            "text": "\"$.record_refs\","
+          },
+          {
+            "line": 254,
+            "path": "tests/test_track_x_gatemem_runner.py",
+            "text": "self.turn_gold_capability = hasattr(turn, \"record_refs\") or hasattr(turn, \"memory_ops\")"
+          }
+        ]
+      }
+    },
+    "commit": "ac533d0ca880dee3c689ce13443b42c672315ff8",
+    "entry_points": [],
+    "remote": "https://github.com/kwd421/MindMap.git"
+  },
+  "study": "GateMem official public benchmark R0 reproducibility audit",
+  "upstream": {
+    "commit": "603f9f4b4ba4b77f043c20f85687fa016fd720b0",
+    "data_inventory": {
+      "checkpoint_container_rows": [],
+      "checkpoint_container_total": 0,
+      "files_by_domain": {
+        "education": 2,
+        "household": 2,
+        "medical": 2,
+        "office": 2
+      },
+      "json_files": 8,
+      "most_common_keys": [
+        [
+          "principal_id",
+          24616
+        ],
+        [
+          "role",
+          23734
+        ],
+        [
+          "turn_id",
+          20293
+        ],
+        [
+          "speaker",
+          20293
+        ],
+        [
+          "text",
+          20293
+        ],
+        [
+          "timestamp",
+          15147
+        ],
+        [
+          "turn_kind",
+          15147
+        ],
+        [
+          "expected_action",
+          4436
+        ],
+        [
+          "episode_id",
+          2309
+        ],
+        [
+          "checkpoint_id",
+          2218
+        ],
+        [
+          "as_of_turn_id",
+          2218
+        ],
+        [
+          "asker",
+          2218
+        ],
+        [
+          "query_type",
+          2218
+        ],
+        [
+          "query_text",
+          2218
+        ],
+        [
+          "judge_spec",
+          2218
+        ],
+        [
+          "notes",
+          2218
+        ],
+        [
+          "leak_targets",
+          2030
+        ],
+        [
+          "attack_type",
+          1513
+        ],
+        [
+          "include",
+          1315
+        ],
+        [
+          "display_name",
+          1223
+        ],
+        [
+          "type",
+          943
+        ],
+        [
+          "not_include",
+          661
+        ],
+        [
+          "access_scope",
+          275
+        ],
+        [
+          "project_id",
+          256
+        ],
+        [
+          "for_principal_id",
+          223
+        ],
+        [
+          "household_id",
+          200
+        ],
+        [
+          "case_id",
+          98
+        ],
+        [
+          "domain",
+          91
+        ],
+        [
+          "entities",
+          91
+        ],
+        [
+          "turns",
+          91
+        ],
+        [
+          "principals",
+          91
+        ],
+        [
+          "relationships",
+          85
+        ],
+        [
+          "program_id",
+          72
+        ],
+        [
+          "patient_id",
+          61
+        ],
+        [
+          "clinician_id",
+          45
+        ],
+        [
+          "manages",
+          34
+        ],
+        [
+          "guest_id",
+          21
+        ],
+        [
+          "scope",
+          16
+        ],
+        [
+          "family_id",
+          16
+        ],
+        [
+          "access_level",
+          16
+        ],
+        [
+          "for_household_id",
+          3
+        ],
+        [
+          "service_scope",
+          3
+        ],
+        [
+          "host_principal_id",
+          2
+        ],
+        [
+          "building_id",
+          2
+        ],
+        [
+          "course_id",
+          2
+        ],
+        [
+          "related_principal_id",
+          1
+        ],
+        [
+          "expires",
+          1
+        ]
+      ],
+      "parse_failures": [],
+      "top_level_types": {
+        "list": 8
+      },
+      "unique_explicit_checkpoint_ids": 2218
+    },
+    "data_manifest_bytes": 7134246,
+    "data_manifest_rows": 8,
+    "readme_contract": {
+      "advertised_checkpoints_2218": true,
+      "advertised_episodes_91": true,
+      "domains_present": {
+        "education": true,
+        "household": true,
+        "medical": true,
+        "office": true
+      },
+      "required_phrases": {
+        "access_control": true,
+        "active_forgetting": true,
+        "prediction_jsonl": true,
+        "utility": true
+      }
+    },
+    "remote": "https://github.com/rzhub/GateMem.git",
+    "repository": "rzhub/GateMem",
+    "required_contract_ok": true
+  }
+}

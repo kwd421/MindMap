@@ -1,0 +1,83 @@
+{
+  "aggregate": {
+    "always_no_memory_predictions_hash_changed": "0/4",
+    "official_summary_equal": "8/8",
+    "opaque_key_commitment_changed": "8/8",
+    "opaque_mapping_commitment_changed": "8/8",
+    "raw_lexical_predictions_hash_changed": "4/4"
+  },
+  "comparisons": [
+    {
+      "domain": "education",
+      "expected_predictions_sha256_equal": true,
+      "method": "always_no_memory",
+      "official_summary_equal": true,
+      "opaque_key_commitment_changed": true,
+      "opaque_mapping_commitment_changed": true,
+      "predictions_sha256_equal": true
+    },
+    {
+      "domain": "education",
+      "expected_predictions_sha256_equal": false,
+      "method": "raw_lexical",
+      "official_summary_equal": true,
+      "opaque_key_commitment_changed": true,
+      "opaque_mapping_commitment_changed": true,
+      "predictions_sha256_equal": false
+    },
+    {
+      "domain": "household",
+      "expected_predictions_sha256_equal": true,
+      "method": "always_no_memory",
+      "official_summary_equal": true,
+      "opaque_key_commitment_changed": true,
+      "opaque_mapping_commitment_changed": true,
+      "predictions_sha256_equal": true
+    },
+    {
+      "domain": "household",
+      "expected_predictions_sha256_equal": false,
+      "method": "raw_lexical",
+      "official_summary_equal": true,
+      "opaque_key_commitment_changed": true,
+      "opaque_mapping_commitment_changed": true,
+      "predictions_sha256_equal": false
+    },
+    {
+      "domain": "medical",
+      "expected_predictions_sha256_equal": true,
+      "method": "always_no_memory",
+      "official_summary_equal": true,
+      "opaque_key_commitment_changed": true,
+      "opaque_mapping_commitment_changed": true,
+      "predictions_sha256_equal": true
+    },
+    {
+      "domain": "medical",
+      "expected_predictions_sha256_equal": false,
+      "method": "raw_lexical",
+      "official_summary_equal": true,
+      "opaque_key_commitment_changed": true,
+      "opaque_mapping_commitment_changed": true,
+      "predictions_sha256_equal": false
+    },
+    {
+      "domain": "office",
+      "expected_predictions_sha256_equal": true,
+      "method": "always_no_memory",
+      "official_summary_equal": true,
+      "opaque_key_commitment_changed": true,
+      "opaque_mapping_commitment_changed": true,
+      "predictions_sha256_equal": true
+    },
+    {
+      "domain": "office",
+      "expected_predictions_sha256_equal": false,
+      "method": "raw_lexical",
+      "official_summary_equal": true,
+      "opaque_key_commitment_changed": true,
+      "opaque_mapping_commitment_changed": true,
+      "predictions_sha256_equal": false
+    }
+  ]
+}
