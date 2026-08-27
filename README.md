@@ -57,7 +57,7 @@ python tools/check_repository_contract.py
 python -m pytest -q
 ```
 
-The repository contract check fails if the README advertises a missing package, test, experiment, or committed result path.
+The repository contract check fails if the README advertises a missing package, test, experiment, committed result, or license path.
 
 ## Reproduce the stable deterministic core
 
@@ -114,16 +114,17 @@ Only levels actually completed may be claimed.
 ```text
 .github/workflows/              CI and deterministic drift checks
 archive/                        superseded research drafts
- data/                          synthetic development/freeze metadata
- docs/                          protocols, audits, and result boundaries
- experiments/                   executable controlled studies
- results/                       compact committed deterministic artifacts
- src/mindmap/                   installable reference implementation
- tests/                         semantic, isolation, and experiment invariants
- tools/                         repository/README contract checks
- pyproject.toml                 package and test configuration
- PREREG_V0_2.md                 current preregistration candidate
- SCHEMA_V0_2.md                 current canonical schema candidate
+data/                           synthetic development/freeze metadata
+docs/                           protocols, audits, and result boundaries
+experiments/                    executable controlled studies
+results/                        compact committed deterministic artifacts
+src/mindmap/                    installable reference implementation
+tests/                          semantic, isolation, and experiment invariants
+tools/                          repository/README contract checks
+LICENSE                         MIT license text
+pyproject.toml                  package and test configuration
+PREREG_V0_2.md                  current preregistration candidate
+SCHEMA_V0_2.md                  current canonical schema candidate
 ```
 
 There is no active `benchmarks/` directory in this runnable core. Public benchmark data remain external and pinned by the relevant protected-runner work rather than copied into this repository.
@@ -158,5 +159,9 @@ Synthetic Track X tests fine-grained mechanisms. Public Track X tests external r
 - Corrections create revision history rather than silent overwrite.
 - Null, generic-favourable, and falsifying outcomes remain visible.
 - CI executes the commands advertised in this README.
+
+## License
+
+The executable research core is released under the MIT License. See `LICENSE`.
 
 See `docs/IMPLEMENTATION_STATUS.md` for the exact implemented/proven boundary and `PREREG_V0_2.md` for the current experimental hypotheses and stopping rules.
