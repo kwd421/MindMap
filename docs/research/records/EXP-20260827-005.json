@@ -1,0 +1,63 @@
+{
+  "schema_version": "0.1.0",
+  "experiment_id": "EXP-20260827-005",
+  "title": "Canonical authorization and future-reference temporal audit",
+  "status": "completed",
+  "study_class": "development",
+  "research_question_ids": ["RQ1", "RQ2"],
+  "hypothesis_ids": ["H1"],
+  "started_at": "2026-08-27T14:53:41Z",
+  "ended_at": "2026-08-27T14:56:45Z",
+  "source": {
+    "repository": "https://github.com/kwd421/MindMap",
+    "source_revision": "f26e148602099d7be01c2759be394c6ee4ff6204",
+    "checkout_revision": "f26e148602099d7be01c2759be394c6ee4ff6204",
+    "dirty": false,
+    "deviations": [
+      "The future-reference sequence was designed after source inspection and was not preregistered.",
+      "PR 55 later added documentation-only commit 2bda2ff38ea79dd0901f6329490d2f9940690261; executable code under audit was unchanged."
+    ],
+    "main_reproduction_revision": "effca06dc8e396b7dd3fbf485c13e57f03aee242"
+  },
+  "dataset": {
+    "name": "Synthetic canonical event sequence",
+    "revision": "EXP-20260827-005-v1",
+    "split": "single adversarial development case",
+    "license": "repository MIT",
+    "raw_data_committed": false
+  },
+  "method_arms": ["GoldSemantics", "GenericLedger", "TypedLedger"],
+  "models": [],
+  "controls": {
+    "python": "3.11",
+    "pr55_full_pytest": {"passed": 96, "failed": 0},
+    "authorization_contract_cases": 4,
+    "same_event_sequence_for_all_implementations": true,
+    "query_system_time": 10,
+    "destination_creation_system_time": 7,
+    "replication_system_time": 6
+  },
+  "sample": {
+    "adversarial_sequences": 1,
+    "implementations": 3
+  },
+  "results": {
+    "status": "completed",
+    "primary_outcome": "AVAILABLE answer agreement",
+    "GoldSemantics": false,
+    "GenericLedger": false,
+    "TypedLedger": true,
+    "all_agree": false,
+    "main_reproduction": [false, false, true],
+    "mechanism": "Typed uses final mind rows without enforcing created_system_time at the replication exposure time."
+  },
+  "cost": {
+    "provider_usd": 0.0,
+    "note": "Local deterministic audit; no hosted-model API charge."
+  },
+  "artifact_retention": {
+    "status": "record_only",
+    "reason": "The exact adversarial event sequence and three Boolean outputs are embedded in this manifest and the human ledger."
+  },
+  "claim_boundary": "One development counterexample to broad temporal conformance; the scoped authorization fix itself passed and the divergence predates PR 55."
+}

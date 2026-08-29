@@ -1,0 +1,107 @@
+{
+  "schema_version": "0.1.0",
+  "experiment_id": "EXP-20260828-006",
+  "title": "LongMemEval cleaned full-set flat-BM25 source-aligned reproduction",
+  "status": "completed",
+  "study_class": "reproduction",
+  "research_question_ids": ["RQ4", "RQ5"],
+  "hypothesis_ids": ["H5"],
+  "started_at": "2026-08-27T15:11:51Z",
+  "ended_at": "2026-08-27T15:11:57Z",
+  "preregistration_commit": "e5f79d6d513e0e991de30406ce52fb0644fed398",
+  "source": {
+    "repository": "https://github.com/kwd421/MindMap",
+    "source_revision": "6ea62666b0cde8f238ae792979fd0559ff8b6b73",
+    "checkout_revision": "6ea62666b0cde8f238ae792979fd0559ff8b6b73",
+    "dirty": false,
+    "deviations": [
+      "The official runner imports CUDA, Torch, sentence-transformers, Transformers, and OpenAI modules even for flat-BM25. The reproduction therefore uses a lightweight runner that copies the pinned session corpus construction, rank_bm25 tokenization and ranking, target derivation, exclusions, k values, and metric formulae."
+    ]
+  },
+  "dataset": {
+    "name": "LongMemEval-S cleaned",
+    "revision": "xiaowu0162/longmemeval-cleaned downloaded 2026-08-28",
+    "split": "all 500 released questions; official retrieval exclusions applied",
+    "license": "MIT",
+    "raw_data_committed": false,
+    "download_url": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/resolve/main/longmemeval_s_cleaned.json",
+    "sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+    "bytes": 277383467,
+    "official_harness_revision": "9e0b455f4ef0e2ab8f2e582289761153549043fc",
+    "official_runner_sha256": "efd7fc5969a904717741fadca3c7dc73611ddbb2aaf3ef33117ebb6943b3e346",
+    "official_eval_sha256": "c98b8d1096877a15aa755c9de44fe33c195298466a2eb6f3c0f9f6bde8c72349"
+  },
+  "method_arms": ["flat_bm25_session"],
+  "models": [],
+  "controls": {
+    "rank_bm25_version": "0.2.2",
+    "numpy_version": "1.26.3",
+    "tokenization": "Python str.split(' ') on each user-only session and question",
+    "ranking": "numpy.argsort(scores)[::-1]",
+    "k_values": [1, 3, 5, 10, 30, 50],
+    "exclude_abstention": true,
+    "exclude_no_target_user_turn": true,
+    "outcome_not_inspected_at_freeze": true
+  },
+  "sample": {
+    "released_questions": 500,
+    "eligible_questions": "determined only by the official exclusion rules",
+    "sampling": "none"
+  },
+  "results": {
+    "status": "completed",
+    "primary_outcome": "session-level recall_all@5 count and denominator",
+    "secondary_outcomes": [
+      "recall_any at k=1,3,5,10,30,50",
+      "recall_all at k=1,3,5,10,30,50",
+      "mean ndcg_any at k=1,3,5,10,30,50",
+      "official exclusion counts",
+      "per-question compact metric rows"
+    ],
+    "stopping_rule": "complete all eligible released questions or fail without changing algorithm, data, or exclusions",
+    "stopping_rule_reached": "all 419 eligible questions completed",
+    "promotion_rule": "report as source-aligned reproduction only; never as official leaderboard or end-to-end QA performance",
+    "released_questions": 500,
+    "eligible_questions": 419,
+    "ignored_abstention": 30,
+    "ignored_no_target_user_turn": 51,
+    "no_target_note": "All 51 no-target exclusions are single-session-assistant questions under the official user-only retrieval target rule.",
+    "metrics": {
+      "1": {"recall_any": {"numerator": 296, "denominator": 419}, "recall_all": {"numerator": 75, "denominator": 419}, "ndcg_any_mean": 0.7064439140811456},
+      "3": {"recall_any": {"numerator": 354, "denominator": 419}, "recall_all": {"numerator": 274, "denominator": 419}, "ndcg_any_mean": 0.745302137485296},
+      "5": {"recall_any": {"numerator": 372, "denominator": 419}, "recall_all": {"numerator": 311, "denominator": 419}, "ndcg_any_mean": 0.771504553827599},
+      "10": {"recall_any": {"numerator": 388, "denominator": 419}, "recall_all": {"numerator": 345, "denominator": 419}, "ndcg_any_mean": 0.7939275523541854},
+      "30": {"recall_any": {"numerator": 415, "denominator": 419}, "recall_all": {"numerator": 401, "denominator": 419}, "ndcg_any_mean": 0.8198259823851706},
+      "50": {"recall_any": {"numerator": 419, "denominator": 419}, "recall_all": {"numerator": 419, "denominator": 419}, "ndcg_any_mean": 0.8248899191219347}
+    },
+    "recall_all_at_5_by_type": {
+      "knowledge-update": {"numerator": 69, "denominator": 72},
+      "multi-session": {"numerator": 68, "denominator": 121},
+      "single-session-assistant": {"numerator": 4, "denominator": 5},
+      "single-session-preference": {"numerator": 21, "denominator": 30},
+      "single-session-user": {"numerator": 60, "denominator": 64},
+      "temporal-reasoning": {"numerator": 89, "denominator": 127}
+    }
+  },
+  "cost": {
+    "provider_usd": 0.0,
+    "note": "Local deterministic lexical retrieval; no hosted-model calls."
+  },
+  "artifacts": {
+    "runner_sha256": "e211fb107ba0d74ff55dc1539d3b844fb70f37b9822c00edc1c54703aa1dc653",
+    "retrieval_rows_sha256": "3420e593f66348a66b05b8b2d3229ba881f52221a0ae83a8d63971132c2ff3a9",
+    "summary_sha256": "a9a6bbed3501eeafb2a7b860b57899c1c04509b13f7b82e64fd65db8164e4047"
+  },
+  "artifact_files": [
+    {"path": "experiments/longmemeval_official_bm25_reproduction.py", "sha256": "e211fb107ba0d74ff55dc1539d3b844fb70f37b9822c00edc1c54703aa1dc653"},
+    {"path": "results/research/EXP-20260828-006/retrieval_rows.csv", "sha256": "3420e593f66348a66b05b8b2d3229ba881f52221a0ae83a8d63971132c2ff3a9"},
+    {"path": "results/research/EXP-20260828-006/summary.json", "sha256": "a9a6bbed3501eeafb2a7b860b57899c1c04509b13f7b82e64fd65db8164e4047"}
+  ],
+  "result_addendum": [
+    "A first detached execution and the final artifact execution produced the same retrieval_rows SHA-256.",
+    "The source-aligned runner's three unit tests passed in the pinned temporary environment.",
+    "The official all-dependency runner was not executed because it imports dense/CUDA dependencies for the lexical arm; this limits the claim to source alignment rather than byte-identical harness execution.",
+    "A post-run research-infrastructure amendment replaced three absolute local path strings with logical basenames. Retrieval rows and metrics were unchanged; current runner and summary hashes were updated."
+  ],
+  "claim_boundary": "Full-set source-aligned reproduction of the official LongMemEval flat-BM25 session retrieval definition. The primary result is recall_all@5 = 311/419 eligible questions. This is not an official leaderboard submission, not end-to-end QA, and not a MindMap result."
+}

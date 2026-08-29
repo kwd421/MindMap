@@ -63,6 +63,15 @@ python tools/check_repository_contract.py
 python -m pytest -q
 ```
 
+The LongMemEval lexical-reproduction tests use an exact Python 3.11 research
+environment. To run those tests instead of recording an optional-dependency
+skip, install the pinned research extra before running the same suite:
+
+```bash
+python -m pip install -e '.[dev,research]'
+python -m pytest -q
+```
+
 `release_contract_v0_2.json` is the machine-readable **enumerated v0.2 release contract**. The checker validates every path, command, status statement, stale-claim guard, result entry, Python declaration, package metadata field, and license rule listed in that manifest. It does not claim to infer arbitrary future prose references that have not been added to the manifest.
 
 ## Reproduce the stable deterministic core

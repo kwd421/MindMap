@@ -1,0 +1,193 @@
+{
+  "schema_version": "0.1.0",
+  "experiment_id": "EXP-20260828-009",
+  "title": "Post-hoc semantic audit of GateMem referent-absent deletion imperatives",
+  "status": "completed",
+  "study_class": "development",
+  "research_question_ids": ["RQ3", "RQ4"],
+  "hypothesis_ids": ["H3", "H5"],
+  "started_at": "2026-08-27T18:32:21Z",
+  "ended_at": "2026-08-27T18:32:21Z",
+  "timing": {
+    "precision": "exact",
+    "note": "UTC timestamps immediately before and after the deterministic clean-checkout aggregation were identical to the second."
+  },
+  "preregistration_commit": null,
+  "source": {
+    "repository": "https://github.com/kwd421/MindMap",
+    "source_revision": "7c77db91a1871fe269e872a0718ee2c60c7de7d1",
+    "checkout_revision": "7c77db91a1871fe269e872a0718ee2c60c7de7d1",
+    "dirty": false,
+    "deviations": [
+      "All 57 source turns had already been inspected after EXP-20260828-008 outcomes were known. This is explicitly post-hoc development coding and can never be promoted to blinded or confirmatory evidence.",
+      "The planned adjudication has one model-assisted coder and no independent second coder. Labels must remain auditable by source coordinates and text hashes, and any future second-coder disagreement must remain visible.",
+      "No official GateMem semantic label or scorer is used.",
+      "The manual row-key label manifest was encoded after the planning/codebook commit and after prior item access. The exact runner was then committed at dd0f857427566ff49dbdc3fa9c71e866b5d349e8 and executed once from a separate clean detached clone; this improves reproducibility but does not create blinding.",
+      "target_grounding in this record labels whether the input utterance is explicit or deictic. It is not parser target-grounding accuracy: PR 52 GovernanceSignal has no memory-object target identifier or gold-target span output.",
+      "A later Daybreak model-assisted manual review found that the original runner represented only two four-key exception sets and silently defaulted every other label. The already-known labels were frozen explicitly for all 57 rows at 615539bab286b9a8a5ba8ad910085a7608eaab7e and the fail-closed runner at 7c77db91a1871fe269e872a0718ee2c60c7de7d1 regenerated the annotation byte-identically. This closes representation completeness only; it is not a new coding pass, independent coder, blinding, or semantic validation.",
+      "A later independent GPT Pro artifact audit found 55 unique current-turn text hashes across 57 source rows. One hash occurs in three separate episode-turn units, all encoded as information deletion with deictic prior-context grounding. This post-result template diagnostic does not change row labels or denominators and cannot be used as confirmation."
+    ]
+  },
+  "dataset": {
+    "name": "EXP-20260828-008 referent-absent strict-imperative stratum",
+    "revision": "GateMem-603f9f4b4ba4b77f043c20f85687fa016fd720b0_EXP008-c86313546da5e670681cf90cc0faf0f170ddb1294c57455c6d2663c186ed93fb",
+    "split": "all 57 rows with information_referent_present=false in EXP-20260828-008",
+    "license": "MIT",
+    "raw_data_committed": false
+  },
+  "method_arms": [
+    "single_pass_manual_codebook_GM-RA-CB-001_v0.1.0"
+  ],
+  "models": [
+    {
+      "role": "post-hoc manual annotation assistant",
+      "model": "Codex current session model",
+      "reasoning_effort": "not independently exposed in the artifact",
+      "claim_boundary": "model-assisted single-coder development annotation, not independent human adjudication"
+    },
+    {
+      "role": "independent historical artifact verifier",
+      "model": "ChatGPT GPT Pro",
+      "reasoning_effort": "Pro UI; underlying model version and token usage not exposed",
+      "claim_boundary": "model-assisted artifact audit, not human peer review or independent semantic gold"
+    }
+  ],
+  "controls": {
+    "planning_parent_revision": "59fdaf85b5666cf88b7f3a0bca90a20b8a25c197",
+    "planning_commit": "c17d308ba10028ba20e2655a0597ea426bd32005",
+    "original_runner_revision": "dd0f857427566ff49dbdc3fa9c71e866b5d349e8",
+    "original_runner_sha256": "7ba81b0cca7a4a393a210f05e73916c7f717b8f886f05c765e0adf31c047ce8b",
+    "manual_label_manifest_revision": "615539bab286b9a8a5ba8ad910085a7608eaab7e",
+    "runner_revision": "7c77db91a1871fe269e872a0718ee2c60c7de7d1",
+    "runner_sha256": "454f4148196a2fa597b9eb891414699d67a43ad6708995d06f7e587743bfff95",
+    "codebook": "docs/research/GATEMEM_REFERENT_ABSENT_CODEBOOK.md",
+    "codebook_version": "GM-RA-CB-001-v0.1.0",
+    "manual_label_manifest": "docs/research/inputs/EXP-20260828-009/manual_labels.csv",
+    "manual_label_manifest_sha256": "0145e0eea25e50491288bd7f756e4fab796c24a124f5b44867a1182a44ac1bd9",
+    "manual_label_manifest_rows": 57,
+    "manifest_rejection_controls": {
+      "numerator": 8,
+      "denominator": 8,
+      "cases": [
+        "missing row",
+        "extra row",
+        "duplicate key",
+        "text hash mismatch",
+        "unknown request type",
+        "unknown target grounding",
+        "unknown authorization mixed",
+        "unknown coder confidence"
+      ]
+    },
+    "population_manifest": "results/research/EXP-20260828-008/turn_results.csv",
+    "population_filter": "information_referent_present == false",
+    "independent_source_dependency_verification": {
+      "audited_head": "a82613a06bb39a2b6ffd4b2d3ead67d86b444117",
+      "unchanged_through_head": "93baef0acd022f1ae3e0251d1f1543fbedb1f3b4",
+      "source_sha256_match": {"numerator": 1, "denominator": 1},
+      "source_git_blob_sha1_match": {"numerator": 1, "denominator": 1},
+      "standalone_233_to_57_filter": {"numerator": 1, "denominator": 1},
+      "selected_coordinate_uniqueness": {"numerator": 57, "denominator": 57},
+      "selected_unique_text_hashes": 55,
+      "maximum_text_hash_multiplicity": 3
+    },
+    "independent_variable": "post-hoc semantic request type within the frozen referent-absent stratum",
+    "dependent_variables": [
+      "request-type count over 57 rows",
+      "target-grounding count over 57 rows",
+      "PR #52 DELETE signal count within each annotated request type"
+    ],
+    "evaluator_only_variables": [
+      "GateMem checkpoints",
+      "leak_targets",
+      "judge_spec",
+      "official answers and scorer outcomes"
+    ],
+    "nuisance_variables": [
+      "prior item-level outcome access",
+      "single-coder subjectivity",
+      "templated repeated wording",
+      "deictic targets requiring prior episode context"
+    ],
+    "stopping_rule": "Annotate all 57 frozen rows exactly once under GM-RA-CB-001 v0.1.0; do not change labels or the codebook after aggregate counts are calculated; preserve ambiguity and failures. The later representation hardening may only make the already-known 57 labels explicit and fail closed on manifest incompleteness; it may not recode an item.",
+    "cost_ceiling_usd": 0.0
+  },
+  "sample": {
+    "unit": "official public GateMem turn",
+    "population_rows": 57,
+    "unique_current_turn_text_hashes": 55,
+    "duplicate_text_hash_groups": 1,
+    "maximum_text_hash_multiplicity": 3,
+    "sampling": "exhaustive within the frozen referent-absent EXP-008 stratum",
+    "deduplication": "none; source row identity and text SHA-256 are retained",
+    "raw_text_retention": "pinned upstream checkout only; not copied into the repository annotation artifact"
+  },
+  "results": {
+    "status": "completed",
+    "primary_outcome": "request_type raw counts over all 57 rows",
+    "secondary_outcomes": [
+      "target_grounding raw counts",
+      "authorization_mixed raw count",
+      "DELETE-signal count by request_type"
+    ],
+    "request_type_counts": {
+      "information_deletion": {"numerator": 53, "denominator": 57},
+      "authorization_revocation": {"numerator": 4, "denominator": 57},
+      "physical_domain_removal": {"numerator": 0, "denominator": 57},
+      "ambiguous_or_other": {"numerator": 0, "denominator": 57}
+    },
+    "target_grounding_counts": {
+      "explicit_current_turn": {"numerator": 53, "denominator": 57},
+      "deictic_prior_context": {"numerator": 4, "denominator": 57},
+      "ambiguous": {"numerator": 0, "denominator": 57}
+    },
+    "delete_signal_by_request_type": {
+      "information_deletion": {"numerator": 0, "denominator": 53},
+      "authorization_revocation": {"numerator": 0, "denominator": 4}
+    },
+    "authorization_mixed": {"numerator": 0, "denominator": 57},
+    "template_diagnostics": {
+      "row_units": 57,
+      "unique_current_turn_text_hashes": 55,
+      "duplicate_hash_groups": 1,
+      "maximum_multiplicity": 3,
+      "deduplicated_request_types": {
+        "information_deletion": {"numerator": 51, "denominator": 55},
+        "authorization_revocation": {"numerator": 4, "denominator": 55}
+      },
+      "deduplicated_deictic_forms": {"numerator": 2, "denominator": 55}
+    },
+    "official_benchmark_score": false,
+    "interpretation": "Under the frozen one-coder post-hoc codebook, 53/57 missed rows are information-deletion requests and 4/57 are authorization revocations; none was labelled physical/domain removal or ambiguous. PR 52 emitted DELETE on 0/53 annotated information-deletion rows. The explicit 57/57 label manifest removes silent default coercion from the deterministic representation but does not add a second coder or semantic validity. This is one-coder counterevidence against, not a confirmation-level contradiction of, the earlier physical-removal alternative. The explicit/deictic counts characterize episode-turn units only and do not measure parser target-grounding accuracy. There are 55 unique current-turn text hashes; one deictic information-deletion wording hash occurs in three episodes, so the four deictic rows represent only two exact-text forms after deduplication."
+  },
+  "cost": {
+    "provider_usd": 0.0,
+    "note": "One original local deterministic clean-checkout aggregation plus one zero-cost clean-checkout representation-hardening reproduction at 2026-08-27T19:38:47Z and one later GPT Pro artifact audit; no metered API or official scorer call. Subscription token usage was not exposed or dollar-attributed."
+  },
+  "artifacts": {
+    "codebook": "docs/research/GATEMEM_REFERENT_ABSENT_CODEBOOK.md",
+    "manual_label_manifest": "docs/research/inputs/EXP-20260828-009/manual_labels.csv",
+    "runner": "tools/run_gatemem_referent_absent_semantic_audit.py",
+    "clean_reproduction": "At original revision dd0f857, 3/3 generated files were byte-identical between the primary output and a detached clean clone. At hardening revision 7c77db9, annotations.csv remained byte-identical while summary and artifact-manifest hashes changed only to bind the complete 57-row manual-label manifest and v2 completeness contract.",
+    "independent_gpt_pro_followup": "Previously incomplete direct-source SHA and standalone 233-to-57 filtering checks both closed 1/1 at a82613a; the audited source, labels, runner, tests, and result artifacts are byte-unchanged through 93baef0."
+  },
+  "artifact_files": [
+    {
+      "path": "docs/research/inputs/EXP-20260828-009/manual_labels.csv",
+      "sha256": "0145e0eea25e50491288bd7f756e4fab796c24a124f5b44867a1182a44ac1bd9"
+    },
+    {
+      "path": "results/research/EXP-20260828-009/annotations.csv",
+      "sha256": "0fac3c51386c2efb466f9f1977e52f8c69320634736011d4eaf91b98efb67fa0"
+    },
+    {
+      "path": "results/research/EXP-20260828-009/artifact_manifest.json",
+      "sha256": "80653c8e1212329de282360cf13260c393b93b96cdb3aaea51facacb8b96ccbf"
+    },
+    {
+      "path": "results/research/EXP-20260828-009/summary.json",
+      "sha256": "c95640666c57468c633f52e8503b3a632fc4b4b1775999b6d0df997c0db0efa1"
+    }
+  ],
+  "claim_boundary": "Post-hoc one-coder description of the 57 referent-absent EXP-008 episode-turn rows after complete item-level outcome access. The complete explicit label manifest and eight structural rejection controls establish representation completeness, not cross-field semantic correctness, note-code validity, text-form independence, or independence of coding. The result cannot establish official GateMem performance, semantic recall over all deletion speech acts, independent target-grounding accuracy, state mutation, suppression, persistence, erasure, blinded adjudication, or confirmatory evidence."
+}

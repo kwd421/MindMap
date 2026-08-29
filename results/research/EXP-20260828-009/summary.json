@@ -1,0 +1,46 @@
+{
+  "authorization_mixed_count": 0,
+  "blinded": false,
+  "claim_boundary": "Single model-assisted post-hoc coder over the frozen 57-row referent-absent development stratum; not semantic gold, an official GateMem score, or evidence of state-level forgetting.",
+  "codebook_version": "GM-RA-CB-001-v0.1.0",
+  "delete_signal_by_request_type": {
+    "ambiguous_or_other": {
+      "denominator": 0,
+      "numerator": 0
+    },
+    "authorization_revocation": {
+      "denominator": 4,
+      "numerator": 0
+    },
+    "information_deletion": {
+      "denominator": 53,
+      "numerator": 0
+    },
+    "physical_domain_removal": {
+      "denominator": 0,
+      "numerator": 0
+    }
+  },
+  "independent_human_adjudication": false,
+  "manual_label_manifest_complete": true,
+  "manual_label_manifest_rows": 57,
+  "manual_label_manifest_sha256": "0145e0eea25e50491288bd7f756e4fab796c24a124f5b44867a1182a44ac1bd9",
+  "official_benchmark_score": false,
+  "planning_commit": "c17d308ba10028ba20e2655a0597ea426bd32005",
+  "population_rows": 57,
+  "post_hoc": true,
+  "request_type_counts": {
+    "ambiguous_or_other": 0,
+    "authorization_revocation": 4,
+    "information_deletion": 53,
+    "physical_domain_removal": 0
+  },
+  "schema_version": "gatemem-referent-absent-semantic-audit-v2",
+  "source_csv_sha256": "5133fae854abb92cf3856f03efc346e2e6dcf1e13b3f7d86285ba3f3faf8f66d",
+  "study_class": "development",
+  "target_grounding_counts": {
+    "ambiguous": 0,
+    "deictic_prior_context": 4,
+    "explicit_current_turn": 53
+  }
+}

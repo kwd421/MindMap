@@ -1,0 +1,65 @@
+{
+  "schema_version": "0.1.0",
+  "experiment_id": "EXP-20260827-004",
+  "title": "GateMem B2 deletion-speech precision and coverage audit",
+  "status": "completed",
+  "study_class": "development",
+  "research_question_ids": ["RQ3"],
+  "hypothesis_ids": ["H3"],
+  "started_at": "2026-08-27T14:53:41Z",
+  "ended_at": "2026-08-27T14:56:45Z",
+  "source": {
+    "repository": "https://github.com/kwd421/MindMap",
+    "source_revision": "2cea6ff5887b6a09821086ffda60c2504d88d15b",
+    "checkout_revision": "2cea6ff5887b6a09821086ffda60c2504d88d15b",
+    "dirty": false,
+    "deviations": [
+      "The two exact upstream positive probes were selected after inspecting public dialogue language, so this is a development audit and those probes cannot be reused as clean confirmation data.",
+      "The synthetic probes were not preregistered."
+    ]
+  },
+  "dataset": {
+    "name": "GateMem public household dialogue plus paired synthetic speech acts",
+    "revision": "603f9f4b4ba4b77f043c20f85687fa016fd720b0",
+    "split": "development language probes",
+    "license": "Code MIT; dataset terms unresolved in the pinned repository card",
+    "raw_data_committed": false,
+    "household_episodes_sha256": "e2bb506cc1bdc8dc7b16d4a57610147365798d03eb1c326f9197b6c6221efb6f"
+  },
+  "method_arms": ["frozen_pr52_public_turn_policy_parser"],
+  "models": [],
+  "controls": {
+    "python": "3.11",
+    "full_pytest": {"passed": 93, "failed": 0},
+    "surface_audit_replicates": 2,
+    "surface_cases_per_replicate": 9,
+    "surface_summaries_identical": true,
+    "language_probe_count": 7,
+    "no_benchmark_outcome_inspected": true
+  },
+  "sample": {
+    "exact_upstream_direct_deletion_requests": 2,
+    "synthetic_direct_deletion_requests": 2,
+    "explicit_memory_deletion_positive_controls": 1,
+    "ordinary_physical_action_negative_controls": 2
+  },
+  "results": {
+    "status": "completed",
+    "primary_outcome": "DELETE signal emission by speech-act class",
+    "upstream_direct_deletion_signal": {"numerator": 0, "denominator": 2},
+    "synthetic_direct_deletion_signal": {"numerator": 0, "denominator": 2},
+    "explicit_memory_positive_signal": {"numerator": 1, "denominator": 1},
+    "physical_action_false_positive": {"numerator": 0, "denominator": 2},
+    "contract_mismatch": "The production regex requires an information referent for forget, despite the prototype review saying forget remained intrinsically cognitive.",
+    "global_state_note": "The safe module mutates base parser regex globals and package initialization imports the safe module eagerly."
+  },
+  "cost": {
+    "provider_usd": 0.0,
+    "note": "Local deterministic audit; no hosted-model API charge."
+  },
+  "artifact_retention": {
+    "status": "record_only",
+    "reason": "The seven development probes and their aggregate outcomes are recorded in this manifest and ledger; no separate outcome artifact was promoted."
+  },
+  "claim_boundary": "Development language-coverage counterexample at one frozen PR head; not an official GateMem score, recall estimate, or held-out confirmation."
+}

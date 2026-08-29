@@ -1,0 +1,156 @@
+{
+  "schema_version": "0.1.0",
+  "experiment_id": "EXP-20260828-008",
+  "title": "Official GateMem deletion-imperative surface coverage audit",
+  "status": "completed",
+  "study_class": "development",
+  "research_question_ids": ["RQ3", "RQ4"],
+  "hypothesis_ids": ["H3", "H5"],
+  "started_at": "2026-08-27T17:32:34Z",
+  "ended_at": "2026-08-27T17:32:34Z",
+  "timing": {
+    "precision": "exact",
+    "note": "Both timestamps were captured immediately before and after the single deterministic pass; the run completed within one second."
+  },
+  "preregistration_commit": null,
+  "source": {
+    "repository": "https://github.com/kwd421/MindMap",
+    "source_revision": "4ac92909d3f00612d025ac9328ee81ed37def40b",
+    "checkout_revision": "4ac92909d3f00612d025ac9328ee81ed37def40b",
+    "dirty": false,
+    "deviations": [
+      "EXP-20260827-004 and exploratory inspection in the current research loop already exposed individual GateMem deletion examples and parser misses. This study is therefore development evidence even though its deterministic extraction rule is frozen before the exhaustive run.",
+      "The frozen lexical rule labels delete/remove/erase/forget imperatives only at the trimmed turn start or after [.!?] plus whitespace, together with a sentence-initial Deletion request label. Newline-, quote-, colon-, and semicolon-only boundaries are not general sentence boundaries in this rule. It is not a semantic gold label for every deletion speech act.",
+      "The tested parser is the frozen PR 52 capability-boundary implementation, not the main branch and not an end-to-end memory agent.",
+      "After the aggregate artifact was written, the 57 referent-absent rows were inspected as development error analysis. That inspection did not alter the frozen extractor, parser, denominator, or artifacts.",
+      "The original run recorded source.dirty=false from operator observation, but the v1 runner checked only exact HEAD revisions and did not itself fail closed on tracked or untracked checkout changes. A later model-assisted manual review reproduced all three artifacts byte-for-byte from clean exact-revision checkouts; that supports result reproducibility but does not retroactively attest the original checkout state."
+    ]
+  },
+  "dataset": {
+    "name": "GateMem official public episodes, all four released domains",
+    "revision": "603f9f4b4ba4b77f043c20f85687fa016fd720b0",
+    "split": "exhaustive strict-sentence-imperative-v1 selection over bench/data/*/episodes.jsonl",
+    "license": "MIT",
+    "raw_data_committed": false
+  },
+  "method_arms": [
+    "pr52_frozen_public_turn_policy_parser"
+  ],
+  "models": [
+    {
+      "role": "independent source-artifact verifier",
+      "model": "ChatGPT GPT Pro",
+      "reasoning_effort": "Pro UI; underlying model version and token usage not exposed",
+      "claim_boundary": "model-assisted exact-byte and deterministic-filter audit, not human peer review, semantic gold, or an official benchmark scorer"
+    }
+  ],
+  "controls": {
+    "planned_manifest_commit": "b22276c9eb89594910dcd5a8fdda11c249e2b0e4",
+    "extraction_rule_version": "strict-sentence-imperative-v1",
+    "runner_sha256": "c82df1056bcbea05198be185ad97663c63bdf07542de08828553f734fe3eadaf",
+    "environment": {
+      "python": "3.11.15",
+      "execution": "local deterministic CPU",
+      "hosted_model_calls": 0,
+      "official_scorer_calls": 0
+    },
+    "inclusion": "A public turn contains delete/remove/erase/forget at the trimmed turn start or immediately after [.!?] plus whitespace, optionally prefixed by please, or as the imperative following the frozen sentence-initial Deletion request label. Other punctuation, newline-only, and quote-only boundaries are outside this lexical v1 rule.",
+    "exclusion": "Past-tense descriptions, indirect requests, morphological lookalikes, reminder-only statements, checkpoints, scorer labels, and all non-episode data.",
+    "independent_variable": "presence versus absence of one of the parser manifest's explicit information referents",
+    "dependent_variables": [
+      "any DELETE signal per selected official turn",
+      "DELETE signal count by domain and referent stratum"
+    ],
+    "evaluator_only_variables": [
+      "GateMem checkpoint query_type",
+      "leak_targets",
+      "judge_spec",
+      "official answer or leakage outcome"
+    ],
+    "nuisance_variables": [
+      "repeated templated wording across episodes",
+      "strict extractor undercoverage",
+      "episode-specific principal aliases"
+    ]
+  },
+  "sample": {
+    "unit": "official public episode turn",
+    "domains": ["education", "household", "medical", "office"],
+    "sampling": "exhaustive after applying the frozen deterministic inclusion rule",
+    "deduplication": "none; unique text hashes are reported as a secondary diagnostic",
+    "episode_files": 4,
+    "episodes": 91,
+    "all_public_turns": 20293,
+    "strict_directive_turns": 233,
+    "unique_text_hashes": 231
+  },
+  "results": {
+    "status": "completed",
+    "primary_outcome": "DELETE-signal numerator and strict-directive denominator",
+    "secondary_outcomes": [
+      "information-referent-present numerator/denominator",
+      "DELETE signal among referent-absent strict directives",
+      "domain counts and unique text hash count"
+    ],
+    "stopping_rule": "Verify both exact git revisions, visit all four official episodes.jsonl files exactly once, evaluate every rule-qualified turn exactly once, and stop with failure on revision, schema, import, or write error without changing the rule.",
+    "strict_directive_delete_signal": {"numerator": 176, "denominator": 233},
+    "information_referent_present": {"numerator": 176, "denominator": 233},
+    "referent_absent_delete_signal": {"numerator": 0, "denominator": 57},
+    "per_domain": {
+      "education": {"numerator": 64, "denominator": 67},
+      "household": {"numerator": 63, "denominator": 94},
+      "medical": {"numerator": 16, "denominator": 29},
+      "office": {"numerator": 33, "denominator": 43}
+    },
+    "operation_shapes": {
+      "delete_only": {"numerator": 174, "denominator": 233},
+      "delete_plus_restrict": {"numerator": 2, "denominator": 233},
+      "no_signal": {"numerator": 57, "denominator": 233}
+    },
+    "official_benchmark_score": false,
+    "interpretation": "The frozen parser emitted DELETE for every selected turn containing one of its 14 explicit information referents and for none of the 57 selected turns without one. The observed 176/233 coverage is therefore the implemented lexical capability boundary on this deterministic development subset, not an end-to-end forgetting result."
+  },
+  "cost": {
+    "provider_usd": 0.0,
+    "note": "One deterministic local Python pass plus a later subscription GPT Pro source-artifact audit; no metered hosted-model API, official GateMem scorer, or LLM judge call."
+  },
+  "artifacts": {
+    "pull_request": "https://github.com/kwd421/MindMap/pull/54",
+    "exact_head_ci": "https://github.com/kwd421/MindMap/actions/runs/33099176986",
+    "model_assisted_manual_review_sha256": "2023c79222b138f83b4131d127e7795f0016abf643f1f0e0fc2f3d3b8fc5a76b",
+    "manual_review_boundary": "Ordinary git/gh/Python/pytest and direct artifact review without Codex Security workflows; subscription-based model-assisted review, not independent human peer review.",
+    "independent_gpt_pro_source_audit": {
+      "audited_head": "a82613a06bb39a2b6ffd4b2d3ead67d86b444117",
+      "unchanged_through_head": "93baef0acd022f1ae3e0251d1f1543fbedb1f3b4",
+      "direct_raw_byte_reconstruction": {"numerator": 1, "denominator": 1},
+      "byte_length": 39567,
+      "crlf_records_including_header": 234,
+      "git_blob_sha1": "7486c39634ada4ae1aafcaef941e68488e676c05",
+      "standalone_full_source_filter": {"numerator": 1, "denominator": 1},
+      "source_rows": 233,
+      "referent_absent_rows": 57,
+      "unique_referent_absent_coordinates": 57,
+      "referent_absent_delete_positive": 0,
+      "unique_referent_absent_text_hashes": 55
+    }
+  },
+  "deviation_addendum": [
+    "The post-result manual review found no blocking discrepancy and reproduced the three committed artifacts 3/3 byte-identically from clean exact revisions. It also found the original runner did not enforce or artifact-record checkout cleanliness, the Markdown ledger retained a stale planned label, and the prose description of sentence boundaries was broader than the frozen regex. The last two documentation defects were corrected without changing the frozen runner or result artifacts; cleanliness enforcement is reserved for a versioned future runner so EXP-008 remains historically reproducible.",
+    "A later independent GPT Pro verifier closed its two previously incomplete source checks. It reconstructed the exact public CSV bytes and matched both Git blob SHA-1 7486c39634ada4ae1aafcaef941e68488e676c05 and SHA-256 5133fae854abb92cf3856f03efc346e2e6dcf1e13b3f7d86285ba3f3faf8f66d, 1/1. A standalone parser then enumerated 233/233 rows and selected 57/233 referent-absent rows with 57/57 unique coordinates, 0/57 DELETE-positive rows, and 55 unique text hashes, 1/1. The audited files are unchanged through 93baef0. This closes byte identity and filtering arithmetic only, not semantic coverage or official scoring."
+  ],
+  "artifact_files": [
+    {
+      "path": "results/research/EXP-20260828-008/artifact_manifest.json",
+      "sha256": "c86313546da5e670681cf90cc0faf0f170ddb1294c57455c6d2663c186ed93fb"
+    },
+    {
+      "path": "results/research/EXP-20260828-008/summary.json",
+      "sha256": "71c9fefb4cab5b0c75838ebed128a147aa4cb7012bbad54bba201decebc5f980"
+    },
+    {
+      "path": "results/research/EXP-20260828-008/turn_results.csv",
+      "sha256": "5133fae854abb92cf3856f03efc346e2e6dcf1e13b3f7d86285ba3f3faf8f66d"
+    }
+  ],
+  "claim_boundary": "Development surface diagnostic over a deterministic subset of official public turns. It is not an official GateMem score, a semantic recall estimate over all deletion speech acts, target grounding, state mutation, answer suppression, restart persistence, physical erasure, or a confirmatory result."
+}

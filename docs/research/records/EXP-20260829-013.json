@@ -1,0 +1,165 @@
+{
+  "schema_version": "0.1.0",
+  "experiment_id": "EXP-20260829-013",
+  "title": "Evaluator-ID boundary remediation and frozen GateMem B2 reanalysis",
+  "status": "completed",
+  "study_class": "development",
+  "research_question_ids": ["RQ3", "RQ4", "RQ5"],
+  "hypothesis_ids": ["H3"],
+  "started_at": "2026-08-29T06:15:16Z",
+  "ended_at": "2026-08-29T06:18:50Z",
+  "timing": {
+    "precision": "exact",
+    "note": "Start is the evaluator-remediation commit time in UTC; end is the result-recording time after the one allowed four-domain paired audit and aggregate analysis."
+  },
+  "preregistration_commit": null,
+  "source": {
+    "repository": "https://github.com/kwd421/MindMap",
+    "source_revision": "de7707debbb7317700fe6eb6c65ee6118e540072",
+    "checkout_revision": "de7707debbb7317700fe6eb6c65ee6118e540072",
+    "dirty": false,
+    "deviations": [
+      "This post-failure development remediation has complete access to EXP-012 execution hashes and the evaluator namespace error, but no official B2 metric value has been opened.",
+      "The remediation may change only the evaluator-side outer checkpoint join and its tests. B1a/B1b/B2 predictions, memory method, parser, retrieval, reader, official scorer outputs, opaque key, and benchmark files are byte-frozen.",
+      "The remediation reuses the 6654 EXP-012 predictions instead of rerunning model inference; all prediction and score hashes must match the EXP-012 failure artifact."
+    ]
+  },
+  "dataset": {
+    "name": "GateMem official open-label benchmark plus frozen EXP-012 outputs",
+    "revision": "GateMem-603f9f4_EXP-012-frozen-artifacts",
+    "split": "all four public domains; 91 episodes; 2218 checkpoints",
+    "license": "MIT; LICENSE SHA-256 78411c3c6aa9704b32c91fa74d8ba365f32514b0c5897e945a4a6f7e9483facc",
+    "raw_data_committed": false
+  },
+  "method_arms": [
+    "EXP012_B1a_raw_lexical_context_echo_frozen",
+    "EXP012_B1b_raw_lexical_shared_reader_frozen",
+    "EXP012_B2_frozen_public_text_governed_shared_reader_frozen"
+  ],
+  "models": [
+    {
+      "role": "already-completed shared deterministic answer reader; no new inference",
+      "model": "deepset/minilm-uncased-squad2",
+      "revision": "934656cdda79824eabf503ed56e15c01ddbdbe3f"
+    }
+  ],
+  "controls": {
+    "planning_commit": "6f73005e94d8137b7c793703c0f52ee2e7d221d7",
+    "method_revision": "4ac92909d3f00612d025ac9328ee81ed37def40b",
+    "analysis_revision": "de7707debbb7317700fe6eb6c65ee6118e540072",
+    "analysis_sha256": "1db20ab20f93a668562ccd3b28e0a6e6cf63ff4fbbd0295f8c06c07ef371a6c7",
+    "analysis_test_sha256": "c7d21b70ddc6ac46225c52ff4928c1066e2e2c41de2ca03a0c3f07c995c12ceb",
+    "allowed_code_change": "Key evaluator joins by the source checkpoint_id serialized in the outer official prediction row; preserve method-internal opaque IDs for retrieval/prompt comparison.",
+    "forbidden_changes": [
+      "B1a/B1b/B2 prediction bytes",
+      "official score bytes",
+      "memory method or parser",
+      "retrieval or reader configuration",
+      "GateMem data or scorer",
+      "opaque key or method-internal opaque identifiers"
+    ],
+    "independent_variable": "B1a/B1b/B2 frozen methods from EXP-012",
+    "dependent_variables": [
+      "official utility, privacy, deletion, and Memory Governance Score",
+      "paired privacy/deletion prompt exposure",
+      "paired utility required-pattern recall and false blocking",
+      "governance signal coverage and reader cost"
+    ],
+    "integration_test": "Synthetic outer prediction rows must use source checkpoint IDs as the real official serialization does; method-internal turn IDs remain opaque and equal across arms.",
+    "missing_data_rule": "Any frozen artifact hash mismatch, checkpoint mismatch, retrieval mismatch, scorer mismatch, prompt-subset violation, or governance count violation invalidates the domain.",
+    "stopping_rule": "Commit the minimal evaluator-only fix and real-boundary regression test, verify all frozen EXP-012 artifact hashes, run the paired audit once for each domain, and stop without further code changes after any publishable output is generated.",
+    "cost_ceiling_usd": 0.0
+  },
+  "sample": {
+    "unit": "frozen GateMem checkpoint",
+    "domains": 4,
+    "checkpoints": 2218,
+    "prediction_rows_reused": 6654,
+    "official_score_files_reused": 12,
+    "sampling": "exhaustive public release"
+  },
+  "results": {
+    "status": "completed",
+    "primary_outcome": "valid paired aggregate over all 2218 frozen checkpoints after evaluator-only ID-boundary correction",
+    "secondary_outcomes": [
+      "four domain publishable aggregates",
+      "all pairing invariant counts",
+      "micro exact counts and weighted official metrics"
+    ],
+    "validity_gates": {
+      "frozen_artifact_hashes": {"numerator": 44, "denominator": 44},
+      "paired_domain_audits": {"numerator": 4, "denominator": 4},
+      "pairing_or_governance_invariant_violations": {"numerator": 0, "denominator": 6}
+    },
+    "official_micro_counts": {
+      "B1b": {
+        "utility_correct": {"numerator": 41, "denominator": 728},
+        "privacy_answer_leak": {"numerator": 45, "denominator": 727},
+        "privacy_context_and_e2e_leak": {"numerator": 509, "denominator": 727},
+        "deletion_answer_leak": {"numerator": 96, "denominator": 763},
+        "deletion_context_and_e2e_leak": {"numerator": 645, "denominator": 763}
+      },
+      "B2": {
+        "utility_correct": {"numerator": 41, "denominator": 728},
+        "privacy_answer_leak": {"numerator": 46, "denominator": 727},
+        "privacy_context_and_e2e_leak": {"numerator": 457, "denominator": 727},
+        "deletion_answer_leak": {"numerator": 68, "denominator": 763},
+        "deletion_context_and_e2e_leak": {"numerator": 512, "denominator": 763}
+      }
+    },
+    "paired_B1b_to_B2": {
+      "utility_correct": {
+        "unchanged_correct": 41,
+        "unchanged_incorrect": 687,
+        "improved": 0,
+        "regressed": 0
+      },
+      "privacy_context_and_e2e": {
+        "leak_removed": 52,
+        "leak_added": 0,
+        "leak_remained": 457,
+        "safe_remained": 218
+      },
+      "deletion_context_and_e2e": {
+        "leak_removed": 133,
+        "leak_added": 0,
+        "leak_remained": 512,
+        "safe_remained": 118
+      },
+      "privacy_answer": {"leak_removed": 1, "leak_added": 2},
+      "deletion_answer": {"leak_removed": 36, "leak_added": 8}
+    },
+    "supplemental_prompt_surface": {
+      "utility_full_required_recall_B1a": {"numerator": 335, "denominator": 728},
+      "utility_full_required_recall_B2": {"numerator": 292, "denominator": 728},
+      "utility_false_blocking": {"numerator": 43, "denominator": 728},
+      "candidates_blocked": {"numerator": 1558, "denominator": 11090}
+    },
+    "reader_cost": {
+      "B1b_input_tokens": 428127,
+      "B2_input_tokens": 365263,
+      "B1b_calls": 2218,
+      "B2_calls": 2198
+    },
+    "derived_micro_e2e_product": {
+      "B1b": 0.002611752562626998,
+      "B2": 0.006880674512876365,
+      "boundary": "Project-derived micro product from exact aggregate counts; official GateMem scores remain the per-domain official summaries."
+    },
+    "interpretation": "At this frozen prior-access development setting, the public-text pre-reader gate removed 52 privacy and 133 deletion context/e2e leaks relative to the same-reader control with no per-item utility-correctness change and no context/e2e leak regression. Answer leakage was mixed and 43 utility checkpoints lost complete required prompt evidence, so the result supports only a scoped context-governance effect for this weak reader."
+  },
+  "cost": {
+    "provider_usd": 0.0,
+    "note": "Planned deterministic local reanalysis of frozen outputs; no model or hosted API call."
+  },
+  "artifact_files": [
+    {
+      "path": "results/research/EXP-20260829-013/summary.json",
+      "sha256": "f1658af3c61e90bd250d76657c1cf7f13f1114f27d947724b4a853c46916661e"
+    }
+  ],
+  "artifacts": {
+    "protected_retention": "The 6654 predictions, 12 official score bundles, four publishable per-domain aggregates, and opaque key remain outside git. The committed summary records their allowed aggregate hashes and the EXP-012 failure artifact records every prediction/score hash."
+  },
+  "claim_boundary": "Completed post-failure, prior-access development reanalysis using an evaluator-only serialization-boundary repair. It supports a scoped reduction in forbidden context/e2e exposure for the exact frozen B2 heuristic versus the same-reader B1b control, with identical utility correctness under this weak reader. It is not confirmation, a leaderboard submission, a fresh model run, semantic parser recall, durable erasure, stronger-reader safety, or general MindMap superiority."
+}

@@ -1,0 +1,156 @@
+{
+  "schema_version": "0.1.0",
+  "experiment_id": "EXP-20260829-012",
+  "title": "Full GateMem B2 matched pre-reader governance execution",
+  "status": "failed",
+  "study_class": "development",
+  "research_question_ids": ["RQ3", "RQ4", "RQ5"],
+  "hypothesis_ids": ["H3"],
+  "started_at": "2026-08-29T06:07:18.177993Z",
+  "ended_at": "2026-08-29T06:11:03Z",
+  "timing": {
+    "precision": "exact",
+    "note": "The first committed-artifact timestamp is used as the execution start; the failure-disposition timestamp was recorded immediately after the four paired audits rejected their checkpoint namespaces."
+  },
+  "preregistration_commit": null,
+  "source": {
+    "repository": "https://github.com/kwd421/MindMap",
+    "source_revision": "4ac92909d3f00612d025ac9328ee81ed37def40b",
+    "checkout_revision": "4ac92909d3f00612d025ac9328ee81ed37def40b",
+    "dirty": false,
+    "deviations": [
+      "This is a development execution after complete access to the prior B1a/B1b aggregate outcome and EXP-008/009 parser-surface diagnostics; it is not confirmatory or an independent replication.",
+      "The exact frozen B2 method predates EXP-008/009 and will be executed without grammar, threshold, retrieval, reader, or scorer amendment.",
+      "GateMem is open-label: evaluator-only checkpoint annotations are available to the experiment coordinator but remain excluded from all three method processes and are joined only after prediction generation.",
+      "The project worktree contains an unrelated untracked prospective-protocol checker; the executed PR 52 and GateMem checkouts must both be clean exact revisions."
+    ]
+  },
+  "dataset": {
+    "name": "GateMem official open-label benchmark",
+    "revision": "603f9f4b4ba4b77f043c20f85687fa016fd720b0",
+    "split": "all four public domains; 91 episodes; 2218 checkpoints",
+    "license": "MIT; LICENSE SHA-256 78411c3c6aa9704b32c91fa74d8ba365f32514b0c5897e945a4a6f7e9483facc",
+    "raw_data_committed": false,
+    "file_sha256": {
+      "education_episodes": "5971478a96553c2eb18a9f1e079987275da0cddf6175e40abda8a58525e65862",
+      "education_checkpoints": "2a372a5017a99108c83324d2fed25dbfb7797a2fb25a20fc066ed5b2d05739b5",
+      "household_episodes": "e2bb506cc1bdc8dc7b16d4a57610147365798d03eb1c326f9197b6c6221efb6f",
+      "household_checkpoints": "4692c3e1ea91be63debd7b39ccc5fc425bc1a83155c1bfb5c197ba68cefd93ae",
+      "medical_episodes": "d4b01f62cbd3457715b5958cf2d07d496c6e59280d28041927e2b3ab8a444b9f",
+      "medical_checkpoints": "2447f5905081e6002f16ad14f7f7dc19e14b7181e5ac8ebd08144d68da6437a0",
+      "office_episodes": "e15797cc0ab778067e0235377a09811c73182b5e1aa28e2221adc5ef9638a409",
+      "office_checkpoints": "7186bc1dd66b493f994b802bad8817d7aa5e7a91f498d67f87410a98f8116d0c"
+    }
+  },
+  "method_arms": [
+    "B1a_raw_lexical_context_echo",
+    "B1b_raw_lexical_shared_reader",
+    "B2_frozen_public_text_governed_shared_reader"
+  ],
+  "models": [
+    {
+      "role": "shared deterministic answer reader for B1b and B2",
+      "model": "deepset/minilm-uncased-squad2",
+      "revision": "934656cdda79824eabf503ed56e15c01ddbdbe3f",
+      "decoding": "extractive QA; max sequence 384; stride 128; max answer tokens 30; null margin 0.0"
+    }
+  ],
+  "controls": {
+    "planning_commit": "87bd72b8314d42beb0ce6a506600e4bb886f072d",
+    "independent_variable": "pre-reader public-text governance gate absent versus present; B1a is a raw-context endpoint control",
+    "dependent_variables": [
+      "official per-domain utility accuracy, access-control violation rate, active-forgetting failure rate, and Memory Governance Score",
+      "matched forbidden prompt exposure for privacy and deletion checkpoints",
+      "required-pattern prompt recall and false blocking on utility checkpoints",
+      "answer coverage, no-memory count, reader input tokens, and elapsed CPU time"
+    ],
+    "evaluator_only_variables": [
+      "query_type",
+      "expected_action",
+      "judge_spec",
+      "leak_targets",
+      "relationships",
+      "records",
+      "record_refs",
+      "memory_ops",
+      "source identifiers and future turns"
+    ],
+    "fixed_retrieval": {
+      "top_k": 5,
+      "bm25_k1": 1.2,
+      "bm25_b": 0.75,
+      "recency_weight": 0.0,
+      "max_answer_characters": 6000
+    },
+    "fixed_reader": {
+      "model_revision": "934656cdda79824eabf503ed56e15c01ddbdbe3f",
+      "max_sequence_length": 384,
+      "stride": 128,
+      "max_answer_tokens": 30,
+      "null_margin": 0.0
+    },
+    "official_scorer": {
+      "script_sha256": "3d546a21778202959a9df12bac44c196a7f20a248cf5a2cb34f0d9b9c2623d8a",
+      "module_sha256": "847a29c8b160b199f84763b137ec867af7d8ccfdb457c22fa01d6ed123e7304a"
+    },
+    "pairing": "one fresh evaluator-owned opaque-ID key reused across all three arms within all domains; exact checkpoint sets and retrieval signatures required",
+    "nuisance_variables": [
+      "complete prior access to B1a/B1b and parser-surface outcomes",
+      "open-label benchmark and template repetition",
+      "lexical policy parser undercoverage and whole-turn blocking",
+      "local CPU and dependency differences from prior GitHub Actions runs",
+      "the frozen extractive reader may dominate utility independently of the memory gate"
+    ],
+    "missing_data_rule": "Any checkpoint-set, candidate-pairing, scorer, source-hash, or method failure invalidates that domain; do not remove rows or change denominators.",
+    "multiple_comparison_rule": "No null-hypothesis testing or multiplicity-adjusted confirmatory claim; report all four domains and micro exact counts as development evidence.",
+    "stopping_rule": "After this record is committed, create clean exact PR 52 and GateMem checkouts, run B1a then B1b then B2 exactly once per domain with one shared secret, score all predictions with the unmodified official scorer, run the frozen paired audit, and stop without method changes after all four domains complete or any domain invalidates.",
+    "cost_ceiling_usd": 0.0
+  },
+  "sample": {
+    "unit": "GateMem checkpoint",
+    "domains": 4,
+    "episodes": 91,
+    "checkpoints": 2218,
+    "utility_checkpoints": 728,
+    "privacy_checkpoints": 727,
+    "deletion_checkpoints": 763,
+    "sampling": "exhaustive public release"
+  },
+  "results": {
+    "status": "failed",
+    "primary_outcome": "paired B2 versus B1a/B1b change in forbidden prompt exposure and official utility/safety metrics over the exact 2218-checkpoint release",
+    "secondary_outcomes": [
+      "per-domain official summaries",
+      "required-pattern prompt recall and false blocking",
+      "governance signal coverage and reason counts",
+      "reader token and runtime cost"
+    ],
+    "execution": {
+      "predictions": {"numerator": 6654, "denominator": 6654},
+      "official_scorer_successes": {"numerator": 12, "denominator": 12},
+      "paired_audit_successes": {"numerator": 0, "denominator": 4}
+    },
+    "failure": {
+      "education_checkpoint_namespace_mismatch": {"missing": 540, "extra": 540},
+      "household_checkpoint_namespace_mismatch": {"missing": 552, "extra": 552},
+      "medical_checkpoint_namespace_mismatch": {"missing": 579, "extra": 579},
+      "office_checkpoint_namespace_mismatch": {"missing": 547, "extra": 547},
+      "root_cause": "The external runner correctly serializes source checkpoint IDs in the outer prediction row for the official scorer, while the paired audit expects method-internal opaque query IDs at that outer boundary. Its synthetic unit fixture encoded the opaque ID directly into the outer row and therefore missed the real integration mismatch.",
+      "disposition": "The primary paired outcome is invalid and no official score is adopted as an EXP-012 architecture result. Predictions and official score files remain byte-frozen outside git for a separate versioned evaluator-only remediation."
+    }
+  },
+  "cost": {
+    "provider_usd": 0.0,
+    "note": "Planned local CPU execution only; no hosted API or paid official submission. Dependency installation and wall time are not monetary provider charges."
+  },
+  "artifact_files": [
+    {
+      "path": "results/research/EXP-20260829-012/failure.json",
+      "sha256": "7d097548cd59f6d235aced23257356e5683805e07076fc6bf6ea1e3c2a868f16"
+    }
+  ],
+  "artifacts": {
+    "protected_retention": "Per-checkpoint prediction, score, prompt, and opaque-identity artifacts remain outside git in the exact execution workspace. Their hashes are committed in the failure artifact; only aggregate failure metadata are public."
+  },
+  "claim_boundary": "Failed prior-access development execution. It establishes a real integration defect between the frozen PR 52 protected runner and paired audit after 6654/6654 predictions and 12/12 official scorer successes; it establishes no B2 utility, safety, architecture, leaderboard, parser-recall, or durable-erasure result."
+}

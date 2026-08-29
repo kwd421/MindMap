@@ -1,0 +1,79 @@
+{
+  "schema_version": "0.1.0",
+  "experiment_id": "EXP-20260827-001",
+  "title": "GateMem B1a/B1b independent aggregate corroboration",
+  "status": "completed",
+  "study_class": "replication",
+  "research_question_ids": ["RQ3", "RQ5"],
+  "hypothesis_ids": ["H2"],
+  "started_at": null,
+  "ended_at": null,
+  "timing": {
+    "precision": "unknown",
+    "note": "The original run did not record exact start or end timestamps; the former midnight values were placeholders and have been removed."
+  },
+  "source": {
+    "repository": "https://github.com/kwd421/MindMap",
+    "source_revision": "7a12a70bcc6f093070f4c36d1e961e554d36baa6",
+    "checkout_revision": "7a12a70bcc6f093070f4c36d1e961e554d36baa6",
+    "dirty": true,
+    "deviations": [
+      "Used safetensors 0.8.0 to satisfy transformers 5.15.0.",
+      "Wrapped result.output_dir with pathlib.Path for reader metadata output."
+    ],
+    "reconstructability": {
+      "status": "unreconstructable",
+      "reason": "The exact dirty patch/source bundle was not retained. Aggregate agreement with PR #50 is durable, but the local checkout cannot be reconstructed byte-for-byte."
+    }
+  },
+  "dataset": {
+    "name": "GateMem",
+    "revision": "603f9f4b4ba4b77f043c20f85687fa016fd720b0",
+    "split": "official protected four-domain evaluation",
+    "license": "see pinned upstream dataset card",
+    "raw_data_committed": false
+  },
+  "method_arms": ["B1a raw_lexical", "B1b raw_lexical_reader"],
+  "models": [
+    {
+      "role": "reader",
+      "provider": "Hugging Face",
+      "model": "deepset/minilm-uncased-squad2",
+      "revision": "934656cdda79824eabf503ed56e15c01ddbdbe3f"
+    }
+  ],
+  "controls": {
+    "paired_candidates": true,
+    "paired_prompt_context": true,
+    "paired_checkpoints": 2218,
+    "reader_frozen": true,
+    "official_scorer_sha256": "3d546a21778202959a9df12bac44c196a7f20a248cf5a2cb34f0d9b9c2623d8a"
+  },
+  "sample": {
+    "domains": 4,
+    "unique_checkpoints": 2218,
+    "b1b_replicates": 2,
+    "b1b_scored_checkpoints": 4436
+  },
+  "results": {
+    "utility_correct_b1a": {"numerator": 335, "denominator": 728},
+    "utility_correct_b1b": {"numerator": 41, "denominator": 728},
+    "b1b_answer_coverage": {"numerator": 824, "denominator": 2218},
+    "privacy_answer_leakage_b1a": {"numerator": 509, "denominator": 727},
+    "privacy_answer_leakage_b1b": {"numerator": 45, "denominator": 727},
+    "privacy_context_leakage_b1b": {"numerator": 509, "denominator": 727},
+    "privacy_end_to_end_leakage_b1b": {"numerator": 509, "denominator": 727},
+    "deletion_answer_leakage_b1a": {"numerator": 646, "denominator": 763},
+    "deletion_answer_leakage_b1b": {"numerator": 96, "denominator": 763},
+    "deletion_context_leakage_b1b": {"numerator": 645, "denominator": 763}
+  },
+  "cost": {
+    "provider_usd": 0.0,
+    "note": "Local model execution only."
+  },
+  "artifact_retention": {
+    "status": "protected_not_committed",
+    "reason": "Protected raw GateMem outputs were kept only in a temporary local directory and the exact dirty source patch was not retained."
+  },
+  "claim_boundary": "Independent aggregate corroboration from an unreconstructable dirty local checkout; pinned negative control only, not a byte-reproducible artifact, MindMap architecture result, or leaderboard submission."
+}

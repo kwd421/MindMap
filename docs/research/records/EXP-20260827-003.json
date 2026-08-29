@@ -1,0 +1,138 @@
+{
+  "schema_version": "0.1.0",
+  "experiment_id": "EXP-20260827-003",
+  "title": "LongMemEval eight-question DeepSeek V4-Flash feasibility pilot",
+  "status": "completed",
+  "study_class": "pilot",
+  "research_question_ids": ["RQ4", "RQ5"],
+  "hypothesis_ids": ["H5"],
+  "started_at": "2026-08-27T14:44:34Z",
+  "ended_at": "2026-08-27T14:45:30Z",
+  "preregistration_commit": "e4101a5b0030ee73188c697c215c01db8ac8bb21",
+  "source": {
+    "repository": "https://github.com/kwd421/MindMap",
+    "source_revision": "c2cdc7999fb2d3ea9289a81edb9f189ed03287bb",
+    "checkout_revision": "c2cdc7999fb2d3ea9289a81edb9f189ed03287bb",
+    "dirty": false,
+    "deviations": []
+  },
+  "dataset": {
+    "name": "LongMemEval cleaned oracle and S variants",
+    "revision": "xiaowu0162/longmemeval-cleaned downloaded 2026-08-27",
+    "split": "deterministic eight-question pilot sample",
+    "license": "MIT",
+    "raw_data_committed": false,
+    "official_harness_revision": "9e0b455f4ef0e2ab8f2e582289761153549043fc",
+    "official_evaluate_qa_sha256": "ecce9c4c79dc89d99534ac17b383a5cbb5b9f0c69ee98adaf0684742e3d95251",
+    "oracle_sha256": "821a2034d219ab45846873dd14c14f12cfe7776e73527a483f9dac095d38620c",
+    "long_s_sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442"
+  },
+  "method_arms": ["no_memory", "bm25_top3", "oracle_context"],
+  "models": [
+    {
+      "role": "answer reader",
+      "provider": "DeepSeek",
+      "model": "deepseek-v4-flash",
+      "documented_version": "DeepSeek-V4-Flash-0731",
+      "thinking": "disabled",
+      "temperature": 0,
+      "maximum_output_tokens": 256
+    },
+    {
+      "role": "pilot judge",
+      "provider": "DeepSeek",
+      "model": "deepseek-v4-flash",
+      "documented_version": "DeepSeek-V4-Flash-0731",
+      "thinking": "disabled",
+      "temperature": 0,
+      "maximum_output_tokens": 16,
+      "official_metric": false
+    }
+  ],
+  "controls": {
+    "sample_seed": "EXP-20260827-003-v1",
+    "selection_rule": "lowest SHA-256 rank per non-abstention question type plus the two lowest-ranked abstention items",
+    "ordered_question_ids": [
+      "618f13b2",
+      "6cb6f249",
+      "4388e9dd",
+      "caf03d32",
+      "b320f3f8",
+      "gpt4_68e94288",
+      "2133c1b5_abs",
+      "a96c20ee_abs"
+    ],
+    "sample_id_sha256": "c0e75cb7dce45e7f70cc0aedfca6c1ef9fe6620bfb1b3fa09620917202720e6f",
+    "retrieval_top_k": 3,
+    "retries_after_initial_attempt": 2,
+    "timeout_seconds": 120,
+    "same_answer_model_across_arms": true,
+    "official_judge_used": false,
+    "manual_audit_required": true
+  },
+  "sample": {
+    "questions": 8,
+    "non_abstention_questions": 6,
+    "abstention_questions": 2,
+    "question_types": 6,
+    "answer_calls_planned": 24,
+    "judge_calls_planned": 24
+  },
+  "results": {
+    "status": "completed",
+    "primary_outcome": "judge-correct count by arm",
+    "secondary_outcomes": [
+      "per-question paired outcomes",
+      "BM25 answer-session recall",
+      "answer latency",
+      "input/cache/output tokens",
+      "estimated and observed balance change"
+    ],
+    "stopping_rule": "stop after all 48 planned calls or immediately on an unexpected projected total cost above USD 0.25",
+    "stopping_rule_reached": "all 48 calls completed",
+    "judge_correct": {
+      "no_memory": {"numerator": 2, "denominator": 8},
+      "bm25_top3": {"numerator": 7, "denominator": 8},
+      "oracle_context": {"numerator": 7, "denominator": 8}
+    },
+    "bm25_answer_session_recall": {"numerator": 12, "denominator": 13},
+    "bm25_full_answer_session_coverage": {"numerator": 7, "denominator": 8},
+    "researcher_judge_agreement": {"numerator": 24, "denominator": 24, "independent": false},
+    "first_attempt_success": {"numerator": 48, "denominator": 48},
+    "cache_miss_input_tokens": 118832,
+    "cache_hit_input_tokens": 128,
+    "output_tokens": 1543,
+    "estimated_total_cost_usd": 0.027162316,
+    "balance_before_usd": "8.57",
+    "balance_after_usd": "8.57",
+    "billed_cost_status": "unknown because the immediate balance response exposed only two decimal places",
+    "decisive_failure_question_id": "a96c20ee_abs",
+    "decisive_failure": "BM25 and oracle context both substituted a Harvard thesis/conference-poster event for an unsupported undergraduate course research poster question."
+  },
+  "cost": {
+    "provider_usd": 0.027162316,
+    "note": "Token-rate estimate, not a billed amount. Pre-run ceiling USD 0.25 was respected. No automatic top-up.",
+    "pricing_source": "https://api-docs.deepseek.com/quick_start/pricing/",
+    "pricing_condition": "off-peak",
+    "usd_per_million_cache_hit_input": 0.007,
+    "usd_per_million_cache_miss_input": 0.22,
+    "usd_per_million_output": 0.66
+  },
+  "artifacts": {
+    "predictions_sha256": "c2f38012cda240ce4dcb9214a00c46feaebd6f02bc42d6f85c00713c9c9c6462",
+    "sample_sha256": "036e443ab4cd17068256d193c0d4e0eeae5876c9f37dc4d9a49542c212362380",
+    "summary_sha256": "bfabecaefc5644ab1e40cf4b6b250b1c4e7aa518830fa406c524fb909d2c33fe"
+  },
+  "artifact_files": [
+    {"path": "results/research/EXP-20260827-003/predictions.jsonl", "sha256": "c2f38012cda240ce4dcb9214a00c46feaebd6f02bc42d6f85c00713c9c9c6462"},
+    {"path": "results/research/EXP-20260827-003/sample.json", "sha256": "036e443ab4cd17068256d193c0d4e0eeae5876c9f37dc4d9a49542c212362380"},
+    {"path": "results/research/EXP-20260827-003/summary.json", "sha256": "bfabecaefc5644ab1e40cf4b6b250b1c4e7aa518830fa406c524fb909d2c33fe"}
+  ],
+  "deviation_addendum": [
+    "The runner did not serialize explicit start/end timestamps or provider response IDs. Filesystem timestamps were used in the audit; the runner will be amended before another study.",
+    "The balance endpoint returned the same two-decimal value before and immediately after the estimated USD 0.027 run, so billed cost is unknown.",
+    "The hosted-model pilot was executed once even though MM-RP-001 calls for two repetitions when a pilot is stochastic. Temperature 0 does not make the mutable hosted alias deterministic; the result remains single-run feasibility evidence.",
+    "The runner checked current accumulated estimated cost before each next pair, not a conservative projection of the next answer-plus-judge pair. The run ended far below the USD 0.25 ceiling, so the mismatch did not affect stopping, but the guard is weaker than the frozen wording."
+  ],
+  "claim_boundary": "Eight-question cost and feasibility pilot with one event-attribution failure; not an official LongMemEval score, confirmatory result, MindMap comparison, or leaderboard submission."
+}

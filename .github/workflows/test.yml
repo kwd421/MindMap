@@ -28,6 +28,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -38,6 +40,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e '.[dev]'
+          python -m pip check
+
+      - name: Install pinned research dependencies on the reproduction version
+        if: matrix.python-version == '3.11'
+        run: |
+          python -m pip install -e '.[research]'
           python -m pip check
 
       - name: Verify enumerated v0.2 release contract
@@ -54,6 +62,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -128,6 +138,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -135,7 +147,7 @@ jobs:
           cache: pip
 
       - name: Install
-        run: python -m pip install -e '.[dev]'
+        run: python -m pip install -e '.[dev,research]'
 
       - name: Recheck enumerated release contract on reproduction job
         run: python tools/check_repository_contract.py
@@ -165,6 +177,11 @@ jobs:
           test "$(jq -r .heldout_read /tmp/track_x_v03_context_gate/run_metadata.json)" = false
           test "$(jq -r .n_rows /tmp/track_x_v03_context_gate/summary.json)" = 420
           test "$(jq -r '.generic_typed_disagreements | length' /tmp/track_x_v03_context_gate/summary.json)" = 0
+
+      - name: EXP-010 exact two-revision artifact reproduction
+        run: |
+          git fetch --no-tags origin 2bda2ff38ea79dd0901f6329490d2f9940690261
+          python tools/check_late_destination_factorial_reproduction.py
 
       - name: Upload Track S semantic outputs
         if: always()

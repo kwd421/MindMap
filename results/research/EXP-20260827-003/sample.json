@@ -1,0 +1,42 @@
+[
+  {
+    "question_id": "618f13b2",
+    "question_type": "knowledge-update",
+    "session_count": 49
+  },
+  {
+    "question_id": "6cb6f249",
+    "question_type": "multi-session",
+    "session_count": 41
+  },
+  {
+    "question_id": "4388e9dd",
+    "question_type": "single-session-assistant",
+    "session_count": 43
+  },
+  {
+    "question_id": "caf03d32",
+    "question_type": "single-session-preference",
+    "session_count": 51
+  },
+  {
+    "question_id": "b320f3f8",
+    "question_type": "single-session-user",
+    "session_count": 46
+  },
+  {
+    "question_id": "gpt4_68e94288",
+    "question_type": "temporal-reasoning",
+    "session_count": 44
+  },
+  {
+    "question_id": "2133c1b5_abs",
+    "question_type": "knowledge-update",
+    "session_count": 50
+  },
+  {
+    "question_id": "a96c20ee_abs",
+    "question_type": "multi-session",
+    "session_count": 53
+  }
+]
