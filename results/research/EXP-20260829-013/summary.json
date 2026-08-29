@@ -1,0 +1,403 @@
+{
+  "analysis_revision": "de7707debbb7317700fe6eb6c65ee6118e540072",
+  "classification": "post-failure prior-access development reanalysis; official local scorer namespace plus supplemental paired aggregates; not a leaderboard or confirmatory result",
+  "experiment_id": "EXP-20260829-013",
+  "frozen_artifact_hash_check": {
+    "denominator": 44,
+    "numerator": 44
+  },
+  "interpretation": [
+    "B2 and B1b had identical utility correctness on every eligible utility checkpoint: 41 remained correct and 687 remained incorrect.",
+    "Relative to B1b, B2 removed 52 privacy and 133 deletion context/e2e leaks with zero context/e2e regressions in either category.",
+    "Answer-surface effects were mixed: privacy leaks changed by one net harm (1 improved, 2 regressed), while deletion leaks improved by 28 net (36 improved, 8 regressed).",
+    "The derived micro e2e product increased from 0.002611752562626998 to 0.006880674512876365, but this is a project-derived micro product; official GateMem values remain the per-domain official summaries.",
+    "The gate removed required prompt patterns on 43 utility checkpoints even though this weak frozen reader lost no utility-correct answers, so a stronger reader could face a utility trade-off.",
+    "The result tests one retrospective public-text heuristic with prior outcome access. It is not durable erasure, semantic target grounding, a leaderboard submission, or general MindMap superiority."
+  ],
+  "official_micro_counts_and_derived_product": {
+    "B1a": {
+      "action_accuracy": {
+        "denominator": 2218,
+        "numerator": 728,
+        "rate": 0.32822362488728585
+      },
+      "deletion_answer_leakage_rate": {
+        "denominator": 763,
+        "numerator": 645,
+        "rate": 0.8453473132372215
+      },
+      "deletion_context_leakage_rate": {
+        "denominator": 763,
+        "numerator": 645,
+        "rate": 0.8453473132372215
+      },
+      "deletion_e2e_leakage_rate": {
+        "denominator": 763,
+        "numerator": 645,
+        "rate": 0.8453473132372215
+      },
+      "derived_micro_mgs_answer": 0.02133992947512303,
+      "derived_micro_mgs_e2e": 0.02133992947512303,
+      "privacy_answer_leakage_rate": {
+        "denominator": 727,
+        "numerator": 509,
+        "rate": 0.7001375515818432
+      },
+      "privacy_context_leakage_rate": {
+        "denominator": 727,
+        "numerator": 509,
+        "rate": 0.7001375515818432
+      },
+      "privacy_e2e_leakage_rate": {
+        "denominator": 727,
+        "numerator": 509,
+        "rate": 0.7001375515818432
+      },
+      "utility_accuracy": {
+        "denominator": 728,
+        "numerator": 335,
+        "rate": 0.46016483516483514
+      }
+    },
+    "B1b": {
+      "action_accuracy": {
+        "denominator": 2218,
+        "numerator": 945,
+        "rate": 0.4260595130748422
+      },
+      "deletion_answer_leakage_rate": {
+        "denominator": 763,
+        "numerator": 96,
+        "rate": 0.1258191349934469
+      },
+      "deletion_context_leakage_rate": {
+        "denominator": 763,
+        "numerator": 645,
+        "rate": 0.8453473132372215
+      },
+      "deletion_e2e_leakage_rate": {
+        "denominator": 763,
+        "numerator": 645,
+        "rate": 0.8453473132372215
+      },
+      "derived_micro_mgs_answer": 0.04618529661886354,
+      "derived_micro_mgs_e2e": 0.002611752562626998,
+      "privacy_answer_leakage_rate": {
+        "denominator": 727,
+        "numerator": 45,
+        "rate": 0.061898211829436035
+      },
+      "privacy_context_leakage_rate": {
+        "denominator": 727,
+        "numerator": 509,
+        "rate": 0.7001375515818432
+      },
+      "privacy_e2e_leakage_rate": {
+        "denominator": 727,
+        "numerator": 509,
+        "rate": 0.7001375515818432
+      },
+      "utility_accuracy": {
+        "denominator": 728,
+        "numerator": 41,
+        "rate": 0.05631868131868132
+      }
+    },
+    "B2": {
+      "action_accuracy": {
+        "denominator": 2218,
+        "numerator": 973,
+        "rate": 0.4386834986474301
+      },
+      "deletion_answer_leakage_rate": {
+        "denominator": 763,
+        "numerator": 68,
+        "rate": 0.0891218872870249
+      },
+      "deletion_context_leakage_rate": {
+        "denominator": 763,
+        "numerator": 512,
+        "rate": 0.6710353866317169
+      },
+      "deletion_e2e_leakage_rate": {
+        "denominator": 763,
+        "numerator": 512,
+        "rate": 0.6710353866317169
+      },
+      "derived_micro_mgs_answer": 0.048053546459669756,
+      "derived_micro_mgs_e2e": 0.006880674512876365,
+      "privacy_answer_leakage_rate": {
+        "denominator": 727,
+        "numerator": 46,
+        "rate": 0.06327372764786796
+      },
+      "privacy_context_leakage_rate": {
+        "denominator": 727,
+        "numerator": 457,
+        "rate": 0.6286107290233838
+      },
+      "privacy_e2e_leakage_rate": {
+        "denominator": 727,
+        "numerator": 457,
+        "rate": 0.6286107290233838
+      },
+      "utility_accuracy": {
+        "denominator": 728,
+        "numerator": 41,
+        "rate": 0.05631868131868132
+      }
+    }
+  },
+  "official_per_domain": {
+    "education": {
+      "B1b": {
+        "compliance_utility_e2e_score": 0.0002846364883401922,
+        "compliance_utility_score": 0.00459104938271605,
+        "deletion_answer_leakage_rate": 0.15,
+        "deletion_context_leakage_rate": 0.8888888888888888,
+        "deletion_e2e_leakage_rate": 0.8888888888888888,
+        "privacy_answer_leakage_rate": 0.027777777777777776,
+        "privacy_context_leakage_rate": 0.5388888888888889,
+        "privacy_e2e_leakage_rate": 0.5388888888888889,
+        "utility_accuracy": 0.005555555555555556
+      },
+      "B2": {
+        "compliance_utility_e2e_score": 0.0010027434842249656,
+        "compliance_utility_score": 0.0049825102880658445,
+        "deletion_answer_leakage_rate": 0.07222222222222222,
+        "deletion_context_leakage_rate": 0.6222222222222222,
+        "deletion_e2e_leakage_rate": 0.6222222222222222,
+        "privacy_answer_leakage_rate": 0.03333333333333333,
+        "privacy_context_leakage_rate": 0.5222222222222223,
+        "privacy_e2e_leakage_rate": 0.5222222222222223,
+        "utility_accuracy": 0.005555555555555556
+      }
+    },
+    "household": {
+      "B1b": {
+        "compliance_utility_e2e_score": 0.0,
+        "compliance_utility_score": 0.0,
+        "deletion_answer_leakage_rate": 0.2391304347826087,
+        "deletion_context_leakage_rate": 0.8260869565217391,
+        "deletion_e2e_leakage_rate": 0.8260869565217391,
+        "privacy_answer_leakage_rate": 0.03804347826086957,
+        "privacy_context_leakage_rate": 0.6847826086956522,
+        "privacy_e2e_leakage_rate": 0.6847826086956522,
+        "utility_accuracy": 0.0
+      },
+      "B2": {
+        "compliance_utility_e2e_score": 0.0,
+        "compliance_utility_score": 0.0,
+        "deletion_answer_leakage_rate": 0.14673913043478262,
+        "deletion_context_leakage_rate": 0.6086956521739131,
+        "deletion_e2e_leakage_rate": 0.6086956521739131,
+        "privacy_answer_leakage_rate": 0.03804347826086957,
+        "privacy_context_leakage_rate": 0.5652173913043478,
+        "privacy_e2e_leakage_rate": 0.5652173913043478,
+        "utility_accuracy": 0.0
+      }
+    },
+    "medical": {
+      "B1b": {
+        "compliance_utility_e2e_score": 0.015636490000896782,
+        "compliance_utility_score": 0.14362136803874093,
+        "deletion_answer_leakage_rate": 0.0847457627118644,
+        "deletion_context_leakage_rate": 0.7062146892655368,
+        "deletion_e2e_leakage_rate": 0.7062146892655368,
+        "privacy_answer_leakage_rate": 0.109375,
+        "privacy_context_leakage_rate": 0.6979166666666666,
+        "privacy_e2e_leakage_rate": 0.6979166666666666,
+        "utility_accuracy": 0.1761904761904762
+      },
+      "B2": {
+        "compliance_utility_e2e_score": 0.01896494708994709,
+        "compliance_utility_score": 0.14273481638418078,
+        "deletion_answer_leakage_rate": 0.0903954802259887,
+        "deletion_context_leakage_rate": 0.6666666666666666,
+        "deletion_e2e_leakage_rate": 0.6666666666666666,
+        "privacy_answer_leakage_rate": 0.109375,
+        "privacy_context_leakage_rate": 0.6770833333333334,
+        "privacy_e2e_leakage_rate": 0.6770833333333334,
+        "utility_accuracy": 0.1761904761904762
+      }
+    },
+    "office": {
+      "B1b": {
+        "compliance_utility_e2e_score": 0.0001365001365001366,
+        "compliance_utility_score": 0.017297543613333084,
+        "deletion_answer_leakage_rate": 0.04504504504504504,
+        "deletion_context_leakage_rate": 0.9369369369369369,
+        "deletion_e2e_leakage_rate": 0.9369369369369369,
+        "privacy_answer_leakage_rate": 0.07017543859649122,
+        "privacy_context_leakage_rate": 0.8888888888888888,
+        "privacy_e2e_leakage_rate": 0.8888888888888888,
+        "utility_accuracy": 0.01948051948051948
+      },
+      "B2": {
+        "compliance_utility_e2e_score": 0.0011207379628432263,
+        "compliance_utility_score": 0.017134359239622397,
+        "deletion_answer_leakage_rate": 0.05405405405405406,
+        "deletion_context_leakage_rate": 0.7657657657657657,
+        "deletion_e2e_leakage_rate": 0.7657657657657657,
+        "privacy_answer_leakage_rate": 0.07017543859649122,
+        "privacy_context_leakage_rate": 0.7543859649122807,
+        "privacy_e2e_leakage_rate": 0.7543859649122807,
+        "utility_accuracy": 0.01948051948051948
+      }
+    }
+  },
+  "paired_B1b_to_B2": {
+    "action_correct": {
+      "0->0": 1202,
+      "0->1": 71,
+      "1->0": 43,
+      "1->1": 902
+    },
+    "deletion_context_leak": {
+      "0->0": 118,
+      "1->0": 133,
+      "1->1": 512
+    },
+    "deletion_e2e_leak": {
+      "0->0": 118,
+      "1->0": 133,
+      "1->1": 512
+    },
+    "deletion_leak": {
+      "0->0": 659,
+      "0->1": 8,
+      "1->0": 36,
+      "1->1": 60
+    },
+    "over_refusal": {
+      "0->0": 1905,
+      "0->1": 20,
+      "1->0": 20,
+      "1->1": 273
+    },
+    "privacy_context_leak": {
+      "0->0": 218,
+      "1->0": 52,
+      "1->1": 457
+    },
+    "privacy_e2e_leak": {
+      "0->0": 218,
+      "1->0": 52,
+      "1->1": 457
+    },
+    "privacy_leak": {
+      "0->0": 680,
+      "0->1": 2,
+      "1->0": 1,
+      "1->1": 44
+    },
+    "utility_correct": {
+      "0->0": 687,
+      "1->1": 41
+    }
+  },
+  "pairing_invariants": {
+    "B2_prompt_subset_violations": 0,
+    "governance_count_violations": 0,
+    "opaque_key_commitment_mismatches": 0,
+    "prompt_mismatches_B1a_B1b": 0,
+    "retrieval_mismatches_B1a_B1b": 0,
+    "retrieval_mismatches_B1a_B2": 0
+  },
+  "planning_commit": "6f73005e94d8137b7c793703c0f52ee2e7d221d7",
+  "pred_action_transitions": {
+    "answer->answer": 745,
+    "answer->no_memory": 79,
+    "no_memory->answer": 48,
+    "no_memory->no_memory": 1346
+  },
+  "publishable_domain_artifacts": {
+    "education": {
+      "sha256": "e5f962ef38a8f80de16f009eb3e1648889f959867607b7f8bc8ea8e45cc3f5f3"
+    },
+    "household": {
+      "sha256": "19a4a5c0bb6183e7f3303a55b864e0a7ae5e77c48cc4aa89b921802d9c0eff16"
+    },
+    "medical": {
+      "sha256": "7f5a3e9a104c66c3c7647ab10a3fbcf2454c1b8d82552f469ed0d272953dd8b7"
+    },
+    "office": {
+      "sha256": "718ba2b6cf0c15dba4bcc2406d976c180a136587de383b54da470a863c37312d"
+    }
+  },
+  "reader_cost": {
+    "B1b": {
+      "calls": 2218,
+      "elapsed_seconds": 159.42845460851095,
+      "forward_calls": 2218,
+      "input_tokens": 428127,
+      "windows": 2218
+    },
+    "B2": {
+      "calls": 2198,
+      "elapsed_seconds": 118.680358525482,
+      "forward_calls": 2198,
+      "input_tokens": 365263,
+      "windows": 2198
+    }
+  },
+  "sample": {
+    "checkpoints": 2218,
+    "deletion": 763,
+    "domains": 4,
+    "episodes": 91,
+    "privacy": 727,
+    "utility": 728
+  },
+  "schema_version": "mindmap-exp013-result-v1",
+  "source": {
+    "gatemem_revision": "603f9f4b4ba4b77f043c20f85687fa016fd720b0",
+    "mindmap_method_revision": "4ac92909d3f00612d025ac9328ee81ed37def40b",
+    "paired_audit_sha256": "1db20ab20f93a668562ccd3b28e0a6e6cf63ff4fbbd0295f8c06c07ef371a6c7",
+    "paired_audit_test_sha256": "c7d21b70ddc6ac46225c52ff4928c1066e2e2c41de2ca03a0c3f07c995c12ceb",
+    "reader_model": "deepset/minilm-uncased-squad2",
+    "reader_revision": "934656cdda79824eabf503ed56e15c01ddbdbe3f"
+  },
+  "status": "completed",
+  "supplemental_stage_metrics": {
+    "deletion": {
+      "B1a_prompt_exposed_checkpoints": 645,
+      "B1a_prompt_exposed_patterns": 857,
+      "B2_prompt_exposed_checkpoints": 522,
+      "B2_prompt_exposed_patterns": 647,
+      "checkpoint_count": 763,
+      "leak_pattern_count": 1115
+    },
+    "governance": {
+      "B2_matched_signal_checkpoint_count": 941,
+      "admitted_count": 9532,
+      "blocked_count": 1558,
+      "candidate_count": 11090,
+      "reason_counts": {
+        "no_applicable_public_policy_signal_admit": 9892,
+        "policy_directive_not_answer_evidence": 659,
+        "public_same_speaker_actor_only_other": 79,
+        "public_same_speaker_actor_only_self": 33,
+        "public_same_speaker_delete": 1093,
+        "public_same_speaker_deny_target": 2
+      }
+    },
+    "privacy": {
+      "B1a_prompt_exposed_checkpoints": 491,
+      "B1a_prompt_exposed_patterns": 712,
+      "B2_prompt_exposed_checkpoints": 437,
+      "B2_prompt_exposed_patterns": 609,
+      "checkpoint_count": 727,
+      "leak_pattern_count": 1486
+    },
+    "utility": {
+      "B1a_full_required_recall_checkpoints": 335,
+      "B1a_required_patterns_present": 2004,
+      "B2_full_required_recall_checkpoints": 292,
+      "B2_required_patterns_present": 1869,
+      "checkpoint_count": 728,
+      "false_blocking_checkpoints": 43,
+      "required_pattern_count": 3139
+    }
+  }
+}

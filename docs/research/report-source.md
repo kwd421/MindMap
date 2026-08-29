@@ -1,10 +1,11 @@
 # MindMap: governed, temporal, provenance-aware memory for long-lived agents
 
 **Document type:** living thesis source  
-**Revision:** 0.1.1
-**Date:** 2026-08-28
+**Revision:** 0.1.2
+**Date:** 2026-08-29
 **Evidence cutoff:** this revision's git commit  
-**Claim status:** research in progress; no public-benchmark superiority claim
+**Claim status:** research in progress; one scoped prior-access GateMem
+development effect, no general public-benchmark superiority claim
 
 ## Abstract
 
@@ -314,6 +315,56 @@ input rejection is not counted as three independent validators. Track X
 structured-only changes are a post-hoc downstream schema effect, not a raw
 verifier improvement. The PR remains a draft and unmerged.
 
+### 4.8 GateMem pre-reader governance full execution
+
+EXP-20260829-012 attempted the first full four-domain execution of the frozen
+PR #52 B2 public-text governance gate. All three arms produced 6,654/6,654
+predictions and the unmodified local official scorer succeeded 12/12 times,
+but the prespecified paired audit failed in all four domains. The real runner
+puts source checkpoint IDs in the outer official prediction rows, whereas the
+audit expected method-internal opaque query IDs at that boundary. Its synthetic
+test encoded opaque IDs in the outer rows and therefore missed the integration
+defect. EXP-012 was recorded as failed; none of its scores was adopted.
+
+EXP-20260829-013 froze an evaluator-only correction before opening B2 metric
+values. The correction leaves the method, parser, retrieval, reader, scorer,
+data, opaque key, 6,654 predictions, and 12 score bundles unchanged. It keys
+the evaluator join by the source ID required by the official prediction format
+and separately verifies that all arms used the same opaque-key commitment.
+Real-boundary tests passed 28/28, 44/44 frozen artifact hashes matched, and the
+four domain paired audits completed with zero candidate, prompt, key, subset,
+or governance-count mismatch.
+
+Against B1b, which uses the same BM25 candidates and frozen extractive reader
+without the pre-reader gate, B2 left utility correctness identical item by
+item: 41/728 remained correct and 687/728 remained incorrect. In the official
+local scorer namespace, privacy context/end-to-end leakage fell from 509/727
+to 457/727, comprising 52 paired improvements and no regressions. Deletion
+context/end-to-end leakage fell from 645/763 to 512/763, comprising 133
+improvements and no regressions.
+
+The answer surface was less uniformly favorable. Privacy answer leakage moved
+from 45/727 to 46/727: one checkpoint improved and two regressed. Deletion
+answer leakage moved from 96/763 to 68/763: 36 improved and eight regressed.
+The project-derived micro end-to-end product increased from
+0.002611752562626998 to 0.006880674512876365, but official GateMem scores remain
+the four per-domain products; the micro value is supplemental.
+
+The equal utility result does not mean zero utility cost. Evaluator-side prompt
+analysis found every required pattern in 335/728 B1a prompts and 292/728 B2
+prompts, identifying 43 false-blocked utility checkpoints. The weak reader
+failed on most of these cases under both conditions, masking a potential loss
+that a stronger reader might expose. B2 also reduced reader input from 428,127
+to 365,263 tokens and calls from 2,218 to 2,198.
+
+The narrow supported statement is therefore that this exact retrospective,
+public-text heuristic reduced forbidden context exposure under one frozen weak
+reader without changing that reader's observed utility correctness. The study
+had complete prior access to B1a/B1b and parser-surface outcomes, uses an
+open-label benchmark, and does not establish semantic target grounding,
+durable deletion, stronger-reader safety, leaderboard status, or general
+MindMap superiority.
+
 ## 5. External evaluation program
 
 The broader source-to-experiment mapping lives in
@@ -383,6 +434,9 @@ preregistration, peer review, an ACM badge, or degree-awarding supervision.
   repetitions requested for stochastic pilots; its cost guard checked current
   accumulated cost rather than projected next-pair cost.
 - Some GateMem raw artifacts are protected and cannot be committed.
+- The valid B2 result is a prior-access open-label development reanalysis after
+  an evaluator integration failure. Its context effect is paired and exact,
+  but stronger readers may expose the 43-checkpoint prompt-utility loss.
 - EXP-20260827-001's dirty local patch and exact execution time were not
   retained; only aggregate corroboration, not byte reproduction, is possible.
 - The fictional-source chapter still needs first-party citation upgrades.
@@ -405,15 +459,18 @@ preregistration, peer review, an ACM badge, or degree-awarding supervision.
 2. Move beyond the accepted finite-runtime temporal gate by projecting the
    standalone Snapshot lifecycle and typed justification-member source kinds;
    freeze disjoint confirmation cases before inspecting their outcomes.
-3. Add an event/relation-aware retrieval arm against the frozen full-set BM25
+3. Repeat the B1b/B2 comparison with a stronger frozen reader on a disjoint or
+   sealed evaluation surface. Treat the 43 observed false-blocking cases as
+   development material and exclude them from confirmation.
+4. Add an event/relation-aware retrieval arm against the frozen full-set BM25
    rows, without inspecting a new held-out outcome during tuning.
-4. Audit why the official user-only retrieval metric excludes 51
+5. Audit why the official user-only retrieval metric excludes 51
    single-session-assistant questions and define an assistant-evidence metric.
-5. Compare no memory, local lexical retrieval, and governed retrieval using one
+6. Compare no memory, local lexical retrieval, and governed retrieval using one
    DeepSeek V4-Flash reader with thinking disabled and identical budgets.
-6. Record tokens, price, latency, retries, returned model, prompts, and outputs.
-7. Audit deterministic and judge-based metrics manually on a blinded sample.
-8. Use the pilot only to estimate variance/cost and preregister a larger run.
+7. Record tokens, price, latency, retries, returned model, prompts, and outputs.
+8. Audit deterministic and judge-based metrics manually on a blinded sample.
+9. Use the pilot only to estimate variance/cost and preregister a larger run.
 
 ## References
 
@@ -423,6 +480,7 @@ preregistration, peer review, an ACM badge, or degree-awarding supervision.
 - Gebru et al. [Datasheets for Datasets](https://arxiv.org/abs/1803.09010).
 - Mitchell et al. [Model Cards for Model Reporting](https://arxiv.org/abs/1810.03993).
 - Wu et al. [LongMemEval official repository](https://github.com/xiaowu0162/LongMemEval).
+- Zhang et al. [GateMem official repository](https://github.com/RZ-H/GateMem).
 - MemTensor. [HaluMem official repository](https://github.com/MemTensor/HaluMem).
 - Hu et al. [Memory in the Age of AI Agents](https://arxiv.org/abs/2512.13564).
 - Sumers et al. [Cognitive Architectures for Language Agents](https://openreview.net/forum?id=1i6ZCvflQJ).

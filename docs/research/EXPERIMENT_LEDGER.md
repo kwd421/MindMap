@@ -59,6 +59,32 @@ Machine-readable records live in `records/`.
   values, verify every frozen hash, run each domain audit once, and stop after
   the first valid publishable aggregates or any new invalidation
 
+### 2026-08-29 result addendum
+
+- **Remediation:** exact analysis commit
+  de7707debbb7317700fe6eb6c65ee6118e540072; real-boundary regression tests
+  28/28; frozen EXP-012 artifacts 44/44 byte hashes matched.
+- **Pairing:** all four domain audits passed. Candidate, prompt, opaque-key, and
+  governance invariant violations were 0 across all declared checks.
+- **Utility:** B1b and B2 were itemwise identical on the 728 utility
+  checkpoints: 41 remained correct and 687 remained incorrect.
+- **Official local scorer, context/e2e:** privacy leakage fell from 509/727 to
+  457/727 with 52 paired improvements and 0 regressions; deletion leakage fell
+  from 645/763 to 512/763 with 133 improvements and 0 regressions.
+- **Answer surface:** privacy leakage changed from 45/727 to 46/727 (one
+  improvement, two regressions); deletion leakage fell from 96/763 to 68/763
+  (36 improvements, eight regressions).
+- **Utility warning:** evaluator-side prompt analysis found complete required
+  evidence in 335/728 B1a prompts versus 292/728 B2 prompts, so 43 utility
+  checkpoints were false-blocked even though the weak frozen reader's final
+  utility correctness did not change.
+- **Cost:** reader input fell from 428,127 to 365,263 tokens; calls fell from
+  2,218 to 2,198. No hosted API or paid submission was used.
+- **Boundary:** prior-access open-label development evidence for this exact
+  public-text heuristic and reader only; not confirmation, leaderboard status,
+  durable erasure, target grounding, stronger-reader safety, or general
+  MindMap superiority.
+
 ## EXP-20260827-001 — GateMem B1a/B1b independent local reproduction
 
 - **Class:** independent aggregate corroboration / changed-environment
