@@ -43,6 +43,22 @@ Machine-readable records live in `records/`.
   versioned evaluator-only remediation; the frozen B2 method itself will not be
   changed.
 
+## EXP-20260829-013 — Evaluator-ID remediation and frozen reanalysis
+
+- **Class:** post-failure development remediation
+- **Input:** the byte-frozen 6,654 predictions and 12 official score outputs
+  from failed EXP-012
+- **Allowed change:** evaluator-side joins use the source checkpoint ID stored in
+  the outer official prediction row; method-internal opaque retrieval and prompt
+  IDs remain unchanged and paired
+- **Forbidden changes:** method/parser/retrieval/reader/scorer/data/key and every
+  prediction or score byte
+- **Regression gate:** the paired-audit fixture must reproduce the real boundary
+  by putting source IDs in outer prediction rows
+- **Stopping rule:** commit the evaluator-only fix before opening B2 metric
+  values, verify every frozen hash, run each domain audit once, and stop after
+  the first valid publishable aggregates or any new invalidation
+
 ## EXP-20260827-001 — GateMem B1a/B1b independent local reproduction
 
 - **Class:** independent aggregate corroboration / changed-environment

@@ -1,0 +1,94 @@
+{
+  "schema_version": "0.1.0",
+  "experiment_id": "EXP-20260829-013",
+  "title": "Evaluator-ID boundary remediation and frozen GateMem B2 reanalysis",
+  "status": "planned",
+  "study_class": "development",
+  "research_question_ids": ["RQ3", "RQ4", "RQ5"],
+  "hypothesis_ids": ["H3"],
+  "started_at": null,
+  "ended_at": null,
+  "timing": {
+    "precision": "unknown",
+    "note": "Planned after EXP-012 paired-audit invalidation and before inspecting any official B2 metric value."
+  },
+  "preregistration_commit": null,
+  "source": {
+    "repository": "https://github.com/kwd421/MindMap",
+    "source_revision": "4ac92909d3f00612d025ac9328ee81ed37def40b",
+    "checkout_revision": "4ac92909d3f00612d025ac9328ee81ed37def40b",
+    "dirty": false,
+    "deviations": [
+      "This post-failure development remediation has complete access to EXP-012 execution hashes and the evaluator namespace error, but no official B2 metric value has been opened.",
+      "The remediation may change only the evaluator-side outer checkpoint join and its tests. B1a/B1b/B2 predictions, memory method, parser, retrieval, reader, official scorer outputs, opaque key, and benchmark files are byte-frozen.",
+      "The remediation reuses the 6654 EXP-012 predictions instead of rerunning model inference; all prediction and score hashes must match the EXP-012 failure artifact."
+    ]
+  },
+  "dataset": {
+    "name": "GateMem official open-label benchmark plus frozen EXP-012 outputs",
+    "revision": "GateMem-603f9f4_EXP-012-frozen-artifacts",
+    "split": "all four public domains; 91 episodes; 2218 checkpoints",
+    "license": "MIT; LICENSE SHA-256 78411c3c6aa9704b32c91fa74d8ba365f32514b0c5897e945a4a6f7e9483facc",
+    "raw_data_committed": false
+  },
+  "method_arms": [
+    "EXP012_B1a_raw_lexical_context_echo_frozen",
+    "EXP012_B1b_raw_lexical_shared_reader_frozen",
+    "EXP012_B2_frozen_public_text_governed_shared_reader_frozen"
+  ],
+  "models": [
+    {
+      "role": "already-completed shared deterministic answer reader; no new inference",
+      "model": "deepset/minilm-uncased-squad2",
+      "revision": "934656cdda79824eabf503ed56e15c01ddbdbe3f"
+    }
+  ],
+  "controls": {
+    "allowed_code_change": "Key evaluator joins by the source checkpoint_id serialized in the outer official prediction row; preserve method-internal opaque IDs for retrieval/prompt comparison.",
+    "forbidden_changes": [
+      "B1a/B1b/B2 prediction bytes",
+      "official score bytes",
+      "memory method or parser",
+      "retrieval or reader configuration",
+      "GateMem data or scorer",
+      "opaque key or method-internal opaque identifiers"
+    ],
+    "independent_variable": "B1a/B1b/B2 frozen methods from EXP-012",
+    "dependent_variables": [
+      "official utility, privacy, deletion, and Memory Governance Score",
+      "paired privacy/deletion prompt exposure",
+      "paired utility required-pattern recall and false blocking",
+      "governance signal coverage and reader cost"
+    ],
+    "integration_test": "Synthetic outer prediction rows must use source checkpoint IDs as the real official serialization does; method-internal turn IDs remain opaque and equal across arms.",
+    "missing_data_rule": "Any frozen artifact hash mismatch, checkpoint mismatch, retrieval mismatch, scorer mismatch, prompt-subset violation, or governance count violation invalidates the domain.",
+    "stopping_rule": "Commit the minimal evaluator-only fix and real-boundary regression test, verify all frozen EXP-012 artifact hashes, run the paired audit once for each domain, and stop without further code changes after any publishable output is generated.",
+    "cost_ceiling_usd": 0.0
+  },
+  "sample": {
+    "unit": "frozen GateMem checkpoint",
+    "domains": 4,
+    "checkpoints": 2218,
+    "prediction_rows_reused": 6654,
+    "official_score_files_reused": 12,
+    "sampling": "exhaustive public release"
+  },
+  "results": {
+    "status": "planned",
+    "primary_outcome": "valid paired aggregate over all 2218 frozen checkpoints after evaluator-only ID-boundary correction",
+    "secondary_outcomes": [
+      "four domain publishable aggregates",
+      "all pairing invariant counts",
+      "micro exact counts and weighted official metrics"
+    ]
+  },
+  "cost": {
+    "provider_usd": 0.0,
+    "note": "Planned deterministic local reanalysis of frozen outputs; no model or hosted API call."
+  },
+  "artifact_retention": {
+    "status": "record_only",
+    "reason": "Before remediation execution; publishable aggregates and their hashes will replace this planning-only retention entry."
+  },
+  "claim_boundary": "Post-failure, prior-access development reanalysis using an evaluator-only serialization-boundary repair. It can recover valid aggregates from byte-frozen EXP-012 predictions but cannot become confirmation, a leaderboard submission, a fresh model run, durable-erasure evidence, or general MindMap superiority."
+}
