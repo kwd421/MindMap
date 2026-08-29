@@ -3,6 +3,29 @@
 This file is append-only. Corrections are new dated addenda, not silent edits.
 Machine-readable records live in `records/`.
 
+## EXP-20260829-012 — Full GateMem B2 matched execution
+
+- **Class:** prior-access development execution
+- **Question:** Does the frozen PR #52 public-text pre-reader governance gate
+  reduce privacy/deletion prompt exposure relative to exactly matched raw BM25
+  candidates, using the same frozen extractive reader and budget?
+- **Source:** MindMap PR #52 exact
+  `4ac92909d3f00612d025ac9328ee81ed37def40b`; GateMem exact
+  `603f9f4b4ba4b77f043c20f85687fa016fd720b0`
+- **Sample:** all four public domains, 91 episodes, 2,218 checkpoints
+- **Arms:** B1a raw lexical context, B1b raw lexical plus shared reader, and B2
+  the same candidates through the frozen public-text governance gate plus the
+  same reader
+- **Primary boundary:** official local GateMem scorer and paired prompt-surface
+  aggregates; no leaderboard submission, human confirmation, parser tuning, or
+  durable-erasure claim
+- **Prior access:** B1a/B1b outcomes and EXP-008/009 parser diagnostics were
+  known before this freeze. The exact B2 endpoint outcome was not run or
+  inspected in this research loop before this record.
+- **Stopping rule:** after committing this record, execute the exact three arms
+  once per domain with one shared opaque-ID key, require exact candidate pairing,
+  retain all denominators, and make no method amendment after B2 output.
+
 ## EXP-20260827-001 — GateMem B1a/B1b independent local reproduction
 
 - **Class:** independent aggregate corroboration / changed-environment
