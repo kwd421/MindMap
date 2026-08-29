@@ -137,19 +137,33 @@ def _method_summary(root: Path) -> dict[str, Any]:
     }
 
 
-def _expected_opaque_queries(
+def _expected_source_queries(
     checkpoints: Iterable[Mapping[str, Any]],
-    secret: bytes,
 ) -> dict[str, Mapping[str, Any]]:
-    opaque = GateMemOpaqueIds.from_secret(secret)
     output: dict[str, Mapping[str, Any]] = {}
     for checkpoint in checkpoints:
-        method_id = opaque.query(
-            str(checkpoint["episode_id"]),
-            str(checkpoint["checkpoint_id"]),
-        )
-        output[method_id] = checkpoint
+        source_id = str(checkpoint["checkpoint_id"])
+        if source_id in output:
+            raise ValueError(f"duplicate source checkpoint: {source_id}")
+        output[source_id] = checkpoint
     return output
+
+
+def _assert_shared_opaque_key(
+    *,
+    secret: bytes,
+    method_roots: Mapping[str, Path],
+) -> None:
+    expected = GateMemOpaqueIds.from_secret(secret).key_commitment_sha256
+    for method, root in method_roots.items():
+        metadata = _load_json(root / "run_metadata.json")
+        firewall = metadata.get("opaque_identity_firewall")
+        if not isinstance(firewall, Mapping):
+            raise ValueError(f"{method} lacks opaque identity metadata")
+        if firewall.get("enabled") is not True:
+            raise ValueError(f"{method} opaque identity firewall is disabled")
+        if firewall.get("key_commitment_sha256") != expected:
+            raise ValueError(f"{method} used a different opaque-ID key")
 
 
 def build_publishable(
@@ -165,13 +179,18 @@ def build_publishable(
         checkout / "bench" / "data" / domain / "checkpoints.jsonl"
     )
     checkpoints = _load_jsonl(checkpoints_path)
-    hidden_by_opaque = _expected_opaque_queries(checkpoints, secret)
-    predictions = {
-        "B1a": _prediction_map(b1a_root),
-        "B1b": _prediction_map(b1b_root),
-        "B2": _prediction_map(b2_root),
+    hidden_by_source = _expected_source_queries(checkpoints)
+    method_roots = {
+        "B1a": b1a_root,
+        "B1b": b1b_root,
+        "B2": b2_root,
     }
-    expected_ids = set(hidden_by_opaque)
+    _assert_shared_opaque_key(secret=secret, method_roots=method_roots)
+    predictions = {
+        method: _prediction_map(root)
+        for method, root in method_roots.items()
+    }
+    expected_ids = set(hidden_by_source)
     for method, rows in predictions.items():
         if set(rows) != expected_ids:
             missing = len(expected_ids - set(rows))
@@ -213,7 +232,7 @@ def build_publishable(
     b2_matched_signal_checkpoint_count = 0
     reason_counts: Counter[str] = Counter()
 
-    for checkpoint_id, hidden in hidden_by_opaque.items():
+    for checkpoint_id, hidden in hidden_by_source.items():
         b1a = predictions["B1a"][checkpoint_id]
         b1b = predictions["B1b"][checkpoint_id]
         b2 = predictions["B2"][checkpoint_id]
@@ -320,6 +339,7 @@ def build_publishable(
         "checkpoints_sha256": checkout_identity["checkpoints_sha256"],
         "checkpoint_count": len(checkpoints),
         "pairing": {
+            "opaque_key_commitment_mismatches": 0,
             "retrieval_mismatches_B1a_B1b": retrieval_mismatches_b1b,
             "retrieval_mismatches_B1a_B2": retrieval_mismatches_b2,
             "prompt_mismatches_B1a_B1b": prompt_mismatches_b1b,

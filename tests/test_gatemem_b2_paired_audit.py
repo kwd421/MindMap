@@ -122,6 +122,7 @@ def _score_rows(*, governed: bool) -> list[dict[str, Any]]:
 def _prediction(
     checkpoint_id: str,
     *,
+    method_id: str,
     prompt: str,
     governed: bool,
     governance_reason: str = "no_applicable_public_policy_signal_admit",
@@ -129,7 +130,7 @@ def _prediction(
     retrieval = [
         {
             "rank": 1,
-            "turn_id": f"turn-{checkpoint_id}",
+            "turn_id": f"turn-{method_id}",
             "speaker_role": "patient",
             "lexical_score": 2.0,
             "recency_score": 0.0,
@@ -142,7 +143,7 @@ def _prediction(
         else [
             {
                 "rank": 1,
-                "turn_id": f"turn-{checkpoint_id}",
+                "turn_id": f"turn-{method_id}",
                 "speaker_role": "patient",
                 "text": prompt,
                 "final_score": 2.0,
@@ -152,7 +153,7 @@ def _prediction(
     governance_items = (
         [
             {
-                "turn_id": f"turn-{checkpoint_id}",
+                "turn_id": f"turn-{method_id}",
                 "rank": 1,
                 "disposition": "admit" if prompt else "block",
                 "reason_codes": [governance_reason],
@@ -195,6 +196,7 @@ def _prepare_method_root(
     predictions: list[dict[str, Any]],
     governed: bool,
     reader: bool,
+    key_commitment: str,
 ) -> None:
     checkout = {
         "observed_commit": "g" * 40,
@@ -210,6 +212,10 @@ def _prepare_method_root(
             "artifact_sha256": {"predictions": "p" * 64},
             "counts": {"episodes": 1, "checkpoints": 3},
             "checkout": checkout,
+            "opaque_identity_firewall": {
+                "enabled": True,
+                "key_commitment_sha256": key_commitment,
+            },
         },
     )
     _write_json(root / "official_score" / "summary.json", {"rows": 3})
@@ -256,35 +262,41 @@ def _prepare_tree(tmp_path: Path):
     b2 = tmp_path / "b2"
     b1_predictions = [
         _prediction(
-            ids["source-utility"],
+            "source-utility",
+            method_id=ids["source-utility"],
             prompt="allowed fact",
             governed=False,
         ),
         _prediction(
-            ids["source-privacy"],
+            "source-privacy",
+            method_id=ids["source-privacy"],
             prompt="private secret",
             governed=False,
         ),
         _prediction(
-            ids["source-deletion"],
+            "source-deletion",
+            method_id=ids["source-deletion"],
             prompt="deleted detail",
             governed=False,
         ),
     ]
     b2_predictions = [
         _prediction(
-            ids["source-utility"],
+            "source-utility",
+            method_id=ids["source-utility"],
             prompt="allowed fact",
             governed=True,
         ),
         _prediction(
-            ids["source-privacy"],
+            "source-privacy",
+            method_id=ids["source-privacy"],
             prompt="",
             governed=True,
             governance_reason="public_same_speaker_restriction",
         ),
         _prediction(
-            ids["source-deletion"],
+            "source-deletion",
+            method_id=ids["source-deletion"],
             prompt="",
             governed=True,
             governance_reason="public_same_speaker_delete",
@@ -296,6 +308,7 @@ def _prepare_tree(tmp_path: Path):
         predictions=b1_predictions,
         governed=False,
         reader=False,
+        key_commitment=opaque.key_commitment_sha256,
     )
     _prepare_method_root(
         b1b,
@@ -303,6 +316,7 @@ def _prepare_tree(tmp_path: Path):
         predictions=b1_predictions,
         governed=False,
         reader=True,
+        key_commitment=opaque.key_commitment_sha256,
     )
     _prepare_method_root(
         b2,
@@ -310,6 +324,7 @@ def _prepare_tree(tmp_path: Path):
         predictions=b2_predictions,
         governed=True,
         reader=True,
+        key_commitment=opaque.key_commitment_sha256,
     )
     return checkout, secret, b1a, b1b, b2
 
@@ -368,6 +383,26 @@ def test_paired_audit_fails_closed_on_retrieval_candidate_drift(
         ValueError,
         match="retrieval candidates are not identical",
     ):
+        module.build_publishable(
+            checkout=checkout,
+            domain="medical",
+            secret=secret,
+            b1a_root=b1a,
+            b1b_root=b1b,
+            b2_root=b2,
+        )
+
+
+def test_paired_audit_fails_closed_on_opaque_key_mismatch(
+    tmp_path: Path,
+):
+    module = _module()
+    checkout, secret, b1a, b1b, b2 = _prepare_tree(tmp_path)
+    metadata = json.loads((b2 / "run_metadata.json").read_text(encoding="utf-8"))
+    metadata["opaque_identity_firewall"]["key_commitment_sha256"] = "f" * 64
+    _write_json(b2 / "run_metadata.json", metadata)
+
+    with pytest.raises(ValueError, match="used a different opaque-ID key"):
         module.build_publishable(
             checkout=checkout,
             domain="medical",
