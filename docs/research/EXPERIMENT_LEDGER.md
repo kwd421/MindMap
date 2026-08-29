@@ -26,6 +26,23 @@ Machine-readable records live in `records/`.
   once per domain with one shared opaque-ID key, require exact candidate pairing,
   retain all denominators, and make no method amendment after B2 output.
 
+### 2026-08-29 failure addendum
+
+- **Execution:** all three arms produced 6,654/6,654 predictions and the
+  unmodified official scorer succeeded 12/12 times.
+- **Invalidation:** the paired audit failed 0/4 domains. It expected method
+  opaque query IDs as the outer prediction keys, while the real protected
+  runner correctly writes source checkpoint IDs at that evaluator-facing
+  boundary for the official scorer. Every domain therefore reported a fully
+  disjoint missing/extra set: 540/540, 552/552, 579/579, and 547/547.
+- **Test gap:** the paired-audit unit fixture placed opaque IDs directly in the
+  outer prediction rows and did not exercise the real external serialization
+  contract.
+- **Disposition:** EXP-012 is failed and contributes no adopted B2 performance
+  result. Exact prediction and score bytes are retained outside git for a
+  versioned evaluator-only remediation; the frozen B2 method itself will not be
+  changed.
+
 ## EXP-20260827-001 — GateMem B1a/B1b independent local reproduction
 
 - **Class:** independent aggregate corroboration / changed-environment

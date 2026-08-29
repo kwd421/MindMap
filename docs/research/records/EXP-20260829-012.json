@@ -2,15 +2,15 @@
   "schema_version": "0.1.0",
   "experiment_id": "EXP-20260829-012",
   "title": "Full GateMem B2 matched pre-reader governance execution",
-  "status": "planned",
+  "status": "failed",
   "study_class": "development",
   "research_question_ids": ["RQ3", "RQ4", "RQ5"],
   "hypothesis_ids": ["H3"],
-  "started_at": null,
-  "ended_at": null,
+  "started_at": "2026-08-29T06:07:18.177993Z",
+  "ended_at": "2026-08-29T06:11:03Z",
   "timing": {
-    "precision": "unknown",
-    "note": "The execution window will be recorded after this planning record is committed and before any B2 public outcome is inspected."
+    "precision": "exact",
+    "note": "The first committed-artifact timestamp is used as the execution start; the failure-disposition timestamp was recorded immediately after the four paired audits rejected their checkpoint namespaces."
   },
   "preregistration_commit": null,
   "source": {
@@ -56,6 +56,7 @@
     }
   ],
   "controls": {
+    "planning_commit": "87bd72b8314d42beb0ce6a506600e4bb886f072d",
     "independent_variable": "pre-reader public-text governance gate absent versus present; B1a is a raw-context endpoint control",
     "dependent_variables": [
       "official per-domain utility accuracy, access-control violation rate, active-forgetting failure rate, and Memory Governance Score",
@@ -116,22 +117,40 @@
     "sampling": "exhaustive public release"
   },
   "results": {
-    "status": "planned",
+    "status": "failed",
     "primary_outcome": "paired B2 versus B1a/B1b change in forbidden prompt exposure and official utility/safety metrics over the exact 2218-checkpoint release",
     "secondary_outcomes": [
       "per-domain official summaries",
       "required-pattern prompt recall and false blocking",
       "governance signal coverage and reason counts",
       "reader token and runtime cost"
-    ]
+    ],
+    "execution": {
+      "predictions": {"numerator": 6654, "denominator": 6654},
+      "official_scorer_successes": {"numerator": 12, "denominator": 12},
+      "paired_audit_successes": {"numerator": 0, "denominator": 4}
+    },
+    "failure": {
+      "education_checkpoint_namespace_mismatch": {"missing": 540, "extra": 540},
+      "household_checkpoint_namespace_mismatch": {"missing": 552, "extra": 552},
+      "medical_checkpoint_namespace_mismatch": {"missing": 579, "extra": 579},
+      "office_checkpoint_namespace_mismatch": {"missing": 547, "extra": 547},
+      "root_cause": "The external runner correctly serializes source checkpoint IDs in the outer prediction row for the official scorer, while the paired audit expects method-internal opaque query IDs at that outer boundary. Its synthetic unit fixture encoded the opaque ID directly into the outer row and therefore missed the real integration mismatch.",
+      "disposition": "The primary paired outcome is invalid and no official score is adopted as an EXP-012 architecture result. Predictions and official score files remain byte-frozen outside git for a separate versioned evaluator-only remediation."
+    }
   },
   "cost": {
     "provider_usd": 0.0,
     "note": "Planned local CPU execution only; no hosted API or paid official submission. Dependency installation and wall time are not monetary provider charges."
   },
-  "artifact_retention": {
-    "status": "record_only",
-    "reason": "Before execution. Protected per-checkpoint predictions will stay outside git; publishable aggregates and reproducibility hashes will be committed after a valid run."
+  "artifact_files": [
+    {
+      "path": "results/research/EXP-20260829-012/failure.json",
+      "sha256": "7d097548cd59f6d235aced23257356e5683805e07076fc6bf6ea1e3c2a868f16"
+    }
+  ],
+  "artifacts": {
+    "protected_retention": "Per-checkpoint prediction, score, prompt, and opaque-identity artifacts remain outside git in the exact execution workspace. Their hashes are committed in the failure artifact; only aggregate failure metadata are public."
   },
-  "claim_boundary": "Prior-access, open-label development execution of the exact frozen PR 52 B2 method on the official local GateMem scorer. It can measure this method's matched public-benchmark behavior but cannot establish confirmation, leaderboard status, semantic parser recall, durable storage erasure, human review, or general MindMap superiority."
+  "claim_boundary": "Failed prior-access development execution. It establishes a real integration defect between the frozen PR 52 protected runner and paired audit after 6654/6654 predictions and 12/12 official scorer successes; it establishes no B2 utility, safety, architecture, leaderboard, parser-recall, or durable-erasure result."
 }

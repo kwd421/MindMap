@@ -1,0 +1,56 @@
+{
+  "schema_version": "mindmap-exp012-failure-v1",
+  "experiment_id": "EXP-20260829-012",
+  "status": "failed",
+  "planning_commit": "87bd72b8314d42beb0ce6a506600e4bb886f072d",
+  "execution_window_utc": {
+    "first_artifact": "2026-08-29T06:07:18.177993+00:00",
+    "last_artifact": "2026-08-29T06:09:08.619684+00:00",
+    "failure_recorded": "2026-08-29T06:11:03Z"
+  },
+  "source": {
+    "mindmap_revision": "4ac92909d3f00612d025ac9328ee81ed37def40b",
+    "gatemem_revision": "603f9f4b4ba4b77f043c20f85687fa016fd720b0",
+    "official_score_script_sha256": "3d546a21778202959a9df12bac44c196a7f20a248cf5a2cb34f0d9b9c2623d8a"
+  },
+  "execution_counts": {
+    "domains": 4,
+    "arms": 3,
+    "predictions": 6654,
+    "official_scorer_successes": 12,
+    "official_scorer_attempts": 12,
+    "paired_audit_successes": 0,
+    "paired_audit_attempts": 4
+  },
+  "paired_audit_failure": {
+    "education": {"missing": 540, "extra": 540},
+    "household": {"missing": 552, "extra": 552},
+    "medical": {"missing": 579, "extra": 579},
+    "office": {"missing": 547, "extra": 547},
+    "cause": "The real protected runner writes evaluator-facing source checkpoint IDs to the outer predictions.jsonl checkpoint_id required by the official scorer, while the paired audit constructs expected keys with GateMemOpaqueIds.query() and tests those opaque method IDs against the outer source-ID keys.",
+    "test_gap": "The frozen paired-audit unit fixture writes opaque IDs directly into the outer prediction rows, so it does not exercise the real external prediction serialization contract.",
+    "disposition": "EXP-012 is invalid for its paired primary outcome. The generated predictions and official scorer summaries are retained outside git for a versioned evaluator-only remediation; no B2 parser, retrieval, reader, prediction, or official score may change."
+  },
+  "artifact_hashes": {
+    "education": {
+      "b1a": {"predictions": "933f2864e57bf9c5b0e820d7ba2447b4d71d283cb88b8369bec41b01e695baf6", "run_metadata": "b245338a063fa283e57d1e24fe739d1378507b215ff7800554ee4e61c3c3877a", "official_summary": "5a0aaac2be0cd383eec6fce741ae80796ec353b20e8001b89145fcd430f0fd89"},
+      "b1b": {"predictions": "fe4cf5bcd7be3e31fe0716789c7cffca72da46ae61ac2aba702c0e82fd11258d", "run_metadata": "9289360170fdec13fa247eb3bdf7681798a666008c713a4ab4ddee2b0bade9b1", "official_summary": "811311db1bfc72e4d2cde86eda14ce8389878e5185ea75acf66c0e7bc44d0f3e", "reader_runtime": "4394c01a3220534aee9b8e015cb92fe2d75d73995c41e9fcc4f52657bbda737e"},
+      "b2": {"predictions": "25e9a0ff295bbfde8cdecc55f4cea889edafdca8b2e9c9845cbc28240e2deae0", "run_metadata": "83ddf2b0a17d9a323f8d8847df3d0eb63c8a0748e3a47db18f35adc6bca4c85b", "official_summary": "eb5c764bb51515df21a4e252387c7fc7fbb618fc3e35a31c3a5b8d40ab3baa1c", "reader_runtime": "a578ebf2ec6223b7c594d31eaff65c48a6e2d8be7ab5f32ae8c796e3d79d84a3"}
+    },
+    "household": {
+      "b1a": {"predictions": "bc94f87f52c18db1fbf1f2b645d240287e680327e4e1f9e87c1d8a8530969745", "run_metadata": "6ce6cc4f63aa52ac12f3fe0af52f104523a83aeb021e2e95da59b30215153dfa", "official_summary": "86e80e1928d18be956ef65dbbc3db664275ff6e7b9f72cc50131866885161963"},
+      "b1b": {"predictions": "2213518757163c81281a03d227d24ff67bd66a3951efe4442ae5e7521a6ecfce", "run_metadata": "7d98b4f21c143014659b8b314cfbe5107b652224fb8fb177dbb48ddfd0a6ac6b", "official_summary": "a75c4841a8614a20598bd292f3fa0c8578e3cde5e3f25184a0047ac96cca16a7", "reader_runtime": "257cbd436811b0d6f41047255a345dd3d28d61131340346607f5a1046f2b7105"},
+      "b2": {"predictions": "c479abfa74874cbbcd3a01057bca5a275b4289c05514c497f41d0d86e3a0f8c6", "run_metadata": "01b869f66464c56edecca55c6bd4f3e1452371cd5a6ad2dc6982e3015d5301dc", "official_summary": "1f912c5b82f1210a73f6b9c4e727f831a30f192c4fb5de56a5c72616b9f144c4", "reader_runtime": "b06fdb2dfacad8a013c353b9ad5621a2c949ac9160502e693968032d0ad31745"}
+    },
+    "medical": {
+      "b1a": {"predictions": "e140198281da40d3d97fd2e76e01b7236cc413ca0055136094a354b419c7431d", "run_metadata": "13b0a9418378e5334e4153274be41087fe000f6ac487ee4dc0b1d019c35796da", "official_summary": "ded65ade63a62a2ffb4c1f12a1fc2a5e4eeaa402b41640fa1824ba03414d8198"},
+      "b1b": {"predictions": "4cbca8684d37e345520aa55b5758f790fddee6b93a09ae401594ce7f032005b2", "run_metadata": "f6dfbb557301c816b40b6a39ed000662a1f4fec4d5fb7a42ed5ae28ccf1b6c31", "official_summary": "bc81283dba50287a4e740757516933937ddd46850646739e4a7d57034ea2cc57", "reader_runtime": "be1f51074f46dbd02ed60f4e64201e34a206d7d90c7f939730248fd7c326f255"},
+      "b2": {"predictions": "19a91a16ca5db8cbdc5a615d6d8be8b9ddb0ab9bf0142bd67bce7dc2e9eac722", "run_metadata": "2cce0d1a895ca41c0949b11715881e7e1084538a950801c203b2e1ed670276c9", "official_summary": "e8a46d42f4aef7c3c71f415109ad397f3bc5290c972856fd7a337f921ecb5552", "reader_runtime": "5c4b8bc525eb85339d869a7988fa425abe498bc0d6bbd30c3c701920eca202da"}
+    },
+    "office": {
+      "b1a": {"predictions": "e1e31c1eff89499bef9892692ec4830c7132764633a0fc820d4c13b54f2ab74c", "run_metadata": "f9020fc41d8fac8154781aa1c927e913b340226ba51f0aa37d31a5078e2fe950", "official_summary": "dfcaea970eeb051b0a50aaf3b7f0383c9da845000032eb3eed223195e2f7c9c1"},
+      "b1b": {"predictions": "1437cccaad135e854b4d2a7db9b6c8b1a6a088f212cb0352b4759280e09ece03", "run_metadata": "d8136432e7621a275c4227fc6dfc8712580b0f831a085c5bea6649c5bc1b6d33", "official_summary": "48ab764f8b636640edfc14aa614a73c9dce2e6fbc5e359e052f20fd573dbbca0", "reader_runtime": "81ecd78de923dc2c66443132992ac0d3b7a5c3aed3842fc2ede1c165fddd572f"},
+      "b2": {"predictions": "2834fc18666a2471650d823cb27afdbd11b4c01685b94283cee2c64d16f877f3", "run_metadata": "920634394976b920c648615b1d35384587fcaad86ad8e1969aa537529be662d7", "official_summary": "8e78441d520e68035b1bdd5b1847fb9437e1b741630416672f71a2296926f03a", "reader_runtime": "b5dcdff7c3d7b5814b20a380f92c732b48dc9916b60594c86dd58bb3e4761bb7"}
+    }
+  }
+}
